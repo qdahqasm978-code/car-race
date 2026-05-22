@@ -82,9 +82,9 @@
     const carExtraImg = new Image();
     carExtraImg.src = "carExtra.png";
 
-    // مواقع السيارات
+    // مواقع السيارات والمتغيرات
     let carX, carY, car32X, car32Y, carExtraX, carExtraY;
-    let gameOver, score;
+    let gameOver, score, level;
 
     function resetGame() {
       carX = canvas.width / 2 - 25;
@@ -94,6 +94,7 @@
       carExtraX = Math.random() * (canvas.width - 50);
       carExtraY = -300;
       score = 0;
+      level = 1;   // البداية من المستوى الأول
       gameOver = false;
     }
 
@@ -107,15 +108,15 @@
       ctx.drawImage(car32Img, car32X, car32Y, 50, 100);
       ctx.drawImage(carExtraImg, carExtraX, carExtraY, 50, 100);
 
-      // حركة السيارات المنافسة
-      car32Y += 3;
+      // حركة السيارات المنافسة تعتمد على المستوى
+      car32Y += 2 + level;
       if (car32Y > canvas.height) {
         car32Y = -100;
         car32X = Math.random() * (canvas.width - 50);
         score++;
       }
 
-      carExtraY += 4;
+      carExtraY += 3 + level;
       if (carExtraY > canvas.height) {
         carExtraY = -100;
         carExtraX = Math.random() * (canvas.width - 50);
@@ -128,12 +129,18 @@
         carY = canvas.height - 100; // إعادة السيارة للأسفل
       }
 
-      // عرض النقاط
+      // زيادة المستوى كل 10 نقاط
+      if (score > 0 && score % 10 === 0) {
+        level = Math.floor(score / 10) + 1;
+      }
+
+      // عرض النقاط والمستوى
       ctx.fillStyle = "white";
       ctx.font = "20px Arial";
       ctx.fillText("Score: " + score, 10, 30);
+      ctx.fillText("Level: " + level, 10, 60);
 
-      // التصادم
+      // التصادم (15 عرض × 50 طول)
       if (
         (carX < car32X + 15 && carX + 15 > car32X && carY < car32Y + 50 && carY + 50 > car32Y) ||
         (carX < carExtraX + 15 && carX + 15 > carExtraX && carY < carExtraY + 50 && carY + 50 > carExtraY)
@@ -146,7 +153,7 @@
 
     function endGame() {
       gameOver = true;
-      alert("💥 Game Over! \nYour Score: " + score);
+      alert("💥 Game Over! \nYour Score: " + score + "\nLevel: " + level);
       restartBtn.style.display = "block";
     }
 
@@ -178,19 +185,17 @@
     const bgMusic = new Audio("background.mp3");
     bgMusic.loop = true;
 
-    // التحكم باللمس على الهاتف (ضغط مطوّل)
+    // التحكم باللمس على الهاتف
     let touchInterval;
 
     canvas.addEventListener("touchstart", (e) => {
       const touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
 
       if (touchX < canvas.width / 2) {
-        // الضغط في الجهة اليسرى
         touchInterval = setInterval(() => {
           if (carX > 0) carX -= 10;
         }, 100);
       } else {
-        // الضغط في الجهة اليمنى
         touchInterval = setInterval(() => {
           if (carX < canvas.width - 50) carX += 10;
         }, 100);
