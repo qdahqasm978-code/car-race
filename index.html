@@ -6,12 +6,8 @@
   <style>
     body {
       background-color: black;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
       margin: 0;
+      overflow: hidden; /* منع التمرير */
       font-family: Arial, sans-serif;
     }
 
@@ -22,6 +18,10 @@
     }
 
     #startScreen {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       text-align: center;
       color: white;
     }
@@ -44,6 +44,9 @@
 
     #restartBtn {
       display: none;
+      position: absolute;
+      top: 20px;
+      right: 20px;
     }
   </style>
 </head>
@@ -56,7 +59,7 @@
   </div>
 
   <!-- الحلبة -->
-  <canvas id="gameCanvas" width="400" height="600"></canvas>
+  <canvas id="gameCanvas"></canvas>
   
   <!-- زر إعادة التشغيل -->
   <button id="restartBtn">🔄 Restart</button>
@@ -68,6 +71,14 @@
     const startScreen = document.getElementById("startScreen");
     const startBtn = document.getElementById("startBtn");
     const restartBtn = document.getElementById("restartBtn");
+
+    // ضبط حجم الكانفس ليملأ الشاشة
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
 
     // تحميل الصور
     const carImg = new Image();
@@ -88,13 +99,13 @@
 
     function resetGame() {
       carX = canvas.width / 2 - 25;
-      carY = canvas.height - 100;
+      carY = canvas.height - 120;
       car32X = Math.random() * (canvas.width - 50);
       car32Y = -100;
       carExtraX = Math.random() * (canvas.width - 50);
       carExtraY = -300;
       score = 0;
-      level = 1;   // البداية من المستوى الأول
+      level = 1;
       gameOver = false;
     }
 
@@ -126,7 +137,7 @@
       // حركة سيارتك للأمام تلقائيًا
       carY -= 2;
       if (carY < 0) {
-        carY = canvas.height - 100; // إعادة السيارة للأسفل
+        carY = canvas.height - 120;
       }
 
       // زيادة المستوى كل 10 نقاط
@@ -137,8 +148,8 @@
       // عرض النقاط والمستوى
       ctx.fillStyle = "white";
       ctx.font = "20px Arial";
-      ctx.fillText("Score: " + score, 10, 30);
-      ctx.fillText("Level: " + level, 10, 60);
+      ctx.fillText("Score: " + score, 20, 40);
+      ctx.fillText("Level: " + level, 20, 70);
 
       // التصادم (15 عرض × 50 طول)
       if (
@@ -160,9 +171,9 @@
     // التحكم بالسيارة يمين ويسار بلوحة المفاتيح
     document.addEventListener("keydown", (e) => {
       if (e.key === "ArrowLeft" && carX > 0) {
-        carX -= 10;
+        carX -= 15;
       } else if (e.key === "ArrowRight" && carX < canvas.width - 50) {
-        carX += 10;
+        carX += 15;
       }
     });
 
@@ -193,11 +204,11 @@
 
       if (touchX < canvas.width / 2) {
         touchInterval = setInterval(() => {
-          if (carX > 0) carX -= 10;
+          if (carX > 0) carX -= 15;
         }, 100);
       } else {
         touchInterval = setInterval(() => {
-          if (carX < canvas.width - 50) carX += 10;
+          if (carX < canvas.width - 50) carX += 15;
         }, 100);
       }
     });
