@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Car Race Game</title>
+  <style>
+    body {
+      background-color: black;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    canvas {
+      border: 2px solid white;
+      background-color: gray;
+      display: none;
+    }
+
+    #startScreen {
+      text-align: center;
+      color: white;
+    }
+
+    #startBtn, #restartBtn {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: red;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    #startBtn:hover, #restartBtn:hover {
+      background-color: darkred;
+    }
+
+    #restartBtn {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- شاشة البداية -->
+  <div id="startScreen">
+    <h1>🏎️ Car Race Game</h1>
+    <p>اضغط على زر التشغيل للبدء</p>
+    <button id="startBtn">▶ Start</button>
+  </div>
+
+  <!-- الحلبة -->
+  <canvas id="gameCanvas" width="400" height="600"></canvas>
+  
+  <!-- زر إعادة التشغيل -->
+  <button id="restartBtn">🔄 Restart</button>
+  
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const startScreen = document.getElementById("startScreen");
+    const startBtn = document.getElementById("startBtn");
+    const restartBtn = document.getElementById("restartBtn");
+
+    // تحميل الصور
+    const carImg = new Image();
+    carImg.src = "car2.png";
+
+    const roadImg = new Image();
+    roadImg.src = "road.png";
+
+    const car32Img = new Image();
+    car32Img.src = "car32.png";
+
+    const carExtraImg = new Image();
+    carExtraImg.src = "carExtra.png";
+
+    // مواقع السيارات
+    let carX, carY, car32X, car32Y, carExtraX, carExtraY;
+    let gameOver, score;
+
+    function resetGame() {
+      carX = canvas.width / 2 - 25;
+      carY = canvas.height - 100;
+      car32X = Math.random() * (canvas.width - 50);
+      car32Y = -100;
+      carExtraX = Math.random() * (canvas.width - 50);
+      carExtraY = -300;
+      score = 0;
+      gameOver = false;
+    }
+
+    function drawGame() {
+      if (gameOver) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.drawImage(roadImg, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(carImg, carX, carY, 50, 100);
+      ctx.drawImage(car32Img, car32X, car32Y, 50, 100);
+      ctx.drawImage(carExtraImg, carExtraX, carExtraY, 50, 100);
+
+      // حركة السيارات المنافسة
+      car32Y += 3;
+      if (car32Y > canvas.height) {
+        car32Y = -100;
+        car32X = Math.random() * (canvas.width - 50);
+        score++;
+      }
+
+      carExtraY += 4;
+      if (carExtraY > canvas.height) {
+        carExtraY = -100;
+        carExtraX = Math.random() * (canvas.width - 50);
+        score++;
+      }
+
+      // حركة سيارتك للأمام تلقائيًا
+      carY -= 2;
+      if (carY < 0) {
+        carY = canvas.height - 100; // إعادة السيارة للأسفل
+      }
+
+      // عرض النقاط
+      ctx.fillStyle = "white";
+      ctx.font = "20px Arial";
+      ctx.fillText("Score: " + score, 10, 30);
+
+      // التصادم
+      if (
+        (carX < car32X + 15 && carX + 15 > car32X && carY < car32Y + 50 && carY + 50 > car32Y) ||
+        (carX < carExtraX + 15 && carX + 15 > carExtraX && carY < carExtraY + 50 && carY + 50 > carExtraY)
+      ) {
+        endGame();
+      }
+
+      requestAnimationFrame(drawGame);
+    }
+
+    function endGame() {
+      gameOver = true;
+      alert("💥 Game Over! \nYour Score: " + score);
+      restartBtn.style.display = "block";
+    }
+
+    // التحكم بالسيارة يمين ويسار بلوحة المفاتيح
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft" && carX > 0) {
+        carX -= 10;
+      } else if (e.key === "ArrowRight" && carX < canvas.width - 50) {
+        carX += 10;
+      }
+    });
+
+    restartBtn.addEventListener("click", () => {
+      resetGame();
+      restartBtn.style.display = "none";
+      bgMusic.play();
+      drawGame();
+    });
+
+    startBtn.addEventListener("click", () => {
+      startScreen.style.display = "none";
+      canvas.style.display = "block";
+      bgMusic.play();
+      resetGame();
+      drawGame();
+    });
+
+    // موسيقى خلفية
+    const bgMusic = new Audio("background.mp3");
+    bgMusic.loop = true;
+
+    // التحكم باللمس على الهاتف (ضغط مطوّل)
+    let touchInterval;
+
+    canvas.addEventListener("touchstart", (e) => {
+      const touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+
+      if (touchX < canvas.width / 2) {
+        // الضغط في الجهة اليسرى
+        touchInterval = setInterval(() => {
+          if (carX > 0) carX -= 10;
+        }, 100);
+      } else {
+        // الضغط في الجهة اليمنى
+        touchInterval = setInterval(() => {
+          if (carX < canvas.width - 50) carX += 10;
+        }, 100);
+      }
+    });
+
+    canvas.addEventListener("touchend", () => {
+      clearInterval(touchInterval);
+    });
+  </script>
+</body>
+</html>
