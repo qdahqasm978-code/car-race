@@ -52,33 +52,6 @@
       top: 20px;
       right: 20px;
     }
-
-    /* أزرار التحكم باللمس */
-    #controls {
-      position: absolute;
-      bottom: 20px;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      padding: 0 40px;
-    }
-
-    .controlBtn {
-      padding: 20px;
-      font-size: 28px;
-      background-color: rgba(255,0,0,0.6);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-      transition: transform 0.2s ease, background 0.3s ease;
-    }
-
-    .controlBtn:hover {
-      background-color: rgba(255,0,0,0.8);
-      transform: scale(1.1);
-    }
   </style>
 </head>
 <body>
@@ -94,12 +67,6 @@
   
   <!-- زر إعادة التشغيل -->
   <button id="restartBtn">🔄 Restart</button>
-
-  <!-- أزرار التحكم باللمس -->
-  <div id="controls" style="display:none;">
-    <button class="controlBtn" id="leftBtn">⬅️</button>
-    <button class="controlBtn" id="rightBtn">➡️</button>
-  </div>
   
   <script>
     const canvas = document.getElementById("gameCanvas");
@@ -108,9 +75,6 @@
     const startScreen = document.getElementById("startScreen");
     const startBtn = document.getElementById("startBtn");
     const restartBtn = document.getElementById("restartBtn");
-    const controls = document.getElementById("controls");
-    const leftBtn = document.getElementById("leftBtn");
-    const rightBtn = document.getElementById("rightBtn");
 
     // ضبط حجم الكانفس ليملأ الشاشة
     function resizeCanvas() {
@@ -138,12 +102,12 @@
     let gameOver, score, level;
 
     function resetGame() {
-      carX = canvas.width / 2 - 25;
-      carY = canvas.height - 120;
-      car32X = Math.random() * (canvas.width - 50);
-      car32Y = -100;
-      carExtraX = Math.random() * (canvas.width - 50);
-      carExtraY = -300;
+      carX = canvas.width / 2 - 40;
+      carY = canvas.height - 160;
+      car32X = Math.random() * (canvas.width - 80);
+      car32Y = -160;
+      carExtraX = Math.random() * (canvas.width - 80);
+      carExtraY = -400;
       score = 0;
       level = 1;
       gameOver = false;
@@ -155,29 +119,29 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       ctx.drawImage(roadImg, 0, 0, canvas.width, canvas.height);
-      ctx.drawImage(carImg, carX, carY, 60, 120); // حجم مناسب
-      ctx.drawImage(car32Img, car32X, car32Y, 60, 120);
-      ctx.drawImage(carExtraImg, carExtraX, carExtraY, 60, 120);
+      ctx.drawImage(carImg, carX, carY, 80, 160); // سيارات أكبر
+      ctx.drawImage(car32Img, car32X, car32Y, 80, 160);
+      ctx.drawImage(carExtraImg, carExtraX, carExtraY, 80, 160);
 
       // حركة السيارات المنافسة تعتمد على المستوى
       car32Y += 2 + level;
       if (car32Y > canvas.height) {
-        car32Y = -120;
-        car32X = Math.random() * (canvas.width - 60);
+        car32Y = -160;
+        car32X = Math.random() * (canvas.width - 80);
         score++;
       }
 
       carExtraY += 3 + level;
       if (carExtraY > canvas.height) {
-        carExtraY = -120;
-        carExtraX = Math.random() * (canvas.width - 60);
+        carExtraY = -160;
+        carExtraX = Math.random() * (canvas.width - 80);
         score++;
       }
 
       // حركة سيارتك للأمام تلقائيًا
       carY -= 2;
       if (carY < 0) {
-        carY = canvas.height - 120;
+        carY = canvas.height - 160;
       }
 
       // زيادة المستوى كل 10 نقاط
@@ -193,8 +157,8 @@
 
       // التصادم (15 عرض × 50 طول)
       if (
-        (carX < car32X + 15 && carX + 15 > car32X && carY < car32Y + 50 && carY + 50 > car32Y) ||
-        (carX < carExtraX + 15 && carX + 15 > carExtraX && carY < carExtraY + 50 && carY + 50 > carExtraY)
+        (carX < car32X + 30 && carX + 30 > car32X && carY < car32Y + 80 && carY + 80 > car32Y) ||
+        (carX < carExtraX + 30 && carX + 30 > carExtraX && carY < carExtraY + 80 && carY + 80 > carExtraY)
       ) {
         endGame();
       }
@@ -212,17 +176,19 @@
     document.addEventListener("keydown", (e) => {
       if (e.key === "ArrowLeft" && carX > 0) {
         carX -= 20;
-      } else if (e.key === "ArrowRight" && carX < canvas.width - 60) {
+      } else if (e.key === "ArrowRight" && carX < canvas.width - 80) {
         carX += 20;
       }
     });
 
-    // التحكم باللمس عبر الأزرار
-    leftBtn.addEventListener("touchstart", () => {
-      if (carX > 0) carX -= 20;
-    });
-    rightBtn.addEventListener("touchstart", () => {
-      if (carX < canvas.width - 60) carX += 20;
+    // التحكم بالهاتف عبر تدوير الشاشة (الجيروسكوب)
+    window.addEventListener("deviceorientation", (event) => {
+      const tilt = event.gamma; // الميل الأفقي للجهاز
+      if (tilt < -5 && carX > 0) {
+        carX -= 10; // ميل لليسار
+      } else if (tilt > 5 && carX < canvas.width - 80) {
+        carX += 10; // ميل لليمين
+      }
     });
 
     restartBtn.addEventListener("click", () => {
@@ -235,7 +201,6 @@
     startBtn.addEventListener("click", () => {
       startScreen.style.display = "none";
       canvas.style.display = "block";
-      controls.style.display = "flex"; // إظهار أزرار التحكم
       bgMusic.play();
       resetGame();
       drawGame();
