@@ -13,7 +13,7 @@
 
     canvas {
       display: none;
-      background-color: gray;
+      background-color: #333;
       border: 2px solid white;
       width: 100vw;
       height: 100vh;
@@ -32,16 +32,18 @@
       margin-top: 10px;
       padding: 14px 28px;
       font-size: 22px;
-      background-color: red;
+      background: linear-gradient(45deg, #ff0000, #cc0000);
       color: white;
       border: none;
       cursor: pointer;
-      border-radius: 5px;
-      transition: background-color 0.3s ease;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+      transition: transform 0.2s ease, background 0.3s ease;
     }
 
     #startBtn:hover, #restartBtn:hover {
-      background-color: darkred;
+      background: linear-gradient(45deg, #cc0000, #990000);
+      transform: scale(1.05);
     }
 
     #restartBtn {
@@ -62,13 +64,20 @@
     }
 
     .controlBtn {
-      padding: 20px 40px;
-      font-size: 24px;
-      background-color: rgba(255,0,0,0.7);
+      padding: 20px;
+      font-size: 28px;
+      background-color: rgba(255,0,0,0.6);
       color: white;
       border: none;
-      border-radius: 10px;
+      border-radius: 50%;
       cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+      transition: transform 0.2s ease, background 0.3s ease;
+    }
+
+    .controlBtn:hover {
+      background-color: rgba(255,0,0,0.8);
+      transform: scale(1.1);
     }
   </style>
 </head>
@@ -146,22 +155,22 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       ctx.drawImage(roadImg, 0, 0, canvas.width, canvas.height);
-      ctx.drawImage(carImg, carX, carY, 50, 100);
-      ctx.drawImage(car32Img, car32X, car32Y, 50, 100);
-      ctx.drawImage(carExtraImg, carExtraX, carExtraY, 50, 100);
+      ctx.drawImage(carImg, carX, carY, 60, 120); // حجم مناسب
+      ctx.drawImage(car32Img, car32X, car32Y, 60, 120);
+      ctx.drawImage(carExtraImg, carExtraX, carExtraY, 60, 120);
 
       // حركة السيارات المنافسة تعتمد على المستوى
       car32Y += 2 + level;
       if (car32Y > canvas.height) {
-        car32Y = -100;
-        car32X = Math.random() * (canvas.width - 50);
+        car32Y = -120;
+        car32X = Math.random() * (canvas.width - 60);
         score++;
       }
 
       carExtraY += 3 + level;
       if (carExtraY > canvas.height) {
-        carExtraY = -100;
-        carExtraX = Math.random() * (canvas.width - 50);
+        carExtraY = -120;
+        carExtraX = Math.random() * (canvas.width - 60);
         score++;
       }
 
@@ -178,7 +187,7 @@
 
       // عرض النقاط والمستوى
       ctx.fillStyle = "white";
-      ctx.font = "20px Arial";
+      ctx.font = "22px Arial";
       ctx.fillText("Score: " + score, 20, 40);
       ctx.fillText("Level: " + level, 20, 70);
 
@@ -202,18 +211,18 @@
     // التحكم بالسيارة بلوحة المفاتيح
     document.addEventListener("keydown", (e) => {
       if (e.key === "ArrowLeft" && carX > 0) {
-        carX -= 15;
-      } else if (e.key === "ArrowRight" && carX < canvas.width - 50) {
-        carX += 15;
+        carX -= 20;
+      } else if (e.key === "ArrowRight" && carX < canvas.width - 60) {
+        carX += 20;
       }
     });
 
     // التحكم باللمس عبر الأزرار
     leftBtn.addEventListener("touchstart", () => {
-      if (carX > 0) carX -= 15;
+      if (carX > 0) carX -= 20;
     });
     rightBtn.addEventListener("touchstart", () => {
-      if (carX < canvas.width - 50) carX += 15;
+      if (carX < canvas.width - 60) carX += 20;
     });
 
     restartBtn.addEventListener("click", () => {
@@ -226,7 +235,7 @@
     startBtn.addEventListener("click", () => {
       startScreen.style.display = "none";
       canvas.style.display = "block";
-      controls.style.display = "flex"; // إظهار أزرار التحكم على الهاتف
+      controls.style.display = "flex"; // إظهار أزرار التحكم
       bgMusic.play();
       resetGame();
       drawGame();
