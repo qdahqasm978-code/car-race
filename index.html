@@ -7,7 +7,7 @@
     body {
       background-color: black;
       margin: 0;
-      overflow: hidden; /* منع التمرير */
+      overflow: hidden;
       font-family: Arial, sans-serif;
     }
 
@@ -15,8 +15,8 @@
       display: none;
       background-color: gray;
       border: 2px solid white;
-      width: 100vw;   /* عرض كامل */
-      height: 100vh;  /* ارتفاع كامل */
+      width: 100vw;
+      height: 100vh;
     }
 
     #startScreen {
@@ -50,6 +50,26 @@
       top: 20px;
       right: 20px;
     }
+
+    /* أزرار التحكم باللمس */
+    #controls {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 40px;
+    }
+
+    .controlBtn {
+      padding: 20px 40px;
+      font-size: 24px;
+      background-color: rgba(255,0,0,0.7);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -65,6 +85,12 @@
   
   <!-- زر إعادة التشغيل -->
   <button id="restartBtn">🔄 Restart</button>
+
+  <!-- أزرار التحكم باللمس -->
+  <div id="controls" style="display:none;">
+    <button class="controlBtn" id="leftBtn">⬅️</button>
+    <button class="controlBtn" id="rightBtn">➡️</button>
+  </div>
   
   <script>
     const canvas = document.getElementById("gameCanvas");
@@ -73,11 +99,14 @@
     const startScreen = document.getElementById("startScreen");
     const startBtn = document.getElementById("startBtn");
     const restartBtn = document.getElementById("restartBtn");
+    const controls = document.getElementById("controls");
+    const leftBtn = document.getElementById("leftBtn");
+    const rightBtn = document.getElementById("rightBtn");
 
-    // ضبط حجم الكانفس ليملأ الشاشة (يدعم الهاتف والكمبيوتر)
+    // ضبط حجم الكانفس ليملأ الشاشة
     function resizeCanvas() {
-      canvas.width = document.documentElement.clientWidth;
-      canvas.height = document.documentElement.clientHeight;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     }
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
@@ -155,3 +184,57 @@
 
       // التصادم (15 عرض × 50 طول)
       if (
+        (carX < car32X + 15 && carX + 15 > car32X && carY < car32Y + 50 && carY + 50 > car32Y) ||
+        (carX < carExtraX + 15 && carX + 15 > carExtraX && carY < carExtraY + 50 && carY + 50 > carExtraY)
+      ) {
+        endGame();
+      }
+
+      requestAnimationFrame(drawGame);
+    }
+
+    function endGame() {
+      gameOver = true;
+      alert("💥 Game Over! \nYour Score: " + score + "\nLevel: " + level);
+      restartBtn.style.display = "block";
+    }
+
+    // التحكم بالسيارة بلوحة المفاتيح
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft" && carX > 0) {
+        carX -= 15;
+      } else if (e.key === "ArrowRight" && carX < canvas.width - 50) {
+        carX += 15;
+      }
+    });
+
+    // التحكم باللمس عبر الأزرار
+    leftBtn.addEventListener("touchstart", () => {
+      if (carX > 0) carX -= 15;
+    });
+    rightBtn.addEventListener("touchstart", () => {
+      if (carX < canvas.width - 50) carX += 15;
+    });
+
+    restartBtn.addEventListener("click", () => {
+      resetGame();
+      restartBtn.style.display = "none";
+      bgMusic.play();
+      drawGame();
+    });
+
+    startBtn.addEventListener("click", () => {
+      startScreen.style.display = "none";
+      canvas.style.display = "block";
+      controls.style.display = "flex"; // إظهار أزرار التحكم على الهاتف
+      bgMusic.play();
+      resetGame();
+      drawGame();
+    });
+
+    // موسيقى خلفية
+    const bgMusic = new Audio("background.mp3");
+    bgMusic.loop = true;
+  </script>
+</body>
+</html>
