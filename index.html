@@ -12,9 +12,11 @@
     }
 
     canvas {
-      border: 2px solid white;
-      background-color: gray;
       display: none;
+      background-color: gray;
+      border: 2px solid white;
+      width: 100vw;   /* عرض كامل */
+      height: 100vh;  /* ارتفاع كامل */
     }
 
     #startScreen {
@@ -28,8 +30,8 @@
 
     #startBtn, #restartBtn {
       margin-top: 10px;
-      padding: 10px 20px;
-      font-size: 18px;
+      padding: 12px 24px;
+      font-size: 20px;
       background-color: red;
       color: white;
       border: none;
@@ -81,141 +83,3 @@
     resizeCanvas();
 
     // تحميل الصور
-    const carImg = new Image();
-    carImg.src = "car2.png";
-
-    const roadImg = new Image();
-    roadImg.src = "road.png";
-
-    const car32Img = new Image();
-    car32Img.src = "car32.png";
-
-    const carExtraImg = new Image();
-    carExtraImg.src = "carExtra.png";
-
-    // مواقع السيارات والمتغيرات
-    let carX, carY, car32X, car32Y, carExtraX, carExtraY;
-    let gameOver, score, level;
-
-    function resetGame() {
-      carX = canvas.width / 2 - 25;
-      carY = canvas.height - 120;
-      car32X = Math.random() * (canvas.width - 50);
-      car32Y = -100;
-      carExtraX = Math.random() * (canvas.width - 50);
-      carExtraY = -300;
-      score = 0;
-      level = 1;
-      gameOver = false;
-    }
-
-    function drawGame() {
-      if (gameOver) return;
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      ctx.drawImage(roadImg, 0, 0, canvas.width, canvas.height);
-      ctx.drawImage(carImg, carX, carY, 50, 100);
-      ctx.drawImage(car32Img, car32X, car32Y, 50, 100);
-      ctx.drawImage(carExtraImg, carExtraX, carExtraY, 50, 100);
-
-      // حركة السيارات المنافسة تعتمد على المستوى
-      car32Y += 2 + level;
-      if (car32Y > canvas.height) {
-        car32Y = -100;
-        car32X = Math.random() * (canvas.width - 50);
-        score++;
-      }
-
-      carExtraY += 3 + level;
-      if (carExtraY > canvas.height) {
-        carExtraY = -100;
-        carExtraX = Math.random() * (canvas.width - 50);
-        score++;
-      }
-
-      // حركة سيارتك للأمام تلقائيًا
-      carY -= 2;
-      if (carY < 0) {
-        carY = canvas.height - 120;
-      }
-
-      // زيادة المستوى كل 10 نقاط
-      if (score > 0 && score % 10 === 0) {
-        level = Math.floor(score / 10) + 1;
-      }
-
-      // عرض النقاط والمستوى
-      ctx.fillStyle = "white";
-      ctx.font = "20px Arial";
-      ctx.fillText("Score: " + score, 20, 40);
-      ctx.fillText("Level: " + level, 20, 70);
-
-      // التصادم (15 عرض × 50 طول)
-      if (
-        (carX < car32X + 15 && carX + 15 > car32X && carY < car32Y + 50 && carY + 50 > car32Y) ||
-        (carX < carExtraX + 15 && carX + 15 > carExtraX && carY < carExtraY + 50 && carY + 50 > carExtraY)
-      ) {
-        endGame();
-      }
-
-      requestAnimationFrame(drawGame);
-    }
-
-    function endGame() {
-      gameOver = true;
-      alert("💥 Game Over! \nYour Score: " + score + "\nLevel: " + level);
-      restartBtn.style.display = "block";
-    }
-
-    // التحكم بالسيارة يمين ويسار بلوحة المفاتيح
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft" && carX > 0) {
-        carX -= 15;
-      } else if (e.key === "ArrowRight" && carX < canvas.width - 50) {
-        carX += 15;
-      }
-    });
-
-    restartBtn.addEventListener("click", () => {
-      resetGame();
-      restartBtn.style.display = "none";
-      bgMusic.play();
-      drawGame();
-    });
-
-    startBtn.addEventListener("click", () => {
-      startScreen.style.display = "none";
-      canvas.style.display = "block";
-      bgMusic.play();
-      resetGame();
-      drawGame();
-    });
-
-    // موسيقى خلفية
-    const bgMusic = new Audio("background.mp3");
-    bgMusic.loop = true;
-
-    // التحكم باللمس على الهاتف
-    let touchInterval;
-
-    canvas.addEventListener("touchstart", (e) => {
-      const touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
-
-      if (touchX < canvas.width / 2) {
-        touchInterval = setInterval(() => {
-          if (carX > 0) carX -= 15;
-        }, 100);
-      } else {
-        touchInterval = setInterval(() => {
-          if (carX < canvas.width - 50) carX += 15;
-        }, 100);
-      }
-    });
-
-    canvas.addEventListener("touchend", () => {
-      clearInterval(touchInterval);
-    });
-  </script>
-</body>
-</html>
