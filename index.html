@@ -88,9 +88,10 @@
     const car32Img = new Image(); car32Img.src = "car32.png";
     const carExtraImg = new Image(); carExtraImg.src = "carExtra.png";
 
-    // موسيقى خلفية
+    // موسيقى خلفية وصوت انفجار
     const bgMusic = new Audio("background.mp3");
     bgMusic.loop = true;
+    const crashSound = new Audio("explosion.mp3"); // ضع ملف صوت انفجار بجانب الكود
 
     let carX, carY, car32X, car32Y, carExtraX, carExtraY;
     let gameOver, score, level;
@@ -174,6 +175,7 @@
     function endGame() {
       gameOver = true;
       bgMusic.pause();
+      crashSound.play(); // تشغيل صوت الانفجار عند التصادم
       alert("💥 Game Over!\nScore: " + score + "\nLevel: " + level + "\nDifficulty: " + difficulty);
       restartBtn.style.display = "block";
     }
@@ -187,7 +189,7 @@
 
     // تحكم بالهاتف عبر الجيروسكوب
     window.addEventListener("deviceorientation", (event) => {
-      const tilt = event.gamma; // ميل الهاتف يمين/يسار
+      const tilt = event.gamma;
       let moveStep = (difficulty === "easy") ? 10 : 5;
       if (tilt < -5 && carX > 0) {
         carX -= moveStep;
