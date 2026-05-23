@@ -14,6 +14,8 @@
       display: none;
       background-color: #333;
       border: 2px solid white;
+      width: 100vw;
+      height: 100vh;
     }
     #startScreen {
       position: absolute;
@@ -80,7 +82,7 @@
     window.onresize = resizeCanvas;
     resizeCanvas();
 
-    // صور السيارات والطريق (يمكنك استبدالها بمستطيلات لو لم تتوفر الصور)
+    // تحميل الصور من نفس المجلد
     const carImg = new Image(); carImg.src = "car2.png";
     const roadImg = new Image(); roadImg.src = "road.png";
     const car32Img = new Image(); car32Img.src = "car32.png";
@@ -106,7 +108,6 @@
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // الخلفية
       if (roadImg.complete) {
         ctx.drawImage(roadImg, 0, 0, canvas.width, canvas.height);
       } else {
@@ -114,17 +115,13 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
 
-      // سيارتك
       ctx.drawImage(carImg, carX, carY, 80, 160);
-
-      // سيارات الخصوم
       ctx.drawImage(car32Img, car32X, car32Y, 80, 160);
       ctx.drawImage(carExtraImg, carExtraX, carExtraY, 80, 160);
 
       let baseSpeed32 = (difficulty === "easy") ? 2 : 4;
       let baseSpeedExtra = (difficulty === "easy") ? 3 : 6;
 
-      // ذكاء اصطناعي في المستوى الصعب
       if (difficulty === "hard") {
         if (car32X < carX) car32X += 1.5;
         else if (car32X > carX) car32X -= 1.5;
@@ -146,7 +143,6 @@
         score++;
       }
 
-      // حركة سيارتك للأمام
       carY -= 2;
       if (carY < 0) carY = canvas.height - 160;
 
@@ -160,7 +156,6 @@
       ctx.fillText("Level: " + level, 20, 70);
       ctx.fillText("Difficulty: " + difficulty, 20, 100);
 
-      // التصادم
       if (
         (carX < car32X + 60 && carX + 60 > car32X && carY < car32Y + 120 && carY + 120 > car32Y) ||
         (carX < carExtraX + 60 && carX + 60 > carExtraX && carY < carExtraY + 120 && carY + 120 > carExtraY)
@@ -177,7 +172,6 @@
       restartBtn.style.display = "block";
     }
 
-    // تحكم بالأسهم
     document.onkeydown = (e) => {
       let moveStep = (difficulty === "easy") ? 20 : 10;
       if (e.key === "ArrowLeft" && carX > 0) carX -= moveStep;
@@ -191,4 +185,11 @@
     };
 
     startBtn.onclick = () => {
-      startScreen.style.display =
+      startScreen.style.display = "none";
+      canvas.style.display = "block";
+      resetGame();
+      drawGame();
+    };
+  </script>
+</body>
+</html>
