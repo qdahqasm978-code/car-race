@@ -10,15 +10,11 @@
       overflow: hidden;
       font-family: Arial, sans-serif;
     }
-
     canvas {
       display: none;
       background-color: #333;
       border: 2px solid white;
-      width: 100vw;
-      height: 100vh;
     }
-
     #startScreen {
       position: absolute;
       top: 50%;
@@ -27,7 +23,6 @@
       text-align: center;
       color: white;
     }
-
     button {
       margin: 10px;
       padding: 14px 28px;
@@ -37,15 +32,7 @@
       border: none;
       cursor: pointer;
       border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-      transition: transform 0.2s ease, background 0.3s ease;
     }
-
-    button:hover {
-      background: linear-gradient(45deg, #cc0000, #990000);
-      transform: scale(1.05);
-    }
-
     #restartBtn {
       display: none;
       position: absolute;
@@ -79,4 +66,129 @@
     const startBtn = document.getElementById("startBtn");
     const restartBtn = document.getElementById("restartBtn");
     const easyBtn = document.getElementById("easyBtn");
-    const hardBtn = document.getElement
+    const hardBtn = document.getElementById("hardBtn");
+
+    let difficulty = "easy"; // الافتراضي
+
+    easyBtn.onclick = () => { difficulty = "easy"; };
+    hardBtn.onclick = () => { difficulty = "hard"; };
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.onresize = resizeCanvas;
+    resizeCanvas();
+
+    // صور السيارات والطريق (يمكنك استبدالها بمستطيلات لو لم تتوفر الصور)
+    const carImg = new Image(); carImg.src = "car2.png";
+    const roadImg = new Image(); roadImg.src = "road.png";
+    const car32Img = new Image(); car32Img.src = "car32.png";
+    const carExtraImg = new Image(); carExtraImg.src = "carExtra.png";
+
+    let carX, carY, car32X, car32Y, carExtraX, carExtraY;
+    let gameOver, score, level;
+
+    function resetGame() {
+      carX = canvas.width / 2 - 40;
+      carY = canvas.height - 160;
+      car32X = Math.random() * (canvas.width - 80);
+      car32Y = -160;
+      carExtraX = Math.random() * (canvas.width - 80);
+      carExtraY = -400;
+      score = 0;
+      level = 1;
+      gameOver = false;
+    }
+
+    function drawGame() {
+      if (gameOver) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // الخلفية
+      if (roadImg.complete) {
+        ctx.drawImage(roadImg, 0, 0, canvas.width, canvas.height);
+      } else {
+        ctx.fillStyle = "#444";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      // سيارتك
+      ctx.drawImage(carImg, carX, carY, 80, 160);
+
+      // سيارات الخصوم
+      ctx.drawImage(car32Img, car32X, car32Y, 80, 160);
+      ctx.drawImage(carExtraImg, carExtraX, carExtraY, 80, 160);
+
+      let baseSpeed32 = (difficulty === "easy") ? 2 : 4;
+      let baseSpeedExtra = (difficulty === "easy") ? 3 : 6;
+
+      // ذكاء اصطناعي في المستوى الصعب
+      if (difficulty === "hard") {
+        if (car32X < carX) car32X += 1.5;
+        else if (car32X > carX) car32X -= 1.5;
+        if (carExtraX < carX) carExtraX += 2;
+        else if (carExtraX > carX) carExtraX -= 2;
+      }
+
+      car32Y += baseSpeed32 + level;
+      if (car32Y > canvas.height) {
+        car32Y = -160;
+        car32X = Math.random() * (canvas.width - 80);
+        score++;
+      }
+
+      carExtraY += baseSpeedExtra + level;
+      if (carExtraY > canvas.height) {
+        carExtraY = -160;
+        carExtraX = Math.random() * (canvas.width - 80);
+        score++;
+      }
+
+      // حركة سيارتك للأمام
+      carY -= 2;
+      if (carY < 0) carY = canvas.height - 160;
+
+      if (score > 0 && score % 10 === 0) {
+        level = Math.floor(score / 10) + 1;
+      }
+
+      ctx.fillStyle = "white";
+      ctx.font = "22px Arial";
+      ctx.fillText("Score: " + score, 20, 40);
+      ctx.fillText("Level: " + level, 20, 70);
+      ctx.fillText("Difficulty: " + difficulty, 20, 100);
+
+      // التصادم
+      if (
+        (carX < car32X + 60 && carX + 60 > car32X && carY < car32Y + 120 && carY + 120 > car32Y) ||
+        (carX < carExtraX + 60 && carX + 60 > carExtraX && carY < carExtraY + 120 && carY + 120 > carExtraY)
+      ) {
+        endGame();
+      }
+
+      requestAnimationFrame(drawGame);
+    }
+
+    function endGame() {
+      gameOver = true;
+      alert("💥 Game Over!\nScore: " + score + "\nLevel: " + level + "\nDifficulty: " + difficulty);
+      restartBtn.style.display = "block";
+    }
+
+    // تحكم بالأسهم
+    document.onkeydown = (e) => {
+      let moveStep = (difficulty === "easy") ? 20 : 10;
+      if (e.key === "ArrowLeft" && carX > 0) carX -= moveStep;
+      else if (e.key === "ArrowRight" && carX < canvas.width - 80) carX += moveStep;
+    };
+
+    restartBtn.onclick = () => {
+      resetGame();
+      restartBtn.style.display = "none";
+      drawGame();
+    };
+
+    startBtn.onclick = () => {
+      startScreen.style.display =
