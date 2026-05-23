@@ -88,6 +88,10 @@
     const car32Img = new Image(); car32Img.src = "car32.png";
     const carExtraImg = new Image(); carExtraImg.src = "carExtra.png";
 
+    // موسيقى خلفية
+    const bgMusic = new Audio("background.mp3");
+    bgMusic.loop = true;
+
     let carX, carY, car32X, car32Y, carExtraX, carExtraY;
     let gameOver, score, level;
 
@@ -156,9 +160,10 @@
       ctx.fillText("Level: " + level, 20, 70);
       ctx.fillText("Difficulty: " + difficulty, 20, 100);
 
+      // التصادم (تم تقليل المسافة إلى النصف)
       if (
-        (carX < car32X + 60 && carX + 60 > car32X && carY < car32Y + 120 && carY + 120 > car32Y) ||
-        (carX < carExtraX + 60 && carX + 60 > carExtraX && carY < carExtraY + 120 && carY + 120 > carExtraY)
+        (carX < car32X + 30 && carX + 30 > car32X && carY < car32Y + 60 && carY + 60 > car32Y) ||
+        (carX < carExtraX + 30 && carX + 30 > carExtraX && carY < carExtraY + 60 && carY + 60 > carExtraY)
       ) {
         endGame();
       }
@@ -168,6 +173,7 @@
 
     function endGame() {
       gameOver = true;
+      bgMusic.pause();
       alert("💥 Game Over!\nScore: " + score + "\nLevel: " + level + "\nDifficulty: " + difficulty);
       restartBtn.style.display = "block";
     }
@@ -181,6 +187,7 @@
     restartBtn.onclick = () => {
       resetGame();
       restartBtn.style.display = "none";
+      bgMusic.play();
       drawGame();
     };
 
@@ -188,6 +195,7 @@
       startScreen.style.display = "none";
       canvas.style.display = "block";
       resetGame();
+      bgMusic.play();
       drawGame();
     };
   </script>
