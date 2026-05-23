@@ -79,45 +79,4 @@
     const startBtn = document.getElementById("startBtn");
     const restartBtn = document.getElementById("restartBtn");
     const easyBtn = document.getElementById("easyBtn");
-    const hardBtn = document.getElementById("hardBtn");
-
-    let difficulty = "easy"; // الافتراضي
-
-    easyBtn.addEventListener("click", () => {
-      difficulty = "easy";
-      alert("تم اختيار المستوى: سهل 😎");
-    });
-
-    hardBtn.addEventListener("click", () => {
-      difficulty = "hard";
-      alert("تم اختيار المستوى: صعب 🔥");
-    });
-
-    // ضبط حجم الكانفس ليملأ الشاشة
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
-
-    // تحميل الصور
-    const carImg = new Image();
-    carImg.src = "car2.png";
-
-    const roadImg = new Image();
-    roadImg.src = "road.png";
-
-    const car32Img = new Image();
-    car32Img.src = "car32.png";
-
-    const carExtraImg = new Image();
-    carExtraImg.src = "carExtra.png";
-
-    // مواقع السيارات والمتغيرات
-    let carX, carY, car32X, car32Y, carExtraX, carExtraY;
-    let gameOver, score, level;
-
-    function resetGame() {
-      carX = canvas.width / 2 - 40;
-      carY = canvas.height
+    const hardBtn = document.getElement
