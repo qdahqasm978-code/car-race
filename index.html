@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>Car Race Game</title>
+  <title>🏎️ Car Race Game</title>
   <style>
     body {
       background-color: black;
@@ -120,118 +120,4 @@
 
     function resetGame() {
       carX = canvas.width / 2 - 40;
-      carY = canvas.height - 160;
-      car32X = Math.random() * (canvas.width - 80);
-      car32Y = -160;
-      carExtraX = Math.random() * (canvas.width - 80);
-      carExtraY = -400;
-      score = 0;
-      level = 1;
-      gameOver = false;
-    }
-
-    function drawGame() {
-      if (gameOver) return;
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      ctx.drawImage(roadImg, 0, 0, canvas.width, canvas.height);
-      ctx.drawImage(carImg, carX, carY, 80, 160);
-      ctx.drawImage(car32Img, car32X, car32Y, 80, 160);
-      ctx.drawImage(carExtraImg, carExtraX, carExtraY, 80, 160);
-
-      // سرعة السيارات حسب الصعوبة
-      let baseSpeed32 = (difficulty === "easy") ? 2 : 4;
-      let baseSpeedExtra = (difficulty === "easy") ? 3 : 6;
-
-      car32Y += baseSpeed32 + level;
-      if (car32Y > canvas.height) {
-        car32Y = -160;
-        car32X = Math.random() * (canvas.width - 80);
-        score++;
-      }
-
-      carExtraY += baseSpeedExtra + level;
-      if (carExtraY > canvas.height) {
-        carExtraY = -160;
-        carExtraX = Math.random() * (canvas.width - 80);
-        score++;
-      }
-
-      // حركة سيارتك للأمام
-      carY -= 2;
-      if (carY < 0) {
-        carY = canvas.height - 160;
-      }
-
-      // زيادة المستوى كل 10 نقاط
-      if (score > 0 && score % 10 === 0) {
-        level = Math.floor(score / 10) + 1;
-      }
-
-      // عرض النقاط والمستوى والصعوبة
-      ctx.fillStyle = "white";
-      ctx.font = "22px Arial";
-      ctx.fillText("Score: " + score, 20, 40);
-      ctx.fillText("Level: " + level, 20, 70);
-      ctx.fillText("Difficulty: " + difficulty, 20, 100);
-
-      // التصادم
-      if (
-        (carX < car32X + 30 && carX + 30 > car32X && carY < car32Y + 80 && carY + 80 > car32Y) ||
-        (carX < carExtraX + 30 && carX + 30 > carExtraX && carY < carExtraY + 80 && carY + 80 > carExtraY)
-      ) {
-        endGame();
-      }
-
-      requestAnimationFrame(drawGame);
-    }
-
-    function endGame() {
-      gameOver = true;
-      alert("💥 Game Over! \nYour Score: " + score + "\nLevel: " + level + "\nDifficulty: " + difficulty);
-      restartBtn.style.display = "block";
-    }
-
-    // التحكم بالسيارة بلوحة المفاتيح
-    document.addEventListener("keydown", (e) => {
-      let moveStep = (difficulty === "easy") ? 20 : 10;
-      if (e.key === "ArrowLeft" && carX > 0) {
-        carX -= moveStep;
-      } else if (e.key === "ArrowRight" && carX < canvas.width - 80) {
-        carX += moveStep;
-      }
-    });
-
-    // التحكم بالهاتف عبر الجيروسكوب
-    window.addEventListener("deviceorientation", (event) => {
-      const tilt = event.gamma;
-      let moveStep = (difficulty === "easy") ? 10 : 5;
-      if (tilt < -5 && carX > 0) {
-        carX -= moveStep;
-      } else if (tilt > 5 && carX < canvas.width - 80) {
-        carX += moveStep;
-      }
-    });
-
-    restartBtn.addEventListener("click", () => {
-      resetGame();
-      restartBtn.style.display = "none";
-      bgMusic.play();
-      drawGame();
-    });
-
-    startBtn.addEventListener("click", () => {
-      startScreen.style.display = "none";
-      canvas.style.display = "block";
-      bgMusic.play();
-      resetGame();
-      drawGame();
-    });
-
-    // موسيقى خلفية
-    const bgMusic = new Audio("background.mp3");
-    bgMusic.loop = true;
-  </script>
-</body>
-</html>
+      carY = canvas.height
