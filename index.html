@@ -11,19 +11,221 @@
       font-family: Arial, sans-serif;
     }
     canvas {
-      display: block;
+      display: none;
       background-color: #333;
       border: 2px solid white;
       width: 100vw;
       height: 100vh;
     }
-    #startBtn {
-      display: none; /* مخفي افتراضيًا */
+    #startScreen {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      padding: 20px 40px;
-      font-size: 26px;
+      text-align: center;
+      color: white;
+    }
+    button {
+      margin: 10px;
+      padding: 14px 28px;
+      font-size: 22px;
       background: linear-gradient(45deg, #ff0000, #cc0000);
       color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+    #restartBtn, #pauseBtn {
+      display: none;
+      position: absolute;
+      top: 20px;
+    }
+    #restartBtn { right: 20px; }
+    #pauseBtn { left: 20px; }
+  </style>
+</head>
+<body>
+  <!-- شاشة البداية -->
+  <div id="startScreen">
+    <h1>🏎️ Car Race Game</h1>
+    <p>اختر مستوى الصعوبة ثم اضغط تشغيل</p>
+    <button id="easyBtn">😎 سهل</button>
+    <button id="hardBtn">🔥 صعب</button>
+    <br><br>
+    <button id="startBtn">▶ Start</button>
+  </div>
+
+  <!-- الحلبة -->
+  <canvas id="gameCanvas"></canvas>
+  
+  <!-- أزرار التحكم -->
+  <button id="restartBtn">🔄 Restart</button>
+  <button id="pauseBtn">⏸ Pause</button>
+  
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const startScreen = document.getElementById("startScreen");
+    const startBtn = document.getElementById("startBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const easyBtn = document.getElementById("easyBtn");
+    const hardBtn = document.getElementById("hardBtn");
+
+    let difficulty = "easy"; 
+    let paused = false;
+
+    easyBtn.onclick = () => { difficulty = "easy"; };
+    hardBtn.onclick = () => { difficulty = "hard"; };
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.onresize = resizeCanvas;
+    resizeCanvas();
+
+    // تحميل الصور
+    const carImg = new Image(); carImg.src = "car2.png";
+    const roadImg = new Image(); roadImg.src = "road.png";
+    const car32Img = new Image(); car32Img.src = "car32.png";
+    const carExtraImg = new Image(); carExtraImg.src = "carExtra.png";
+
+    // الأصوات
+    const bgMusic = new Audio("background.mp3");
+    bgMusic.loop = true;
+    const crashSound = new Audio("explosion.mp3");
+
+    let carX, carY, car32X, car32Y, carExtraX, carExtraY;
+    let gameOver, score, level;
+
+    function resetGame() {
+      carX = canvas.width / 2 - 40;
+      carY = canvas.height - 160;
+      car32X = Math.random() * (canvas.width - 80);
+      car32Y = -160;
+      carExtraX = Math.random() * (canvas.width - 80);
+      carExtraY = -400;
+      score = 0;
+      level = 1;
+      gameOver = false;
+      paused = false;
+      pauseBtn.textContent = "⏸ Pause";
+    }
+
+    function drawGame() {
+      if (gameOver || paused) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (roadImg.complete) {
+        ctx.drawImage(roadImg, 0, 0, canvas.width, canvas.height);
+      } else {
+        ctx.fillStyle = "#444";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      ctx.drawImage(carImg, carX, carY, 80, 160);
+      ctx.drawImage(car32Img, car32X, car32Y, 80, 160);
+      ctx.drawImage(carExtraImg, carExtraX, carExtraY, 80, 160);
+
+      let baseSpeed32 = (difficulty === "easy") ? 2 : 4;
+      let baseSpeedExtra = (difficulty === "easy") ? 3 : 6;
+
+      if (difficulty === "hard") {
+        if (car32X < carX) car32X += 1.5;
+        else if (car32X > carX) car32X -= 1.5;
+        if (carExtraX < carX) carExtraX += 2;
+        else if (carExtraX > carX) carExtraX -= 2;
+      }
+
+      car32Y += baseSpeed32 + level;
+      if (car32Y > canvas.height) {
+        car32Y = -160;
+        car32X = Math.random() * (canvas.width - 80);
+        score++;
+      }
+
+      carExtraY += baseSpeedExtra + level;
+      if (carExtraY > canvas.height) {
+        carExtraY = -160;
+        carExtraX = Math.random() * (canvas.width - 80);
+        score++;
+      }
+
+      carY -= 2;
+      if (carY < 0) carY = canvas.height - 160;
+
+      if (score > 0 && score % 10 === 0) {
+        level = Math.floor(score / 10) + 1;
+      }
+
+      ctx.fillStyle = "white";
+      ctx.font = "22px Arial";
+      ctx.fillText("Score: " + score, 20, 40);
+      ctx.fillText("Level: " + level, 20, 70);
+      ctx.fillText("Difficulty: " + difficulty, 20, 100);
+
+      if (
+        (carX < car32X + 30 && carX + 30 > car32X && carY < car32Y + 60 && carY + 60 > car32Y) ||
+        (carX < carExtraX + 30 && carX + 30 > carExtraX && carY < carExtraY + 60 && carY + 60 > carExtraY)
+      ) {
+        endGame();
+      }
+
+      requestAnimationFrame(drawGame);
+    }
+
+    function endGame() {
+      gameOver = true;
+      bgMusic.pause();
+      crashSound.play();
+      alert("💥 Game Over!\nScore: " + score + "\nLevel: " + level + "\nDifficulty: " + difficulty);
+      restartBtn.style.display = "block";
+    }
+
+    document.onkeydown = (e) => {
+      let moveStep = (difficulty === "easy") ? 20 : 10;
+      if (e.key === "ArrowLeft" && carX > 0) carX -= moveStep;
+      else if (e.key === "ArrowRight" && carX < canvas.width - 80) carX += moveStep;
+    };
+
+    window.addEventListener("deviceorientation", (event) => {
+      const tilt = event.gamma;
+      let moveStep = (difficulty === "easy") ? 10 : 5;
+      if (tilt < -5 && carX > 0) carX -= moveStep;
+      else if (tilt > 5 && carX < canvas.width - 80) carX += moveStep;
+    });
+
+    restartBtn.onclick = () => {
+      resetGame();
+      restartBtn.style.display = "none";
+      bgMusic.play();
+      drawGame();
+    };
+
+    pauseBtn.onclick = () => {
+      paused = !paused;
+      if (paused) {
+        bgMusic.pause();
+        pauseBtn.textContent = "▶ Resume";
+      } else {
+        bgMusic.play();
+        pauseBtn.textContent = "⏸ Pause";
+        drawGame();
+      }
+    };
+
+    startBtn.onclick = () => {
+      startScreen.style.display = "none";
+      canvas.style.display = "block";
+      resetGame();
+      bgMusic.play();
+      restartBtn.style.display = "block";
+      pauseBtn.style.display = "block";
+      drawGame();
+    };
+  </script>
+</body>
+</html>
