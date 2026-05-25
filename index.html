@@ -108,9 +108,22 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
 
-      if (currentCar === "car2") ctx.drawImage(carImg, carX, carY, 80, 160);
-      else if (currentCar === "car32") ctx.drawImage(car32Img, carX, carY, 80, 160);
-      else if (currentCar === "carExtra") ctx.drawImage(carExtraImg, carX, carY, 80, 160);
+      // رسم سيارة اللاعب مع قلب car32 و carExtra بمقدار 180 درجة عند اختيارهن
+      if (currentCar === "car2") {
+        ctx.drawImage(carImg, carX, carY, 80, 160);
+      } else if (currentCar === "car32") {
+        ctx.save();
+        ctx.translate(carX + 40, carY + 80); // الانتقال إلى مركز السيارة
+        ctx.rotate(Math.PI); // التدوير 180 درجة
+        ctx.drawImage(car32Img, -40, -80, 80, 160); // الرسم من المركز الجديد
+        ctx.restore();
+      } else if (currentCar === "carExtra") {
+        ctx.save();
+        ctx.translate(carX + 40, carY + 80);
+        ctx.rotate(Math.PI);
+        ctx.drawImage(carExtraImg, -40, -80, 80, 160);
+        ctx.restore();
+      }
 
       ctx.drawImage(car32Img, car32X, car32Y, 80, 160);
       ctx.drawImage(carExtraImg, carExtraX, carExtraY, 80, 160);
@@ -185,7 +198,7 @@
       restartBtn.style.display = "block";
     }
 
-    document.onkeydown =    document.onkeydown = (e) => {
+    document.onkeydown = (e) => {
       let moveStep = (difficulty === "easy") ? 20 : 10;
       if (e.key === "ArrowLeft" && carX > 0) carX -= moveStep;
       else if (e.key === "ArrowRight" && carX < canvas.width - 80) carX += moveStep;
@@ -214,7 +227,6 @@
       drawGame();
     };
 
-    // عند الضغط على الشاشة تتوقف اللعبة ويظهر زر الإيقاف
     canvas.addEventListener("click", () => {
       if (!gameOver) {
         paused = true;
@@ -225,7 +237,6 @@
       }
     });
 
-    // تحكم بالهاتف عبر الجيروسكوب
     window.addEventListener("deviceorientation", (event) => {
       const tilt = event.gamma;
       let moveStep = (difficulty === "easy") ? 10 : 5;
