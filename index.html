@@ -236,6 +236,16 @@
         restartBtn.style.display = "none";
       }
     });
+    // تحكم بالهاتف عبر الجيروسكوب
+    window.addEventListener("deviceorientation", (event) => {
+      const tilt = event.gamma;
+      let moveStep = (difficulty === "easy") ? 10 : 5;
+      if (tilt < -5 && carX > 0) {
+        carX -= moveStep;
+      } else if (tilt > 5 && carX < canvas.width - 80) {
+        carX += moveStep;
+      }
+    });
   </script>
 </body>
 </html>
