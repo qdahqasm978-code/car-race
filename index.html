@@ -35,13 +35,18 @@
       cursor: pointer;
       border-radius: 10px;
     }
-    #restartBtn, #pauseBtn {
+    #controlPanel {
       display: none;
       position: absolute;
-      top: 20px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
     }
-    #restartBtn { right: 20px; }
-    #pauseBtn { left: 20px; }
+    #controlPanel button {
+      display: block;
+      margin: 10px auto;
+    }
   </style>
 </head>
 <body>
@@ -58,9 +63,11 @@
   <!-- الحلبة -->
   <canvas id="gameCanvas"></canvas>
   
-  <!-- أزرار التحكم -->
-  <button id="restartBtn">🔄 Restart</button>
-  <button id="pauseBtn">⏸ Pause</button>
+  <!-- لوحة التحكم (إيقاف + إعادة تشغيل) -->
+  <div id="controlPanel">
+    <button id="pauseBtn">⏸ Pause</button>
+    <button id="restartBtn">🔄 Restart</button>
+  </div>
   
   <script>
     const canvas = document.getElementById("gameCanvas");
@@ -68,6 +75,7 @@
 
     const startScreen = document.getElementById("startScreen");
     const startBtn = document.getElementById("startBtn");
+    const controlPanel = document.getElementById("controlPanel");
     const restartBtn = document.getElementById("restartBtn");
     const pauseBtn = document.getElementById("pauseBtn");
     const easyBtn = document.getElementById("easyBtn");
@@ -75,6 +83,7 @@
 
     let difficulty = "easy"; 
     let paused = false;
+    let gameOver = false;
 
     easyBtn.onclick = () => { difficulty = "easy"; };
     hardBtn.onclick = () => { difficulty = "hard"; };
@@ -98,7 +107,7 @@
     const crashSound = new Audio("explosion.mp3");
 
     let carX, carY, car32X, car32Y, carExtraX, carExtraY;
-    let gameOver, score, level;
+    let score, level;
 
     function resetGame() {
       carX = canvas.width / 2 - 40;
@@ -111,9 +120,7 @@
       level = 1;
       gameOver = false;
       paused = false;
-      pauseBtn.textContent = "⏸ Pause";
-      pauseBtn.style.display = "none"; // إخفاء زر الإيقاف عند البداية
-      restartBtn.style.display = "none"; // إخفاء زر إعادة التشغيل عند البداية
+      controlPanel.style.display = "none"; // إخفاء لوحة التحكم عند البداية
     }
 
     function drawGame() {
@@ -134,13 +141,6 @@
 
       let baseSpeed32 = (difficulty === "easy") ? 2 : 4;
       let baseSpeedExtra = (difficulty === "easy") ? 3 : 6;
-
-      if (difficulty === "hard") {
-        if (car32X < carX) car32X += 1.5;
-        else if (car32X > carX) car32X -= 1.5;
-        if (carExtraX < carX) carExtraX += 2;
-        else if (carExtraX > carX) carExtraX -= 2;
-      }
 
       car32Y += baseSpeed32 + level;
       if (car32Y > canvas.height) {
@@ -184,7 +184,9 @@
       bgMusic.pause();
       crashSound.play();
       alert("💥 Game Over!\nScore: " + score + "\nLevel: " + level + "\nDifficulty: " + difficulty);
-      restartBtn.style.display = "block"; // زر إعادة التشغيل يظهر فقط عند الخسارة
+      controlPanel.style.display = "block"; 
+      pauseBtn.style.display = "none"; // عند الخسارة نخفي زر الإيقاف
+      restartBtn.style.display = "block"; // ونظهر زر إعادة التشغيل
     }
 
     document.onkeydown = (e) => {
@@ -192,13 +194,6 @@
       if (e.key === "ArrowLeft" && carX > 0) carX -= moveStep;
       else if (e.key === "ArrowRight" && carX < canvas.width - 80) carX += moveStep;
     };
-
-    window.addEventListener("deviceorientation", (event) => {
-      const tilt = event.gamma;
-      let moveStep = (difficulty === "easy") ? 10 : 5;
-      if (tilt < -5 && carX > 0) carX -= moveStep;
-      else if (tilt > 5 && carX < canvas.width - 80) carX += moveStep;
-    });
 
     restartBtn.onclick = () => {
       resetGame();
@@ -208,12 +203,9 @@
 
     pauseBtn.onclick = () => {
       paused = !paused;
-      if (paused) {
-        bgMusic.pause();
-        pauseBtn.textContent = "▶ Resume";
-      } else {
+      if (!paused) {
         bgMusic.play();
-        pauseBtn.textContent = "⏸ Pause";
+        controlPanel.style.display = "none"; // إخفاء اللوحة عند الاستئناف
         drawGame();
       }
     };
@@ -226,10 +218,14 @@
       drawGame();
     };
 
-    // عند الضغط على الشاشة يظهر زر الإيقاف
+    // عند الضغط على الشاشة تتوقف اللعبة ويظهر زر الإيقاف
     canvas.addEventListener("click", () => {
       if (!gameOver) {
+        paused = true;
+        bgMusic.pause();
+        controlPanel.style.display = "block";
         pauseBtn.style.display = "block";
+        restartBtn.style.display = "none";
       }
     });
   </script>
