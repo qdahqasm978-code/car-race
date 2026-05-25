@@ -108,10 +108,24 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
 
-      if (currentCar === "car2") ctx.drawImage(carImg, carX, carY, 80, 160);
-      else if (currentCar === "car32") ctx.drawImage(car32Img, carX, carY, 80, 160);
-      else if (currentCar === "carExtra") ctx.drawImage(carExtraImg, carX, carY, 80, 160);
+      // رسم السيارة المختارة مع دوران 180 لـ car32 و carExtra
+      if (currentCar === "car2") {
+        ctx.drawImage(carImg, carX, carY, 80, 160);
+      } else if (currentCar === "car32") {
+        ctx.save();
+        ctx.translate(carX + 40, carY + 80);
+        ctx.rotate(Math.PI);
+        ctx.drawImage(car32Img, -40, -80, 80, 160);
+        ctx.restore();
+      } else if (currentCar === "carExtra") {
+        ctx.save();
+        ctx.translate(carX + 40, carY + 80);
+        ctx.rotate(Math.PI);
+        ctx.drawImage(carExtraImg, -40, -80, 80, 160);
+        ctx.restore();
+      }
 
+      // سيارات الخصوم
       ctx.drawImage(car32Img, car32X, car32Y, 80, 160);
       ctx.drawImage(carExtraImg, carExtraX, carExtraY, 80, 160);
 
@@ -176,6 +190,7 @@
     }
 
     function endGame() {
+      gameOver = true;    function endGame() {
       gameOver = true;
       bgMusic.pause();
       crashSound.play();
@@ -185,7 +200,7 @@
       restartBtn.style.display = "block";
     }
 
-    document.onkeydown =    document.onkeydown = (e) => {
+    document.onkeydown = (e) => {
       let moveStep = (difficulty === "easy") ? 20 : 10;
       if (e.key === "ArrowLeft" && carX > 0) carX -= moveStep;
       else if (e.key === "ArrowRight" && carX < canvas.width - 80) carX += moveStep;
@@ -235,23 +250,10 @@
         carX += moveStep;
       }
     });
-    // رسم السيارة المختارة
-if (currentCar === "car2") {
-  ctx.drawImage(carImg, carX, carY, 80, 160);
-} else if (currentCar === "car32") {
-  ctx.save();
-  ctx.translate(carX + 40, carY + 80); // مركز السيارة
-  ctx.rotate(Math.PI); // 180 درجة
-  ctx.drawImage(car32Img, -40, -80, 80, 160);
-  ctx.restore();
-} else if (currentCar === "carExtra") {
-  ctx.save();
-  ctx.translate(carX + 40, carY + 80);
-  ctx.rotate(Math.PI);
-  ctx.drawImage(carExtraImg, -40, -80, 80, 160);
-  ctx.restore();
-});
-
   </script>
 </body>
 </html>
+
+      bgMusic.pause();
+      crashSound.play();
+      alert("💥 Game Over
