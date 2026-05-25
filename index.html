@@ -4,53 +4,15 @@
   <meta charset="UTF-8">
   <title>🏎️ Car Race Game</title>
   <style>
-    body {
-      background-color: black;
-      margin: 0;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-    }
-    canvas {
-      display: none;
-      background-color: #333;
-      border: 2px solid white;
-      width: 100vw;
-      height: 100vh;
-    }
-    #startScreen {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      color: white;
-    }
-    button {
-      margin: 10px;
-      padding: 14px 28px;
-      font-size: 22px;
-      background: linear-gradient(45deg, #ff0000, #cc0000);
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 10px;
-    }
-    #controlPanel {
-      display: none;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-    }
-    #controlPanel button {
-      display: block;
-      margin: 10px auto;
-    }
+    body { background-color: black; margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
+    canvas { display: none; background-color: #333; border: 2px solid white; width: 100vw; height: 100vh; }
+    #startScreen { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white; }
+    button { margin: 10px; padding: 14px 28px; font-size: 22px; background: linear-gradient(45deg, #ff0000, #cc0000); color: white; border: none; cursor: pointer; border-radius: 10px; }
+    #controlPanel { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+    #controlPanel button { display: block; margin: 10px auto; }
   </style>
 </head>
 <body>
-  <!-- شاشة البداية -->
   <div id="startScreen">
     <h1>🏎️ Car Race Game</h1>
     <p>اختر مستوى الصعوبة ثم اضغط تشغيل</p>
@@ -60,10 +22,8 @@
     <button id="startBtn">▶ Start</button>
   </div>
 
-  <!-- الحلبة -->
   <canvas id="gameCanvas"></canvas>
   
-  <!-- لوحة التحكم -->
   <div id="controlPanel">
     <button id="pauseBtn">⏸ Pause</button>
     <button id="restartBtn">🔄 Restart</button>
@@ -107,14 +67,12 @@
     window.onresize = resizeCanvas;
     resizeCanvas();
 
-    // تحميل الصور
     const carImg = new Image(); carImg.src = "car2.png";
     const roadImg = new Image(); roadImg.src = "road.png";
     const car32Img = new Image(); car32Img.src = "car32.png";
     const carExtraImg = new Image(); carExtraImg.src = "carExtra.png";
     const car50Img = new Image(); car50Img.src = "car50.png";
 
-    // الأصوات
     const bgMusic = new Audio("background.mp3");
     bgMusic.loop = true;
     const crashSound = new Audio("explosion.mp3");
@@ -150,12 +108,10 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
 
-      // رسم السيارة المختارة
       if (currentCar === "car2") ctx.drawImage(carImg, carX, carY, 80, 160);
       else if (currentCar === "car32") ctx.drawImage(car32Img, carX, carY, 80, 160);
       else if (currentCar === "carExtra") ctx.drawImage(carExtraImg, carX, carY, 80, 160);
 
-      // سيارات الخصوم
       ctx.drawImage(car32Img, car32X, car32Y, 80, 160);
       ctx.drawImage(carExtraImg, carExtraX, carExtraY, 80, 160);
 
@@ -183,7 +139,6 @@
         score++;
       }
 
-      // السيارة الثالثة في المستوى الصعب
       if (difficulty === "hard") {
         ctx.drawImage(car50Img, window.car50X, window.car50Y, 80, 160);
         window.car50Y += 6 + level;
@@ -221,3 +176,65 @@
     }
 
     function endGame() {
+      gameOver = true;
+      bgMusic.pause();
+      crashSound.play();
+      alert("💥 Game Over!\nScore: " + score + "\nLevel: " + level + "\nDifficulty: " + difficulty);
+      controlPanel.style.display = "block"; 
+      pauseBtn.style.display = "none";
+      restartBtn.style.display = "block";
+    }
+
+    document.onkeydown =    document.onkeydown = (e) => {
+      let moveStep = (difficulty === "easy") ? 20 : 10;
+      if (e.key === "ArrowLeft" && carX > 0) carX -= moveStep;
+      else if (e.key === "ArrowRight" && carX < canvas.width - 80) carX += moveStep;
+    };
+
+    restartBtn.onclick = () => {
+      resetGame();
+      bgMusic.play();
+      drawGame();
+    };
+
+    pauseBtn.onclick = () => {
+      paused = !paused;
+      if (!paused) {
+        bgMusic.play();
+        controlPanel.style.display = "none";
+        drawGame();
+      }
+    };
+
+    startBtn.onclick = () => {
+      startScreen.style.display = "none";
+      canvas.style.display = "block";
+      resetGame();
+      bgMusic.play();
+      drawGame();
+    };
+
+    // عند الضغط على الشاشة تتوقف اللعبة ويظهر زر الإيقاف
+    canvas.addEventListener("click", () => {
+      if (!gameOver) {
+        paused = true;
+        bgMusic.pause();
+        controlPanel.style.display = "block";
+        pauseBtn.style.display = "block";
+        restartBtn.style.display = "none";
+      }
+    });
+
+    // تحكم بالهاتف عبر الجيروسكوب
+    window.addEventListener("deviceorientation", (event) => {
+      const tilt = event.gamma;
+      let moveStep = (difficulty === "easy") ? 10 : 5;
+      if (tilt < -5 && carX > 0) {
+        carX -= moveStep;
+      } else if (tilt > 5 && carX < canvas.width - 80) {
+        carX += moveStep;
+      }
+    });
+  </script>
+</body>
+</html>
