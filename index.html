@@ -120,7 +120,7 @@
       level = 1;
       gameOver = false;
       paused = false;
-      controlPanel.style.display = "none"; // إخفاء لوحة التحكم عند البداية
+      controlPanel.style.display = "none";
     }
 
     function drawGame() {
@@ -141,6 +141,14 @@
 
       let baseSpeed32 = (difficulty === "easy") ? 2 : 4;
       let baseSpeedExtra = (difficulty === "easy") ? 3 : 6;
+
+      // في المستوى الصعب: السيارات تتجه نحو سيارتك أفقياً
+      if (difficulty === "hard") {
+        if (car32X < carX) car32X += 1.5;
+        else if (car32X > carX) car32X -= 1.5;
+        if (carExtraX < carX) carExtraX += 2;
+        else if (carExtraX > carX) carExtraX -= 2;
+      }
 
       car32Y += baseSpeed32 + level;
       if (car32Y > canvas.height) {
@@ -185,8 +193,8 @@
       crashSound.play();
       alert("💥 Game Over!\nScore: " + score + "\nLevel: " + level + "\nDifficulty: " + difficulty);
       controlPanel.style.display = "block"; 
-      pauseBtn.style.display = "none"; // عند الخسارة نخفي زر الإيقاف
-      restartBtn.style.display = "block"; // ونظهر زر إعادة التشغيل
+      pauseBtn.style.display = "none";
+      restartBtn.style.display = "block";
     }
 
     document.onkeydown = (e) => {
@@ -205,7 +213,7 @@
       paused = !paused;
       if (!paused) {
         bgMusic.play();
-        controlPanel.style.display = "none"; // إخفاء اللوحة عند الاستئناف
+        controlPanel.style.display = "none";
         drawGame();
       }
     };
