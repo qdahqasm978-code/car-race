@@ -35,12 +35,13 @@
       cursor: pointer;
       border-radius: 10px;
     }
-    #restartBtn {
+    #restartBtn, #pauseBtn {
       display: none;
       position: absolute;
       top: 20px;
-      right: 20px;
     }
+    #restartBtn { right: 20px; }
+    #pauseBtn { left: 20px; }
   </style>
 </head>
 <body>
@@ -57,8 +58,9 @@
   <!-- الحلبة -->
   <canvas id="gameCanvas"></canvas>
   
-  <!-- زر إعادة التشغيل -->
+  <!-- أزرار التحكم -->
   <button id="restartBtn">🔄 Restart</button>
+  <button id="pauseBtn">⏸ Pause</button>
   
   <script>
     const canvas = document.getElementById("gameCanvas");
@@ -67,10 +69,12 @@
     const startScreen = document.getElementById("startScreen");
     const startBtn = document.getElementById("startBtn");
     const restartBtn = document.getElementById("restartBtn");
+    const pauseBtn = document.getElementById("pauseBtn");
     const easyBtn = document.getElementById("easyBtn");
     const hardBtn = document.getElementById("hardBtn");
 
-    let difficulty = "easy"; // الافتراضي
+    let difficulty = "easy"; 
+    let paused = false;
 
     easyBtn.onclick = () => { difficulty = "easy"; };
     hardBtn.onclick = () => { difficulty = "hard"; };
@@ -82,16 +86,16 @@
     window.onresize = resizeCanvas;
     resizeCanvas();
 
-    // تحميل الصور من نفس المجلد
+    // تحميل الصور
     const carImg = new Image(); carImg.src = "car2.png";
     const roadImg = new Image(); roadImg.src = "road.png";
     const car32Img = new Image(); car32Img.src = "car32.png";
     const carExtraImg = new Image(); carExtraImg.src = "carExtra.png";
 
-    // موسيقى خلفية وصوت انفجار
+    // الأصوات
     const bgMusic = new Audio("background.mp3");
     bgMusic.loop = true;
-    const crashSound = new Audio("explosion.mp3"); // ضع ملف صوت انفجار بجانب الكود
+    const crashSound = new Audio("explosion.mp3");
 
     let carX, carY, car32X, car32Y, carExtraX, carExtraY;
     let gameOver, score, level;
@@ -106,10 +110,12 @@
       score = 0;
       level = 1;
       gameOver = false;
+      paused = false;
+      pauseBtn.textContent = "⏸ Pause";
     }
 
     function drawGame() {
-      if (gameOver) return;
+      if (gameOver || paused) return;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -161,7 +167,6 @@
       ctx.fillText("Level: " + level, 20, 70);
       ctx.fillText("Difficulty: " + difficulty, 20, 100);
 
-      // التصادم (نصف المسافة السابقة)
       if (
         (carX < car32X + 30 && carX + 30 > car32X && carY < car32Y + 60 && carY + 60 > car32Y) ||
         (carX < carExtraX + 30 && carX + 30 > carExtraX && carY < carExtraY + 60 && carY + 60 > carExtraY)
@@ -175,27 +180,22 @@
     function endGame() {
       gameOver = true;
       bgMusic.pause();
-      crashSound.play(); // تشغيل صوت الانفجار عند التصادم
+      crashSound.play();
       alert("💥 Game Over!\nScore: " + score + "\nLevel: " + level + "\nDifficulty: " + difficulty);
       restartBtn.style.display = "block";
     }
 
-    // تحكم بالأسهم
     document.onkeydown = (e) => {
       let moveStep = (difficulty === "easy") ? 20 : 10;
       if (e.key === "ArrowLeft" && carX > 0) carX -= moveStep;
       else if (e.key === "ArrowRight" && carX < canvas.width - 80) carX += moveStep;
     };
 
-    // تحكم بالهاتف عبر الجيروسكوب
     window.addEventListener("deviceorientation", (event) => {
       const tilt = event.gamma;
       let moveStep = (difficulty === "easy") ? 10 : 5;
-      if (tilt < -5 && carX > 0) {
-        carX -= moveStep;
-      } else if (tilt > 5 && carX < canvas.width - 80) {
-        carX += moveStep;
-      }
+      if (tilt < -5 && carX > 0) carX -= moveStep;
+      else if (tilt > 5 && carX < canvas.width - 80) carX += moveStep;
     });
 
     restartBtn.onclick = () => {
@@ -205,11 +205,25 @@
       drawGame();
     };
 
+    pauseBtn.onclick = () => {
+      paused = !paused;
+      if (paused) {
+        bgMusic.pause();
+        pauseBtn.textContent = "▶ Resume";
+      } else {
+        bgMusic.play();
+        pauseBtn.textContent = "⏸ Pause";
+        drawGame();
+      }
+    };
+
     startBtn.onclick = () => {
       startScreen.style.display = "none";
       canvas.style.display = "block";
       resetGame();
       bgMusic.play();
+      restartBtn.style.display = "block";
+      pauseBtn.style.display = "block";
       drawGame();
     };
   </script>
