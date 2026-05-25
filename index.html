@@ -112,6 +112,8 @@
       gameOver = false;
       paused = false;
       pauseBtn.textContent = "⏸ Pause";
+      pauseBtn.style.display = "none"; // إخفاء زر الإيقاف عند البداية
+      restartBtn.style.display = "none"; // إخفاء زر إعادة التشغيل عند البداية
     }
 
     function drawGame() {
@@ -182,7 +184,7 @@
       bgMusic.pause();
       crashSound.play();
       alert("💥 Game Over!\nScore: " + score + "\nLevel: " + level + "\nDifficulty: " + difficulty);
-      restartBtn.style.display = "block";
+      restartBtn.style.display = "block"; // زر إعادة التشغيل يظهر فقط عند الخسارة
     }
 
     document.onkeydown = (e) => {
@@ -200,7 +202,6 @@
 
     restartBtn.onclick = () => {
       resetGame();
-      restartBtn.style.display = "none";
       bgMusic.play();
       drawGame();
     };
@@ -222,10 +223,15 @@
       canvas.style.display = "block";
       resetGame();
       bgMusic.play();
-      restartBtn.style.display = "block";
-      pauseBtn.style.display = "block";
       drawGame();
     };
+
+    // عند الضغط على الشاشة يظهر زر الإيقاف
+    canvas.addEventListener("click", () => {
+      if (!gameOver) {
+        pauseBtn.style.display = "block";
+      }
+    });
   </script>
 </body>
 </html>
