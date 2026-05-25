@@ -63,10 +63,13 @@
   <!-- الحلبة -->
   <canvas id="gameCanvas"></canvas>
   
-  <!-- لوحة التحكم (إيقاف + إعادة تشغيل) -->
+  <!-- لوحة التحكم -->
   <div id="controlPanel">
     <button id="pauseBtn">⏸ Pause</button>
     <button id="restartBtn">🔄 Restart</button>
+    <button id="car2Btn">🚗 Car 2</button>
+    <button id="car32Btn">🚙 Car 32</button>
+    <button id="carExtraBtn">🏎️ Car Extra</button>
   </div>
   
   <script>
@@ -81,12 +84,21 @@
     const easyBtn = document.getElementById("easyBtn");
     const hardBtn = document.getElementById("hardBtn");
 
+    const car2Btn = document.getElementById("car2Btn");
+    const car32Btn = document.getElementById("car32Btn");
+    const carExtraBtn = document.getElementById("carExtraBtn");
+
     let difficulty = "easy"; 
     let paused = false;
     let gameOver = false;
+    let currentCar = "car2";
 
     easyBtn.onclick = () => { difficulty = "easy"; };
     hardBtn.onclick = () => { difficulty = "hard"; };
+
+    car2Btn.onclick = () => { currentCar = "car2"; };
+    car32Btn.onclick = () => { currentCar = "car32"; };
+    carExtraBtn.onclick = () => { currentCar = "carExtra"; };
 
     function resizeCanvas() {
       canvas.width = window.innerWidth;
@@ -100,6 +112,7 @@
     const roadImg = new Image(); roadImg.src = "road.png";
     const car32Img = new Image(); car32Img.src = "car32.png";
     const carExtraImg = new Image(); carExtraImg.src = "carExtra.png";
+    const car50Img = new Image(); car50Img.src = "car50.png";
 
     // الأصوات
     const bgMusic = new Audio("background.mp3");
@@ -116,6 +129,8 @@
       car32Y = -160;
       carExtraX = Math.random() * (canvas.width - 80);
       carExtraY = -400;
+      window.car50X = Math.random() * (canvas.width - 80);
+      window.car50Y = -600;
       score = 0;
       level = 1;
       gameOver = false;
@@ -135,14 +150,18 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
 
-      ctx.drawImage(carImg, carX, carY, 80, 160);
+      // رسم السيارة المختارة
+      if (currentCar === "car2") ctx.drawImage(carImg, carX, carY, 80, 160);
+      else if (currentCar === "car32") ctx.drawImage(car32Img, carX, carY, 80, 160);
+      else if (currentCar === "carExtra") ctx.drawImage(carExtraImg, carX, carY, 80, 160);
+
+      // سيارات الخصوم
       ctx.drawImage(car32Img, car32X, car32Y, 80, 160);
       ctx.drawImage(carExtraImg, carExtraX, carExtraY, 80, 160);
 
       let baseSpeed32 = (difficulty === "easy") ? 2 : 4;
       let baseSpeedExtra = (difficulty === "easy") ? 3 : 6;
 
-      // في المستوى الصعب: السيارات تتجه نحو سيارتك أفقياً
       if (difficulty === "hard") {
         if (car32X < carX) car32X += 1.5;
         else if (car32X > carX) car32X -= 1.5;
@@ -162,6 +181,20 @@
         carExtraY = -160;
         carExtraX = Math.random() * (canvas.width - 80);
         score++;
+      }
+
+      // السيارة الثالثة في المستوى الصعب
+      if (difficulty === "hard") {
+        ctx.drawImage(car50Img, window.car50X, window.car50Y, 80, 160);
+        window.car50Y += 6 + level;
+        if (window.car50Y > canvas.height) {
+          window.car50Y = -160;
+          window.car50X = Math.random() * (canvas.width - 80);
+          score++;
+        }
+        if (carX < window.car50X + 30 && carX + 30 > window.car50X && carY < window.car50Y + 60 && carY + 60 > window.car50Y) {
+          endGame();
+        }
       }
 
       carY -= 2;
@@ -188,64 +221,3 @@
     }
 
     function endGame() {
-      gameOver = true;
-      bgMusic.pause();
-      crashSound.play();
-      alert("💥 Game Over!\nScore: " + score + "\nLevel: " + level + "\nDifficulty: " + difficulty);
-      controlPanel.style.display = "block"; 
-      pauseBtn.style.display = "none";
-      restartBtn.style.display = "block";
-    }
-
-    document.onkeydown = (e) => {
-      let moveStep = (difficulty === "easy") ? 20 : 10;
-      if (e.key === "ArrowLeft" && carX > 0) carX -= moveStep;
-      else if (e.key === "ArrowRight" && carX < canvas.width - 80) carX += moveStep;
-    };
-
-    restartBtn.onclick = () => {
-      resetGame();
-      bgMusic.play();
-      drawGame();
-    };
-
-    pauseBtn.onclick = () => {
-      paused = !paused;
-      if (!paused) {
-        bgMusic.play();
-        controlPanel.style.display = "none";
-        drawGame();
-      }
-    };
-
-    startBtn.onclick = () => {
-      startScreen.style.display = "none";
-      canvas.style.display = "block";
-      resetGame();
-      bgMusic.play();
-      drawGame();
-    };
-
-    // عند الضغط على الشاشة تتوقف اللعبة ويظهر زر الإيقاف
-    canvas.addEventListener("click", () => {
-      if (!gameOver) {
-        paused = true;
-        bgMusic.pause();
-        controlPanel.style.display = "block";
-        pauseBtn.style.display = "block";
-        restartBtn.style.display = "none";
-      }
-    });
-    // تحكم بالهاتف عبر الجيروسكوب
-    window.addEventListener("deviceorientation", (event) => {
-      const tilt = event.gamma;
-      let moveStep = (difficulty === "easy") ? 10 : 5;
-      if (tilt < -5 && carX > 0) {
-        carX -= moveStep;
-      } else if (tilt > 5 && carX < canvas.width - 80) {
-        carX += moveStep;
-      }
-    });
-  </script>
-</body>
-</html>
