@@ -10,16 +10,11 @@
     #startScreen { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white; width: 90%; }
     button { margin: 10px; padding: 14px 28px; font-size: 22px; background: linear-gradient(45deg, #ff0000, #cc0000); color: white; border: none; cursor: pointer; border-radius: 10px; transition: 0.2s; }
     button:active { transform: scale(0.95); }
-    #controlPanel { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background: rgba(0,0,0,0.8); padding: 20px; border-radius: 15px; }
-    #controlPanel button { display: block; margin: 10px auto; width: 150px; }
-    
-    /* زر الإيقاف المؤقت أثناء اللعب المخصص للموبايل */
-    #ingamePauseBtn { display: none; position: absolute; top: 15px; right: 15px; padding: 10px 20px; font-size: 16px; background: rgba(255, 255, 255, 0.2); border: 1px solid white; border-radius: 8px; z-index: 10; color: white; }
+    #controlPanel { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background: rgba(0,0,0,0.85); padding: 25px; border-radius: 15px; box-shadow: 0 0 20px rgba(255,0,0,0.5); z-index: 20; }
+    #controlPanel button { display: block; margin: 12px auto; width: 160px; }
   </style>
 </head>
 <body>
-
-  <button id="ingamePauseBtn">⏸ Pause</button>
 
   <div id="startScreen">
     <h1>🏎️ Car Race Game</h1>
@@ -35,12 +30,12 @@
   <div id="controlPanel">
     <button id="pauseBtn">⏸ Resume</button>
     <button id="restartBtn">🔄 Restart</button>
-    <hr style="border-color: #555;">
-    <p style="color: white; margin: 5px 0;">اختر سيارتك:</p>
-    <button id="car2Btn">🚗 Car 2</button>
-    <button id="car32Btn">🚙 Car 32</button>
-    <button id="carExtraBtn">🏎️ Car Extra</button>
-    <button id="car50Btn">🚘 Car 50</button>
+    <hr style="border-color: #555; margin: 15px 0;">
+    <p style="color: white; margin: 5px 0; font-size: 16px;">اختر سيارتك:</p>
+    <button id="car2Btn" style="font-size: 16px; padding: 8px;">🚗 Car 2</button>
+    <button id="car32Btn" style="font-size: 16px; padding: 8px;">🚙 Car 32</button>
+    <button id="carExtraBtn" style="font-size: 16px; padding: 8px;">🏎️ Car Extra</button>
+    <button id="car50Btn" style="font-size: 16px; padding: 8px;">🚘 Car 50</button>
   </div>
   
   <script>
@@ -52,7 +47,6 @@
     const controlPanel = document.getElementById("controlPanel");
     const restartBtn = document.getElementById("restartBtn");
     const pauseBtn = document.getElementById("pauseBtn");
-    const ingamePauseBtn = document.getElementById("ingamePauseBtn");
     
     const easyBtn = document.getElementById("easyBtn");
     const hardBtn = document.getElementById("hardBtn");
@@ -67,9 +61,12 @@
     let gameOver = false;
     let currentCar = "car2";
     let roadY = 0; 
-    
-    // متغير لحفظ نظام إبقاء الشاشة مضيئة
     let wakeLock = null;
+
+    // متغيرات تتبع اللمس لمنع التداخل بين السحب والنقر السريع للتوقف
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTime = 0;
 
     easyBtn.onclick = () => { difficulty = "easy"; easyBtn.style.border = "2px solid gold"; hardBtn.style.border = "none"; };
     hardBtn.onclick = () => { difficulty = "hard"; hardBtn.style.border = "2px solid gold"; easyBtn.style.border = "none"; };
@@ -101,18 +98,16 @@
     const carWidth = 80;
     const carHeight = 160;
 
-    // دالة طلب إبقاء الشاشة مضيئة (Wake Lock)
     async function requestWakeLock() {
       try {
         if ('wakeLock' in navigator) {
           wakeLock = await navigator.wakeLock.request('screen');
         }
       } catch (err) {
-        console.log("Wake Lock لم يشتغل: ", err.message);
+        console.log("Wake Lock Error: ", err.message);
       }
     }
 
-    // دالة إلغاء تفعيل إبقاء الشاشة مضيئة للحفاظ على البطارية عند الخسارة أو التوقف
     function releaseWakeLock() {
       if (wakeLock !== null) {
         wakeLock.release();
@@ -137,17 +132,25 @@
       gameOver = false;
       paused = false;
       controlPanel.style.display = "none";
-      ingamePauseBtn.style.display = "block";
     }
 
+    // تعديل دالة التصادم لتصبح دقيقة ومقلصة إلى النصف (50% من الحجم الفعلي)
     function checkCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
-      const padX = 8; 
-      const padY = 15; 
+      const shrinkW1 = w1 * 0.5;
+      const shrinkH1 = h1 * 0.5;
+      const shrinkW2 = w2 * 0.5;
+      const shrinkH2 = h2 * 0.5;
+
+      const offsetX1 = x1 + (w1 - shrinkW1) / 2;
+      const offsetY1 = y1 + (h1 - shrinkH1) / 2;
+      const offsetX2 = x2 + (w2 - shrinkW2) / 2;
+      const offsetY2 = y2 + (h2 - shrinkH2) / 2;
+
       return (
-        x1 + padX < x2 + w2 - padX &&
-        x1 + w1 - padX > x2 + padX &&
-        y1 + padY < y2 + h2 - padY &&
-        y1 + h1 - padY > y2 + padY
+        offsetX1 < offsetX2 + shrinkW2 &&
+        offsetX1 + shrinkW1 > offsetX2 &&
+        offsetY1 < offsetY2 + shrinkH2 &&
+        offsetY1 + shrinkH1 > offsetY2
       );
     }
 
@@ -156,7 +159,8 @@
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      let scrollSpeed = (difficulty === "easy" ? 4 : 8) + level;
+      // تخفيف سرعة الحركة الخلفية في المستوى الصعب من 8 إلى 6
+      let scrollSpeed = (difficulty === "easy" ? 4 : 6) + level;
       roadY += scrollSpeed;
       if (roadY >= canvas.height) {
         roadY = 0;
@@ -199,18 +203,20 @@
       if (currentCar !== "car32") ctx.drawImage(car32Img, car32X, car32Y, carWidth, carHeight);
       if (currentCar !== "carExtra") ctx.drawImage(carExtraImg, carExtraX, carExtraY, carWidth, carHeight);
 
-      let baseSpeed32 = (difficulty === "easy") ? 2 : 4;
-      let baseSpeedExtra = (difficulty === "easy") ? 3 : 6;
+      // تخفيف السرعات الأساسية لسيارات الأعداء في المستوى الصعب
+      let baseSpeed32 = (difficulty === "easy") ? 2 : 3;
+      let baseSpeedExtra = (difficulty === "easy") ? 3 : 4.5;
 
+      // تخفيف سرعة ملاحقة الذكاء الاصطناعي الجانبية في المستوى الصعب لسهولة التحكم
       if (difficulty === "hard") {
-        if (car32X < carX) car32X += 1.5;
-        else if (car32X > carX) car32X -= 1.5;
+        if (car32X < carX) car32X += 0.9;
+        else if (car32X > carX) car32X -= 0.9;
         
-        if (carExtraX < carX) carExtraX += 2;
-        else if (carExtraX > carX) carExtraX -= 2;
+        if (carExtraX < carX) carExtraX += 1.2;
+        else if (carExtraX > carX) carExtraX -= 1.2;
 
-        if (window.car50X < carX) window.car50X += 2.2;
-        else if (window.car50X > carX) window.car50X -= 2.2;
+        if (window.car50X < carX) window.car50X += 1.4;
+        else if (window.car50X > carX) window.car50X -= 1.4;
       }
 
       car32Y += baseSpeed32 + level;
@@ -231,7 +237,8 @@
         if (currentCar !== "car50") {
           ctx.drawImage(car50Img, window.car50X, window.car50Y, carWidth, carHeight);
         }
-        window.car50Y += 6 + level;
+        // تخفيف سرعة هبوط سيارة 50 العمودية
+        window.car50Y += 4.5 + level;
         if (window.car50Y > canvas.height) {
           window.car50Y = -160;
           window.car50X = Math.random() * (canvas.width - carWidth);
@@ -266,8 +273,7 @@
       gameOver = true;
       bgMusic.pause();
       crashSound.play();
-      releaseWakeLock(); // إطفاء ميزة منع الانطفاء عند الخسارة
-      ingamePauseBtn.style.display = "none";
+      releaseWakeLock(); 
       alert("💥 Game Over!\nScore: " + score + "\nLevel: " + level);
       controlPanel.style.display = "block"; 
       pauseBtn.style.display = "none";
@@ -296,35 +302,59 @@
       if (carY > canvas.height - carHeight) carY = canvas.height - carHeight;
     }
 
-    canvas.addEventListener("touchstart", handleTouch, {passive: true});
+    // الاستماع للمس على الهاتف والتمييز الذكي بين السحب (اللعب) والضغط السريع (إيقاف)
+    canvas.addEventListener("touchstart", (e) => {
+      const touch = e.touches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+      touchStartTime = Date.now();
+      handleTouch(e);
+    }, {passive: true});
+
     canvas.addEventListener("touchmove", (e) => {
       handleTouch(e);
       e.preventDefault(); 
     }, { passive: false });
 
+    canvas.addEventListener("touchend", (e) => {
+      const touch = e.changedTouches[0];
+      const moveDistance = Math.hypot(touch.clientX - touchStartX, touch.clientY - touchStartY);
+      const touchDuration = Date.now() - touchStartTime;
+
+      // إذا كانت الضغطة سريعة جداً وبدون سحب مسافة طويلة، يتم إيقاف اللعبة وإظهار قائمة التحكم
+      if (touchDuration < 200 && moveDistance < 15) {
+        togglePause();
+      }
+    });
+
+    // عند النقر بالفأرة على شاشة الكمبيوتر يتم إيقاف اللعبة مباشرة
+    canvas.onclick = () => {
+      togglePause();
+    };
+
     function togglePause() {
+      if (gameOver) return;
       paused = !paused;
       if (paused) {
         bgMusic.pause();
-        releaseWakeLock(); // السماح للشاشة بالانطفاء إذا أوقف اللاعب اللعبة مؤقتاً
+        releaseWakeLock(); 
         controlPanel.style.display = "block";
         pauseBtn.style.display = "block";
         restartBtn.style.display = "block";
       } else {
         bgMusic.play();
-        requestWakeLock(); // إعادة إضاءة الشاشة فوراً عند استئناف اللعب
+        requestWakeLock(); 
         controlPanel.style.display = "none";
         drawGame();
       }
     }
 
     pauseBtn.onclick = togglePause;
-    ingamePauseBtn.onclick = togglePause;
 
     restartBtn.onclick = () => {
       resetGame();
       bgMusic.play();
-      requestWakeLock(); // تشغيل الإضاءة الدائمة عند إعادة التشغيل
+      requestWakeLock(); 
       drawGame();
     };
 
@@ -333,11 +363,10 @@
       canvas.style.display = "block";
       resetGame();
       bgMusic.play();
-      requestWakeLock(); // إبقاء الشاشة مضيئة فور الضغط على Start وبدء اللعبة
+      requestWakeLock(); 
       drawGame();
     };
 
-    // إعادة تفعيل النظام تلقائياً إذا خرج اللاعب من المتصفح وعاد إليه واللعبة تعمل
     document.addEventListener('visibilitychange', async () => {
       if (wakeLock !== null && document.visibilityState === 'visible' && !paused && !gameOver) {
         await requestWakeLock();
