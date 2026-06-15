@@ -30,6 +30,7 @@
     <button id="car2Btn">🚗 Car 2</button>
     <button id="car32Btn">🚙 Car 32</button>
     <button id="carExtraBtn">🏎️ Car Extra</button>
+    <button id="car50Btn">🚘 Car 50</button>
   </div>
   
   <script>
@@ -47,11 +48,13 @@
     const car2Btn = document.getElementById("car2Btn");
     const car32Btn = document.getElementById("car32Btn");
     const carExtraBtn = document.getElementById("carExtraBtn");
+    const car50Btn = document.getElementById("car50Btn");
 
     let difficulty = "easy"; 
     let paused = false;
     let gameOver = false;
     let currentCar = "car2";
+    let roadY = 0; // متغير لتحريك المضمار
 
     easyBtn.onclick = () => { difficulty = "easy"; };
     hardBtn.onclick = () => { difficulty = "hard"; };
@@ -59,6 +62,7 @@
     car2Btn.onclick = () => { currentCar = "car2"; };
     car32Btn.onclick = () => { currentCar = "car32"; };
     carExtraBtn.onclick = () => { currentCar = "carExtra"; };
+    car50Btn.onclick = () => { currentCar = "car50"; };
 
     function resizeCanvas() {
       canvas.width = window.innerWidth;
@@ -82,7 +86,8 @@
 
     function resetGame() {
       carX = canvas.width / 2 - 40;
-      carY = canvas.height - 160;
+      carY = canvas.height - 180; // تثبيت سيارة اللاعب في الأسفل
+      roadY = 0;
       car32X = Math.random() * (canvas.width - 80);
       car32Y = -160;
       carExtraX = Math.random() * (canvas.width - 80);
@@ -101,21 +106,35 @@
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      if (roadImg.complete) {
-        ctx.drawImage(roadImg, 0, 0, canvas.width, canvas.height);
-      } else {
-        ctx.fillStyle = "#444";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // سرعة حركة المضمار بناءً على الصعوبة والمستوى
+      let scrollSpeed = (difficulty === "easy" ? 4 : 8) + level;
+      roadY += scrollSpeed;
+      if (roadY >= canvas.height) {
+        roadY = 0;
       }
 
-      // رسم سيارة اللاعب مع قلب car32 و carExtra بمقدار 180 درجة عند اختيارهن
+      // رسم المضمار المتحرك بشكل متكرر ليعطي تأثير الحركة اللانهائية
+      if (roadImg.complete) {
+        ctx.drawImage(roadImg, 0, roadY, canvas.width, canvas.height);
+        ctx.drawImage(roadImg, 0, roadY - canvas.height, canvas.width, canvas.height);
+      } else {
+        ctx.fillStyle = "#333";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // خطوط بيضاء جانبية في حال عدم تحميل الصورة لإظهار الحركة
+        ctx.fillStyle = "white";
+        for (let i = -canvas.height; i < canvas.height; i += 100) {
+          ctx.fillRect(canvas.width / 2 - 5, i + (roadY % 100), 10, 50);
+        }
+      }
+
+      // رسم سيارة اللاعب الحالية
       if (currentCar === "car2") {
         ctx.drawImage(carImg, carX, carY, 80, 160);
       } else if (currentCar === "car32") {
         ctx.save();
-        ctx.translate(carX + 40, carY + 80); // الانتقال إلى مركز السيارة
-        ctx.rotate(Math.PI); // التدوير 180 درجة
-        ctx.drawImage(car32Img, -40, -80, 80, 160); // الرسم من المركز الجديد
+        ctx.translate(carX + 40, carY + 80);
+        ctx.rotate(Math.PI);
+        ctx.drawImage(car32Img, -40, -80, 80, 160);
         ctx.restore();
       } else if (currentCar === "carExtra") {
         ctx.save();
@@ -123,21 +142,35 @@
         ctx.rotate(Math.PI);
         ctx.drawImage(carExtraImg, -40, -80, 80, 160);
         ctx.restore();
+      } else if (currentCar === "car50") {
+        ctx.save();
+        ctx.translate(carX + 40, carY + 80);
+        ctx.rotate(Math.PI);
+        ctx.drawImage(car50Img, -40, -80, 80, 160);
+        ctx.restore();
       }
 
-      ctx.drawImage(car32Img, car32X, car32Y, 80, 160);
-      ctx.drawImage(carExtraImg, carExtraX, carExtraY, 80, 160);
+      // رسم سيارات الأعداء (إذا لم تكن مختارة كسيارة للاعب الحالية)
+      if (currentCar !== "car32") ctx.drawImage(car32Img, car32X, car32Y, 80, 160);
+      if (currentCar !== "carExtra") ctx.drawImage(carExtraImg, carExtraX, carExtraY, 80, 160);
 
       let baseSpeed32 = (difficulty === "easy") ? 2 : 4;
       let baseSpeedExtra = (difficulty === "easy") ? 3 : 6;
 
+      // الذكاء الاصطناعي للملاحقة في المستوى الصعب
       if (difficulty === "hard") {
         if (car32X < carX) car32X += 1.5;
         else if (car32X > carX) car32X -= 1.5;
+        
         if (carExtraX < carX) carExtraX += 2;
         else if (carExtraX > carX) carExtraX -= 2;
+
+        // جعل سيارة 50 تتجه نحو اللاعب في المستوى الصعب
+        if (window.car50X < carX) window.car50X += 2.2;
+        else if (window.car50X > carX) window.car50X -= 2.2;
       }
 
+      // تحديث حركة سيارة 32
       car32Y += baseSpeed32 + level;
       if (car32Y > canvas.height) {
         car32Y = -160;
@@ -145,6 +178,7 @@
         score++;
       }
 
+      // تحديث حركة سيارة Extra
       carExtraY += baseSpeedExtra + level;
       if (carExtraY > canvas.height) {
         carExtraY = -160;
@@ -152,21 +186,22 @@
         score++;
       }
 
+      // ظهور وحركة سيارة 50 كعدو في المستوى الصعب
       if (difficulty === "hard") {
-        ctx.drawImage(car50Img, window.car50X, window.car50Y, 80, 160);
+        if (currentCar !== "car50") {
+          ctx.drawImage(car50Img, window.car50X, window.car50Y, 80, 160);
+        }
         window.car50Y += 6 + level;
         if (window.car50Y > canvas.height) {
           window.car50Y = -160;
           window.car50X = Math.random() * (canvas.width - 80);
           score++;
         }
-        if (carX < window.car50X + 30 && carX + 30 > window.car50X && carY < window.car50Y + 60 && carY + 60 > window.car50Y) {
+        // التحقق من الاصطدام بالسيارة 50 عندما تكون عدواً
+        if (currentCar !== "car50" && carX < window.car50X + 60 && carX + 60 > window.car50X && carY < window.car50Y + 130 && carY + 130 > window.car50Y) {
           endGame();
         }
       }
-
-      carY -= 2;
-      if (carY < 0) carY = canvas.height - 160;
 
       if (score > 0 && score % 10 === 0) {
         level = Math.floor(score / 10) + 1;
@@ -178,10 +213,11 @@
       ctx.fillText("Level: " + level, 20, 70);
       ctx.fillText("Difficulty: " + difficulty, 20, 100);
 
-      if (
-        (carX < car32X + 30 && carX + 30 > car32X && carY < car32Y + 60 && carY + 60 > car32Y) ||
-        (carX < carExtraX + 30 && carX + 30 > carExtraX && carY < carExtraY + 60 && carY + 60 > carExtraY)
-      ) {
+      // التحقق من الاصطدام بالسيارات الأخرى
+      let crashWith32 = (currentCar !== "car32" && carX < car32X + 60 && carX + 60 > car32X && carY < car32Y + 130 && carY + 130 > car32Y);
+      let crashWithExtra = (currentCar !== "carExtra" && carX < carExtraX + 60 && carX + 60 > carExtraX && carY < carExtraY + 130 && carY + 130 > carExtraY);
+
+      if (crashWith32 || crashWithExtra) {
         endGame();
       }
 
@@ -199,7 +235,7 @@
     }
 
     document.onkeydown = (e) => {
-      let moveStep = (difficulty === "easy") ? 20 : 10;
+      let moveStep = (difficulty === "easy") ? 25 : 15;
       if (e.key === "ArrowLeft" && carX > 0) carX -= moveStep;
       else if (e.key === "ArrowRight" && carX < canvas.width - 80) carX += moveStep;
     };
@@ -239,7 +275,7 @@
 
     window.addEventListener("deviceorientation", (event) => {
       const tilt = event.gamma;
-      let moveStep = (difficulty === "easy") ? 10 : 5;
+      let moveStep = (difficulty === "easy") ? 12 : 7;
       if (tilt < -5 && carX > 0) {
         carX -= moveStep;
       } else if (tilt > 5 && carX < canvas.width - 80) {
