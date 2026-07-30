@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,35 +7,48 @@
   <style>
     body { background-color: black; margin: 0; overflow: hidden; font-family: Arial, sans-serif; user-select: none; }
     canvas { display: none; background-color: #333; border: 2px solid white; width: 100vw; height: 100vh; }
+    
+    /* زر اختيار اللغة */
+    .lang-switcher { position: absolute; top: 15px; left: 15px; z-index: 100; display: flex; gap: 8px; }
+    .lang-btn { padding: 6px 12px; font-size: 14px; background: rgba(255,255,255,0.2); border: 1px solid white; color: white; border-radius: 6px; cursor: pointer; }
+    .lang-btn.active { background: #ff0000; border-color: #ff0000; font-weight: bold; }
+
     #startScreen { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white; width: 90%; }
-    button { margin: 10px; padding: 14px 28px; font-size: 22px; background: linear-gradient(45deg, #ff0000, #cc0000); color: white; border: none; cursor: pointer; border-radius: 10px; transition: 0.2s; }
+    button { margin: 8px; padding: 12px 24px; font-size: 18px; background: linear-gradient(45deg, #ff0000, #cc0000); color: white; border: none; cursor: pointer; border-radius: 10px; transition: 0.2s; }
     button:active { transform: scale(0.95); }
-    #controlPanel { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background: rgba(0,0,0,0.85); padding: 25px; border-radius: 15px; box-shadow: 0 0 20px rgba(255,0,0,0.5); z-index: 20; }
-    #controlPanel button { display: block; margin: 12px auto; width: 160px; }
+    
+    #controlPanel { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background: rgba(0,0,0,0.9); padding: 20px; border-radius: 15px; box-shadow: 0 0 20px rgba(255,0,0,0.5); z-index: 20; min-width: 260px; }
+    #controlPanel button { display: block; margin: 10px auto; width: 100%; max-width: 220px; }
   </style>
 </head>
 <body>
 
+  <!-- أزرار تبديل اللغة -->
+  <div class="lang-switcher">
+    <button class="lang-btn active" id="langAr">🇸🇦 العربية</button>
+    <button class="lang-btn" id="langEn">🇬🇧 English</button>
+  </div>
+
   <div id="startScreen">
-    <h1>🏎️ Car Race Game</h1>
-    <p>اختر مستوى الصعوبة ثم اضغط تشغيل</p>
+    <h1 id="titleTxt">🏎️ لعبة سباق السيارات</h1>
+    <p id="subTitleTxt">اختر مستوى الصعوبة ثم اضغط تشغيل</p>
     <button id="easyBtn" style="border: 2px solid gold;">😎 سهل</button>
     <button id="hardBtn">🔥 صعب</button>
     <br><br>
-    <button id="startBtn">▶ Start</button>
+    <button id="startBtn">▶ بدء اللعب</button>
   </div>
 
   <canvas id="gameCanvas"></canvas>
   
   <div id="controlPanel">
-    <button id="pauseBtn">⏸ Resume</button>
-    <button id="restartBtn">🔄 Restart</button>
+    <button id="pauseBtn">⏸ استئناف</button>
+    <button id="restartBtn">🔄 إعادة التشغيل</button>
     <hr style="border-color: #555; margin: 15px 0;">
-    <p style="color: white; margin: 5px 0; font-size: 16px;">اختر سيارتك:</p>
-    <button id="car2Btn" style="font-size: 16px; padding: 8px;">🚗 Car 2</button>
-    <button id="car32Btn" style="font-size: 16px; padding: 8px;">🚙 Car 32</button>
-    <button id="carExtraBtn" style="font-size: 16px; padding: 8px;">🏎️ Car Extra</button>
-    <button id="car50Btn" style="font-size: 16px; padding: 8px;">🚘 Car 50</button>
+    <p id="selectCarTxt" style="color: white; margin: 5px 0; font-size: 16px;">اختر سيارتك:</p>
+    <button id="car2Btn" style="font-size: 15px; padding: 10px;">🔴 الحمراء (Red)</button>
+    <button id="car32Btn" style="font-size: 15px; padding: 10px;">🔵 الزرقاء (Blue)</button>
+    <button id="carExtraBtn" style="font-size: 15px; padding: 10px;">🟢 الخضراء (Green)</button>
+    <button id="car50Btn" style="font-size: 15px; padding: 10px;">⬛ السوداء (Black)</button>
   </div>
   
   <script>
@@ -56,6 +69,78 @@
     const carExtraBtn = document.getElementById("carExtraBtn");
     const car50Btn = document.getElementById("car50Btn");
 
+    const langAr = document.getElementById("langAr");
+    const langEn = document.getElementById("langEn");
+
+    // نصوص اللغات (i18n)
+    let currentLang = "ar";
+    const i18n = {
+      ar: {
+        title: "🏎️ لعبة سباق السيارات",
+        subtitle: "اختر مستوى الصعوبة ثم اضغط تشغيل",
+        easy: "😎 سهل",
+        hard: "🔥 صعب",
+        start: "▶ بدء اللعب",
+        resume: "⏸ استئناف",
+        restart: "🔄 إعادة التشغيل",
+        selectCar: "اختر سيارتك:",
+        carRed: "🔴 السيارة الحمراء",
+        carBlue: "🔵 السيارة الزرقاء",
+        carGreen: "🟢 السيارة الخضراء",
+        carBlack: "⬛ السيارة السوداء",
+        score: "النقاط: ",
+        level: "المستوى: ",
+        difficulty: "الصعوبة: ",
+        gameOver: "💥 انتهت اللعبة!\nالنقاط: ",
+        levelText: "\nالمستوى: "
+      },
+      en: {
+        title: "🏎️ Car Race Game",
+        subtitle: "Select difficulty then press Start",
+        easy: "😎 Easy",
+        hard: "🔥 Hard",
+        start: "▶ Start",
+        resume: "⏸ Resume",
+        restart: "🔄 Restart",
+        selectCar: "Choose Your Car:",
+        carRed: "🔴 Red Car",
+        carBlue: "🔵 Blue Car",
+        carGreen: "🟢 Green Car",
+        carBlack: "⬛ Black Car",
+        score: "Score: ",
+        level: "Level: ",
+        difficulty: "Difficulty: ",
+        gameOver: "💥 Game Over!\nScore: ",
+        levelText: "\nLevel: "
+      }
+    };
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+      
+      langAr.classList.toggle("active", lang === "ar");
+      langEn.classList.toggle("active", lang === "en");
+
+      const t = i18n[lang];
+      document.getElementById("titleTxt").innerText = t.title;
+      document.getElementById("subTitleTxt").innerText = t.subtitle;
+      easyBtn.innerText = t.easy;
+      hardBtn.innerText = t.hard;
+      startBtn.innerText = t.start;
+      pauseBtn.innerText = t.resume;
+      restartBtn.innerText = t.restart;
+      document.getElementById("selectCarTxt").innerText = t.selectCar;
+
+      car2Btn.innerText = t.carRed;
+      car32Btn.innerText = t.carBlue;
+      carExtraBtn.innerText = t.carGreen;
+      car50Btn.innerText = t.carBlack;
+    }
+
+    langAr.onclick = () => setLanguage("ar");
+    langEn.onclick = () => setLanguage("en");
+
     let difficulty = "easy"; 
     let paused = false;
     let gameOver = false;
@@ -63,7 +148,6 @@
     let roadY = 0; 
     let wakeLock = null;
 
-    // متغيرات تتبع اللمس لمنع التداخل بين السحب والنقر السريع للتوقف
     let touchStartX = 0;
     let touchStartY = 0;
     let touchStartTime = 0;
@@ -83,6 +167,7 @@
     window.onresize = resizeCanvas;
     resizeCanvas();
 
+    // تحميل الصور مع حماية في حال عدم توفر الصورة
     const carImg = new Image(); carImg.src = "car2.png";
     const roadImg = new Image(); roadImg.src = "road.png";
     const car32Img = new Image(); car32Img.src = "car32.png";
@@ -95,17 +180,60 @@
 
     let carX, carY, car32X, car32Y, carExtraX, carExtraY;
     let score, level;
-    const carWidth = 80;
-    const carHeight = 160;
+    const carWidth = 70;
+    const carHeight = 140;
+
+    // دالة رسم سيارة احترافية بالـ Canvas بديلة في حال عدم وجود صور
+    function drawFallbackCar(x, y, width, height, bodyColor, isFlipped = false) {
+      ctx.save();
+      ctx.translate(x + width / 2, y + height / 2);
+      if (isFlipped) ctx.rotate(Math.PI);
+
+      // جسم السيارة الرئيسي
+      ctx.fillStyle = bodyColor;
+      ctx.beginPath();
+      ctx.roundRect(-width / 2, -height / 2, width, height, 15);
+      ctx.fill();
+
+      // الزجاج الأمامي والخلفي
+      ctx.fillStyle = "#87CEEB";
+      ctx.fillRect(-width / 2 + 8, -height / 4, width - 16, height / 5); // زجاج أمامي
+      ctx.fillRect(-width / 2 + 10, height / 4, width - 20, height / 8); // زجاج خلفي
+
+      // الإطارات الأربعة
+      ctx.fillStyle = "#111";
+      ctx.fillRect(-width / 2 - 4, -height / 3, 6, 25);
+      ctx.fillRect(width / 2 - 2, -height / 3, 6, 25);
+      ctx.fillRect(-width / 2 - 4, height / 4, 6, 25);
+      ctx.fillRect(width / 2 - 2, height / 4, 6, 25);
+
+      // الأضواء الأمامية
+      ctx.fillStyle = "#FFF";
+      ctx.fillRect(-width / 2 + 6, -height / 2, 12, 6);
+      ctx.fillRect(width / 2 - 18, -height / 2, 12, 6);
+
+      ctx.restore();
+    }
+
+    // دالة عامة لتمثيل وقراءة السيارات (صورة أو رسم جاهز)
+    function renderCar(img, x, y, width, height, color, isFlipped = false) {
+      if (img.complete && img.naturalWidth !== 0) {
+        ctx.save();
+        ctx.translate(x + width / 2, y + height / 2);
+        if (isFlipped) ctx.rotate(Math.PI);
+        ctx.drawImage(img, -width / 2, -height / 2, width, height);
+        ctx.restore();
+      } else {
+        drawFallbackCar(x, y, width, height, color, isFlipped);
+      }
+    }
 
     async function requestWakeLock() {
       try {
         if ('wakeLock' in navigator) {
           wakeLock = await navigator.wakeLock.request('screen');
         }
-      } catch (err) {
-        console.log("Wake Lock Error: ", err.message);
-      }
+      } catch (err) {}
     }
 
     function releaseWakeLock() {
@@ -134,7 +262,6 @@
       controlPanel.style.display = "none";
     }
 
-    // تعديل دالة التصادم لتصبح دقيقة ومقلصة إلى النصف (50% من الحجم الفعلي)
     function checkCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
       const shrinkW1 = w1 * 0.5;
       const shrinkH1 = h1 * 0.5;
@@ -159,55 +286,38 @@
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // تخفيف سرعة الحركة الخلفية في المستوى الصعب من 8 إلى 6
       let scrollSpeed = (difficulty === "easy" ? 4 : 6) + level;
       roadY += scrollSpeed;
-      if (roadY >= canvas.height) {
-        roadY = 0;
-      }
+      if (roadY >= canvas.height) roadY = 0;
 
-      if (roadImg.complete) {
+      if (roadImg.complete && roadImg.naturalWidth !== 0) {
         ctx.drawImage(roadImg, 0, roadY, canvas.width, canvas.height);
         ctx.drawImage(roadImg, 0, roadY - canvas.height, canvas.width, canvas.height);
       } else {
         ctx.fillStyle = "#333";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "white";
-        for (let i = -canvas.height; i < canvas.height; i += 100) {
-          ctx.fillRect(canvas.width / 2 - 5, i + (roadY % 100), 10, 50);
+        ctx.fillStyle = "#FFF";
+        for (let i = -canvas.height; i < canvas.height; i += 80) {
+          ctx.fillRect(canvas.width / 2 - 4, i + (roadY % 80), 8, 40);
         }
       }
 
-      if (currentCar === "car2") {
-        ctx.drawImage(carImg, carX, carY, carWidth, carHeight);
-      } else if (currentCar === "car32") {
-        ctx.save();
-        ctx.translate(carX + carWidth/2, carY + carHeight/2);
-        ctx.rotate(Math.PI);
-        ctx.drawImage(car32Img, -carWidth/2, -carHeight/2, carWidth, carHeight);
-        ctx.restore();
-      } else if (currentCar === "carExtra") {
-        ctx.save();
-        ctx.translate(carX + carWidth/2, carY + carHeight/2);
-        ctx.rotate(Math.PI);
-        ctx.drawImage(carExtraImg, -carWidth/2, -carHeight/2, carWidth, carHeight);
-        ctx.restore();
-      } else if (currentCar === "car50") {
-        ctx.save();
-        ctx.translate(carX + carWidth/2, carY + carHeight/2);
-        ctx.rotate(Math.PI);
-        ctx.drawImage(car50Img, -carWidth/2, -carHeight/2, carWidth, carHeight);
-        ctx.restore();
-      }
+      // 🔴 السيارة الحمراء (Car 2)
+      // 🔵 السيارة الزرقاء (Car 32)
+      // 🟢 السيارة الخضراء (Car Extra)
+      // ⬛ السيارة السوداء (Car 50)
+      if (currentCar === "car2") renderCar(carImg, carX, carY, carWidth, carHeight, "#e74c3c", false);
+      else if (currentCar === "car32") renderCar(car32Img, carX, carY, carWidth, carHeight, "#3498db", true);
+      else if (currentCar === "carExtra") renderCar(carExtraImg, carX, carY, carWidth, carHeight, "#2ecc71", true);
+      else if (currentCar === "car50") renderCar(car50Img, carX, carY, carWidth, carHeight, "#2c3e50", true);
 
-      if (currentCar !== "car32") ctx.drawImage(car32Img, car32X, car32Y, carWidth, carHeight);
-      if (currentCar !== "carExtra") ctx.drawImage(carExtraImg, carExtraX, carExtraY, carWidth, carHeight);
+      // رسم سيارات الأعداء
+      if (currentCar !== "car32") renderCar(car32Img, car32X, car32Y, carWidth, carHeight, "#3498db", false);
+      if (currentCar !== "carExtra") renderCar(carExtraImg, carExtraX, carExtraY, carWidth, carHeight, "#2ecc71", false);
 
-      // تخفيف السرعات الأساسية لسيارات الأعداء في المستوى الصعب
       let baseSpeed32 = (difficulty === "easy") ? 2 : 3;
       let baseSpeedExtra = (difficulty === "easy") ? 3 : 4.5;
 
-      // تخفيف سرعة ملاحقة الذكاء الاصطناعي الجانبية في المستوى الصعب لسهولة التحكم
       if (difficulty === "hard") {
         if (car32X < carX) car32X += 0.9;
         else if (car32X > carX) car32X -= 0.9;
@@ -235,9 +345,8 @@
 
       if (difficulty === "hard") {
         if (currentCar !== "car50") {
-          ctx.drawImage(car50Img, window.car50X, window.car50Y, carWidth, carHeight);
+          renderCar(car50Img, window.car50X, window.car50Y, carWidth, carHeight, "#2c3e50", false);
         }
-        // تخفيف سرعة هبوط سيارة 50 العمودية
         window.car50Y += 4.5 + level;
         if (window.car50Y > canvas.height) {
           window.car50Y = -160;
@@ -253,11 +362,13 @@
         level = Math.floor(score / 10) + 1;
       }
 
+      // طباعة النصوص والنقاط حسب اللغة
+      const t = i18n[currentLang];
       ctx.fillStyle = "white";
-      ctx.font = "bold 20px Arial";
-      ctx.fillText("Score: " + score, 20, 40);
-      ctx.fillText("Level: " + level, 20, 70);
-      ctx.fillText("Difficulty: " + difficulty.toUpperCase(), 20, 100);
+      ctx.font = "bold 18px Arial";
+      ctx.fillText(t.score + score, 20, 40);
+      ctx.fillText(t.level + level, 20, 70);
+      ctx.fillText(t.difficulty + difficulty.toUpperCase(), 20, 100);
 
       let crashWith32 = (currentCar !== "car32" && checkCollision(carX, carY, carWidth, carHeight, car32X, car32Y, carWidth, carHeight));
       let crashWithExtra = (currentCar !== "carExtra" && checkCollision(carX, carY, carWidth, carHeight, carExtraX, carExtraY, carWidth, carHeight));
@@ -272,9 +383,11 @@
     function endGame() {
       gameOver = true;
       bgMusic.pause();
-      crashSound.play();
+      try { crashSound.play(); } catch(e){}
       releaseWakeLock(); 
-      alert("💥 Game Over!\nScore: " + score + "\nLevel: " + level);
+
+      const t = i18n[currentLang];
+      alert(t.gameOver + score + t.levelText + level);
       controlPanel.style.display = "block"; 
       pauseBtn.style.display = "none";
       restartBtn.style.display = "block";
@@ -302,7 +415,6 @@
       if (carY > canvas.height - carHeight) carY = canvas.height - carHeight;
     }
 
-    // الاستماع للمس على الهاتف والتمييز الذكي بين السحب (اللعب) والضغط السريع (إيقاف)
     canvas.addEventListener("touchstart", (e) => {
       const touch = e.touches[0];
       touchStartX = touch.clientX;
@@ -321,13 +433,11 @@
       const moveDistance = Math.hypot(touch.clientX - touchStartX, touch.clientY - touchStartY);
       const touchDuration = Date.now() - touchStartTime;
 
-      // إذا كانت الضغطة سريعة جداً وبدون سحب مسافة طويلة، يتم إيقاف اللعبة وإظهار قائمة التحكم
       if (touchDuration < 200 && moveDistance < 15) {
         togglePause();
       }
     });
 
-    // عند النقر بالفأرة على شاشة الكمبيوتر يتم إيقاف اللعبة مباشرة
     canvas.onclick = () => {
       togglePause();
     };
@@ -342,7 +452,7 @@
         pauseBtn.style.display = "block";
         restartBtn.style.display = "block";
       } else {
-        bgMusic.play();
+        try { bgMusic.play(); } catch(e){}
         requestWakeLock(); 
         controlPanel.style.display = "none";
         drawGame();
@@ -353,7 +463,7 @@
 
     restartBtn.onclick = () => {
       resetGame();
-      bgMusic.play();
+      try { bgMusic.play(); } catch(e){}
       requestWakeLock(); 
       drawGame();
     };
@@ -362,7 +472,7 @@
       startScreen.style.display = "none";
       canvas.style.display = "block";
       resetGame();
-      bgMusic.play();
+      try { bgMusic.play(); } catch(e){}
       requestWakeLock(); 
       drawGame();
     };
