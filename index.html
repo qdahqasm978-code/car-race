@@ -8,12 +8,13 @@
     body { background-color: black; margin: 0; overflow: hidden; font-family: Arial, sans-serif; user-select: none; }
     canvas { display: none; background-color: #333; border: 2px solid white; width: 100vw; height: 100vh; }
     
-    /* زر اختيار اللغة */
-    .lang-switcher { position: absolute; top: 15px; left: 15px; z-index: 100; display: flex; gap: 8px; }
-    .lang-btn { padding: 6px 12px; font-size: 14px; background: rgba(255,255,255,0.2); border: 1px solid white; color: white; border-radius: 6px; cursor: pointer; }
-    .lang-btn.active { background: #ff0000; border-color: #ff0000; font-weight: bold; }
+    #startScreen { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white; width: 90%; z-index: 30; }
+    
+    /* أزرار اختيار اللغة في شاشة البداية */
+    .lang-container { margin-bottom: 20px; display: flex; justify-content: center; gap: 15px; }
+    .lang-select-btn { padding: 10px 20px; font-size: 16px; background: #333; color: white; border: 2px solid white; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+    .lang-select-btn.active { background: #ff0000; border-color: gold; font-weight: bold; }
 
-    #startScreen { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white; width: 90%; }
     button { margin: 8px; padding: 12px 24px; font-size: 18px; background: linear-gradient(45deg, #ff0000, #cc0000); color: white; border: none; cursor: pointer; border-radius: 10px; transition: 0.2s; }
     button:active { transform: scale(0.95); }
     
@@ -23,13 +24,13 @@
 </head>
 <body>
 
-  <!-- أزرار تبديل اللغة -->
-  <div class="lang-switcher">
-    <button class="lang-btn active" id="langAr">🇸🇦 العربية</button>
-    <button class="lang-btn" id="langEn">🇬🇧 English</button>
-  </div>
-
   <div id="startScreen">
+    <!-- اختيار اللغة قبل البدء -->
+    <div class="lang-container">
+      <button id="langAr" class="lang-select-btn active">🇸🇦 العربية</button>
+      <button id="langEn" class="lang-select-btn">🇬🇧 English</button>
+    </div>
+
     <h1 id="titleTxt">🏎️ لعبة سباق السيارات</h1>
     <p id="subTitleTxt">اختر مستوى الصعوبة ثم اضغط تشغيل</p>
     <button id="easyBtn" style="border: 2px solid gold;">😎 سهل</button>
@@ -45,10 +46,10 @@
     <button id="restartBtn">🔄 إعادة التشغيل</button>
     <hr style="border-color: #555; margin: 15px 0;">
     <p id="selectCarTxt" style="color: white; margin: 5px 0; font-size: 16px;">اختر سيارتك:</p>
-    <button id="car2Btn" style="font-size: 15px; padding: 10px;">🔴 الحمراء (Red)</button>
-    <button id="car32Btn" style="font-size: 15px; padding: 10px;">🔵 الزرقاء (Blue)</button>
-    <button id="carExtraBtn" style="font-size: 15px; padding: 10px;">🟢 الخضراء (Green)</button>
-    <button id="car50Btn" style="font-size: 15px; padding: 10px;">⬛ السوداء (Black)</button>
+    <button id="car2Btn" style="font-size: 15px; padding: 10px;">🔴 السيارة الحمراء (Car 2)</button>
+    <button id="car32Btn" style="font-size: 15px; padding: 10px;">🔵 السيارة الزرقاء (Car 32)</button>
+    <button id="carExtraBtn" style="font-size: 15px; padding: 10px;">🟢 السيارة الخضراء (Car Extra)</button>
+    <button id="car50Btn" style="font-size: 15px; padding: 10px;">⬛ السيارة السوداء (Car 50)</button>
   </div>
   
   <script>
@@ -72,46 +73,49 @@
     const langAr = document.getElementById("langAr");
     const langEn = document.getElementById("langEn");
 
-    // نصوص اللغات (i18n)
     let currentLang = "ar";
     const i18n = {
       ar: {
         title: "🏎️ لعبة سباق السيارات",
-        subtitle: "اختر مستوى الصعوبة ثم اضغط تشغيل",
+        subtitle: "اختر لغتك ومستوى الصعوبة ثم اضغط بدء",
         easy: "😎 سهل",
         hard: "🔥 صعب",
         start: "▶ بدء اللعب",
         resume: "⏸ استئناف",
         restart: "🔄 إعادة التشغيل",
         selectCar: "اختر سيارتك:",
-        carRed: "🔴 السيارة الحمراء",
-        carBlue: "🔵 السيارة الزرقاء",
-        carGreen: "🟢 السيارة الخضراء",
-        carBlack: "⬛ السيارة السوداء",
+        carRed: "🔴 السيارة الحمراء (Car 2)",
+        carBlue: "🔵 السيارة الزرقاء (Car 32)",
+        carGreen: "🟢 السيارة الخضراء (Car Extra)",
+        carBlack: "⬛ السيارة السوداء (Car 50)",
         score: "النقاط: ",
         level: "المستوى: ",
         difficulty: "الصعوبة: ",
         gameOver: "💥 انتهت اللعبة!\nالنقاط: ",
-        levelText: "\nالمستوى: "
+        levelText: "\nالمستوى: ",
+        easyText: "سهل",
+        hardText: "صعب"
       },
       en: {
         title: "🏎️ Car Race Game",
-        subtitle: "Select difficulty then press Start",
+        subtitle: "Choose language & difficulty, then press Start",
         easy: "😎 Easy",
         hard: "🔥 Hard",
         start: "▶ Start",
         resume: "⏸ Resume",
         restart: "🔄 Restart",
         selectCar: "Choose Your Car:",
-        carRed: "🔴 Red Car",
-        carBlue: "🔵 Blue Car",
-        carGreen: "🟢 Green Car",
-        carBlack: "⬛ Black Car",
+        carRed: "🔴 Red Car (Car 2)",
+        carBlue: "🔵 Blue Car (Car 32)",
+        carGreen: "🟢 Green Car (Car Extra)",
+        carBlack: "⬛ Black Car (Car 50)",
         score: "Score: ",
         level: "Level: ",
         difficulty: "Difficulty: ",
         gameOver: "💥 Game Over!\nScore: ",
-        levelText: "\nLevel: "
+        levelText: "\nLevel: ",
+        easyText: "EASY",
+        hardText: "HARD"
       }
     };
 
@@ -167,7 +171,6 @@
     window.onresize = resizeCanvas;
     resizeCanvas();
 
-    // تحميل الصور مع حماية في حال عدم توفر الصورة
     const carImg = new Image(); carImg.src = "car2.png";
     const roadImg = new Image(); roadImg.src = "road.png";
     const car32Img = new Image(); car32Img.src = "car32.png";
@@ -183,31 +186,27 @@
     const carWidth = 70;
     const carHeight = 140;
 
-    // دالة رسم سيارة احترافية بالـ Canvas بديلة في حال عدم وجود صور
+    // دالة رسم السيارة البديلة بألوانها المحددة في حال عدم وجود صور
     function drawFallbackCar(x, y, width, height, bodyColor, isFlipped = false) {
       ctx.save();
       ctx.translate(x + width / 2, y + height / 2);
       if (isFlipped) ctx.rotate(Math.PI);
 
-      // جسم السيارة الرئيسي
       ctx.fillStyle = bodyColor;
       ctx.beginPath();
       ctx.roundRect(-width / 2, -height / 2, width, height, 15);
       ctx.fill();
 
-      // الزجاج الأمامي والخلفي
       ctx.fillStyle = "#87CEEB";
-      ctx.fillRect(-width / 2 + 8, -height / 4, width - 16, height / 5); // زجاج أمامي
-      ctx.fillRect(-width / 2 + 10, height / 4, width - 20, height / 8); // زجاج خلفي
+      ctx.fillRect(-width / 2 + 8, -height / 4, width - 16, height / 5);
+      ctx.fillRect(-width / 2 + 10, height / 4, width - 20, height / 8);
 
-      // الإطارات الأربعة
       ctx.fillStyle = "#111";
       ctx.fillRect(-width / 2 - 4, -height / 3, 6, 25);
       ctx.fillRect(width / 2 - 2, -height / 3, 6, 25);
       ctx.fillRect(-width / 2 - 4, height / 4, 6, 25);
       ctx.fillRect(width / 2 - 2, height / 4, 6, 25);
 
-      // الأضواء الأمامية
       ctx.fillStyle = "#FFF";
       ctx.fillRect(-width / 2 + 6, -height / 2, 12, 6);
       ctx.fillRect(width / 2 - 18, -height / 2, 12, 6);
@@ -215,7 +214,6 @@
       ctx.restore();
     }
 
-    // دالة عامة لتمثيل وقراءة السيارات (صورة أو رسم جاهز)
     function renderCar(img, x, y, width, height, color, isFlipped = false) {
       if (img.complete && img.naturalWidth !== 0) {
         ctx.save();
@@ -302,16 +300,16 @@
         }
       }
 
-      // 🔴 السيارة الحمراء (Car 2)
-      // 🔵 السيارة الزرقاء (Car 32)
-      // 🟢 السيارة الخضراء (Car Extra)
-      // ⬛ السيارة السوداء (Car 50)
+      // رسم السيارات بالألوان المحددة:
+      // Car 2 = حمراء (#e74c3c)
+      // Car 32 = زرقاء (#3498db)
+      // Car Extra = خضراء (#2ecc71)
+      // Car 50 = سوداء (#2c3e50)
       if (currentCar === "car2") renderCar(carImg, carX, carY, carWidth, carHeight, "#e74c3c", false);
       else if (currentCar === "car32") renderCar(car32Img, carX, carY, carWidth, carHeight, "#3498db", true);
       else if (currentCar === "carExtra") renderCar(carExtraImg, carX, carY, carWidth, carHeight, "#2ecc71", true);
       else if (currentCar === "car50") renderCar(car50Img, carX, carY, carWidth, carHeight, "#2c3e50", true);
 
-      // رسم سيارات الأعداء
       if (currentCar !== "car32") renderCar(car32Img, car32X, car32Y, carWidth, carHeight, "#3498db", false);
       if (currentCar !== "carExtra") renderCar(carExtraImg, carExtraX, carExtraY, carWidth, carHeight, "#2ecc71", false);
 
@@ -362,13 +360,22 @@
         level = Math.floor(score / 10) + 1;
       }
 
-      // طباعة النصوص والنقاط حسب اللغة
+      // عرض العدادات والنقاط بوضوح تام حسب اللغة المختارة
       const t = i18n[currentLang];
       ctx.fillStyle = "white";
-      ctx.font = "bold 18px Arial";
-      ctx.fillText(t.score + score, 20, 40);
-      ctx.fillText(t.level + level, 20, 70);
-      ctx.fillText(t.difficulty + difficulty.toUpperCase(), 20, 100);
+      ctx.font = "bold 20px Arial";
+      
+      if (currentLang === "ar") {
+        ctx.textAlign = "right";
+        ctx.fillText(`النقاط: ${score}`, canvas.width - 20, 40);
+        ctx.fillText(`المستوى: ${level}`, canvas.width - 20, 75);
+        ctx.fillText(`الصعوبة: ${difficulty === 'easy' ? t.easyText : t.hardText}`, canvas.width - 20, 110);
+      } else {
+        ctx.textAlign = "left";
+        ctx.fillText(`Score: ${score}`, 20, 40);
+        ctx.fillText(`Level: ${level}`, 20, 75);
+        ctx.fillText(`Difficulty: ${difficulty === 'easy' ? t.easyText : t.hardText}`, 20, 110);
+      }
 
       let crashWith32 = (currentCar !== "car32" && checkCollision(carX, carY, carWidth, carHeight, car32X, car32Y, carWidth, carHeight));
       let crashWithExtra = (currentCar !== "carExtra" && checkCollision(carX, carY, carWidth, carHeight, carExtraX, carExtraY, carWidth, carHeight));
