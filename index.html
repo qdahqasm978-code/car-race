@@ -3,35 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>🏎️ Car Race Game Deluxe</title>
+  <title>🏎️ Smart AI Car Race</title>
   <style>
-    body { background-color: black; margin: 0; overflow: hidden; font-family: Arial, sans-serif; user-select: none; }
-    canvas { display: none; background-color: #333; border: 2px solid white; width: 100vw; height: 100vh; }
+    body { background-color: #111; margin: 0; overflow: hidden; font-family: Arial, sans-serif; user-select: none; }
+    canvas { display: none; background-color: #222; margin: 0 auto; display: block; }
     
-    #startScreen { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white; width: 90%; z-index: 30; }
-    .lang-container { margin-bottom: 20px; display: flex; justify-content: center; gap: 15px; }
-    .lang-select-btn { padding: 10px 20px; font-size: 16px; background: #333; color: white; border: 2px solid white; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-    .lang-select-btn.active { background: #ff0000; border-color: gold; font-weight: bold; }
+    #startScreen { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white; width: 90%; z-index: 30; background: rgba(0,0,0,0.85); padding: 25px; border-radius: 15px; border: 1px solid #444; }
+    .lang-container { margin-bottom: 15px; display: flex; justify-content: center; gap: 10px; }
+    .lang-btn { padding: 8px 16px; font-size: 14px; background: #333; color: white; border: 1px solid white; border-radius: 6px; cursor: pointer; }
+    .lang-btn.active { background: #e74c3c; border-color: gold; font-weight: bold; }
 
-    button { margin: 8px; padding: 12px 24px; font-size: 18px; background: linear-gradient(45deg, #ff0000, #cc0000); color: white; border: none; cursor: pointer; border-radius: 10px; transition: 0.2s; }
+    button { margin: 6px; padding: 12px 20px; font-size: 16px; background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; border: none; cursor: pointer; border-radius: 8px; transition: 0.2s; }
     button:active { transform: scale(0.95); }
     
-    #controlPanel { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background: rgba(0,0,0,0.92); padding: 20px; border-radius: 15px; box-shadow: 0 0 25px rgba(255,0,0,0.6); z-index: 20; min-width: 260px; }
-    #controlPanel button { display: block; margin: 10px auto; width: 100%; max-width: 220px; }
+    #controlPanel { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background: rgba(0,0,0,0.95); padding: 20px; border-radius: 15px; box-shadow: 0 0 20px rgba(231,76,60,0.5); z-index: 20; min-width: 250px; }
+    #controlPanel button { display: block; margin: 8px auto; width: 100%; }
   </style>
 </head>
 <body>
 
   <div id="startScreen">
     <div class="lang-container">
-      <button id="langAr" class="lang-select-btn active">🇸🇦 العربية</button>
-      <button id="langEn" class="lang-select-btn">🇬🇧 English</button>
+      <button id="langAr" class="lang-btn active">🇸🇦 العربية</button>
+      <button id="langEn" class="lang-btn">🇬🇧 English</button>
     </div>
 
-    <h1 id="titleTxt">🏎️ لعبة سباق السيارات Pro</h1>
-    <p id="subTitleTxt">اختر مستوى الصعوبة ثم اضغط تشغيل</p>
-    <button id="easyBtn" style="border: 2px solid gold;">😎 سهل</button>
-    <button id="hardBtn">🔥 صعب</button>
+    <h1 id="titleTxt">🏎️ سباق الذكاء الاصطناعي الذكي</h1>
+    <p id="subTitleTxt">تم تطوير الذكاء الاصطناعي للسيارات وإصلاح التصادم والاتجاهات</p>
+    <button id="easyBtn" style="border: 2px solid gold;">😎 سهل (الذكاء عادي)</button>
+    <button id="hardBtn">🔥 صعب (ذكاء عدواني)</button>
     <br><br>
     <button id="startBtn">▶ بدء اللعب</button>
   </div>
@@ -41,12 +41,12 @@
   <div id="controlPanel">
     <button id="pauseBtn">⏸ استئناف</button>
     <button id="restartBtn">🔄 إعادة التشغيل</button>
-    <hr style="border-color: #555; margin: 15px 0;">
-    <p id="selectCarTxt" style="color: white; margin: 5px 0; font-size: 16px;">اختر سيارتك:</p>
-    <button id="car2Btn" style="font-size: 15px; padding: 10px;">🔴 السيارة الحمراء</button>
-    <button id="car32Btn" style="font-size: 15px; padding: 10px;">🔵 السيارة الزرقاء</button>
-    <button id="carExtraBtn" style="font-size: 15px; padding: 10px;">🟢 السيارة الخضراء</button>
-    <button id="car50Btn" style="font-size: 15px; padding: 10px;">⬛ السيارة السوداء</button>
+    <hr style="border-color: #444; margin: 10px 0;">
+    <p id="selectCarTxt" style="color: white; margin: 5px 0;">اختر سيارتك:</p>
+    <button id="car2Btn">🔴 الحمراء</button>
+    <button id="car32Btn">🔵 الزرقاء</button>
+    <button id="carExtraBtn">🟢 الخضراء</button>
+    <button id="car50Btn">⬛ السوداء</button>
   </div>
   
   <script>
@@ -75,26 +75,20 @@
 
     const i18n = {
       ar: {
-        title: "🏎️ لعبة سباق السيارات Pro",
-        subtitle: "اختر لغتك ومستوى الصعوبة ثم اضغط بدء",
-        easy: "😎 سهل", hard: "🔥 صعب", start: "▶ بدء اللعب",
+        title: "🏎️ سباق الذكاء الاصطناعي الذكي",
+        subtitle: "تم تطوير نظام AI وتصحيح زوايا السيارات والتصادم",
+        easy: "😎 سهل", hard: "🔥 صعب (AI متطور)", start: "▶ بدء اللعب",
         resume: "⏸ استئناف", restart: "🔄 إعادة التشغيل",
-        selectCar: "اختر سيارتك:", carRed: "🔴 السيارة الحمراء",
-        carBlue: "🔵 السيارة الزرقاء", carGreen: "🟢 السيارة الخضراء",
-        carBlack: "⬛ السيارة السوداء", score: "النقاط: ",
-        highScore: "أعلى نتيجة: ", level: "المستوى: ",
-        gameOver: "💥 انتهت اللعبة!\nالنقاط: "
+        selectCar: "اختر سيارتك:", carRed: "🔴 الحمراء", carBlue: "🔵 الزرقاء", carGreen: "🟢 الخضراء", carBlack: "⬛ السوداء",
+        score: "النقاط: ", highScore: "أعلى نتيجة: ", level: "المستوى: ", gameOver: "💥 انتهت اللعبة!\nالنقاط: "
       },
       en: {
-        title: "🏎️ Car Race Game Pro",
-        subtitle: "Choose language & difficulty, then press Start",
-        easy: "😎 Easy", hard: "🔥 Hard", start: "▶ Start",
+        title: "🏎️ Smart AI Car Race",
+        subtitle: "Improved AI system, hitboxes & car orientations",
+        easy: "😎 Easy", hard: "🔥 Hard (Advanced AI)", start: "▶ Start Game",
         resume: "⏸ Resume", restart: "🔄 Restart",
-        selectCar: "Choose Your Car:", carRed: "🔴 Red Car",
-        carBlue: "🔵 Blue Car", carGreen: "🟢 Green Car",
-        carBlack: "⬛ Black Car", score: "Score: ",
-        highScore: "High Score: ", level: "Level: ",
-        gameOver: "💥 Game Over!\nScore: "
+        selectCar: "Choose Your Car:", carRed: "🔴 Red", carBlue: "🔵 Blue", carGreen: "🟢 Green", carBlack: "⬛ Black",
+        score: "Score: ", highScore: "High Score: ", level: "Level: ", gameOver: "💥 Game Over!\nScore: "
       }
     };
 
@@ -109,8 +103,7 @@
       easyBtn.innerText = t.easy; hardBtn.innerText = t.hard; startBtn.innerText = t.start;
       pauseBtn.innerText = t.resume; restartBtn.innerText = t.restart;
       document.getElementById("selectCarTxt").innerText = t.selectCar;
-      car2Btn.innerText = t.carRed; car32Btn.innerText = t.carBlue;
-      carExtraBtn.innerText = t.carGreen; car50Btn.innerText = t.carBlack;
+      car2Btn.innerText = t.carRed; car32Btn.innerText = t.carBlue; carExtraBtn.innerText = t.carGreen; car50Btn.innerText = t.carBlack;
     }
 
     langAr.onclick = () => setLanguage("ar");
@@ -118,11 +111,11 @@
 
     let difficulty = "easy"; 
     let paused = false, gameOver = false, currentCar = "car2", roadY = 0;
-    let particles = [], coins = [], activeTraffic = [];
+    let particles = [], coins = [], aiVehicles = [];
 
-    // أبعاد موحدة لجميع السيارات
-    const carWidth = 65;
-    const carHeight = 130;
+    const carWidth = 60;
+    const carHeight = 120;
+    let lanes = [];
 
     easyBtn.onclick = () => { difficulty = "easy"; easyBtn.style.border = "2px solid gold"; hardBtn.style.border = "none"; };
     hardBtn.onclick = () => { difficulty = "hard"; hardBtn.style.border = "2px solid gold"; easyBtn.style.border = "none"; };
@@ -132,7 +125,15 @@
     carExtraBtn.onclick = () => { currentCar = "carExtra"; togglePause(); };
     car50Btn.onclick = () => { currentCar = "car50"; togglePause(); };
 
-    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    function resizeCanvas() { 
+      canvas.width = Math.min(window.innerWidth, 500); 
+      canvas.height = window.innerHeight;
+      lanes = [
+        canvas.width * 0.2,
+        canvas.width * 0.5,
+        canvas.width * 0.8
+      ];
+    }
     window.onresize = resizeCanvas;
     resizeCanvas();
 
@@ -146,100 +147,145 @@
       { id: "car2", img: carImg, color: "#e74c3c" },
       { id: "car32", img: car32Img, color: "#3498db" },
       { id: "carExtra", img: carExtraImg, color: "#2ecc71" },
-      { id: "car50", img: car50Img, color: "#2c3e50" }
+      { id: "car50", img: car50Img, color: "#34495e" }
     ];
 
     const bgMusic = new Audio("background.mp3"); bgMusic.loop = true;
     const crashSound = new Audio("explosion.mp3");
 
-    let carX, carY, score, level, dodgedCars;
+    let playerX, playerY, playerVx = 0, score, level, dodgedCars;
 
-    function drawFallbackCar(x, y, width, height, bodyColor, isFlipped = false) {
-      ctx.save();
-      ctx.translate(x + width / 2, y + height / 2);
-      if (isFlipped) ctx.rotate(Math.PI);
-
-      ctx.fillStyle = bodyColor;
+    // رسم السيارة في حال عدم تحميل الصورة (بديل دقيق)
+    function drawProceduralCar(w, h, color, isPlayer) {
+      ctx.fillStyle = color;
       ctx.beginPath();
-      ctx.roundRect(-width / 2, -height / 2, width, height, 12);
+      ctx.roundRect(-w / 2, -h / 2, w, h, 10);
       ctx.fill();
 
       ctx.fillStyle = "#87CEEB";
-      ctx.fillRect(-width / 2 + 6, -height / 4, width - 12, height / 5);
-      ctx.fillRect(-width / 2 + 8, height / 4, width - 16, height / 8);
+      const windshieldY = isPlayer ? -h / 4 : h / 10;
+      ctx.fillRect(-w / 2 + 5, windshieldY, w - 10, h / 5);
 
       ctx.fillStyle = "#111";
-      ctx.fillRect(-width / 2 - 4, -height / 3, 6, 22);
-      ctx.fillRect(width / 2 - 2, -height / 3, 6, 22);
-      ctx.fillRect(-width / 2 - 4, height / 4, 6, 22);
-      ctx.fillRect(width / 2 - 2, height / 4, 6, 22);
+      ctx.fillRect(-w / 2 - 3, -h / 3, 5, 20);
+      ctx.fillRect(w / 2 - 2, -h / 3, 5, 20);
+      ctx.fillRect(-w / 2 - 3, h / 4, 5, 20);
+      ctx.fillRect(w / 2 - 2, h / 4, 5, 20);
+    }
+
+    // دالة رسم موحدة تضمن الاتجاه الصحيح تماماً ومنع الانعكاس المقلوب
+    function renderVehicle(img, x, y, w, h, color, isPlayer, vx = 0) {
+      ctx.save();
+      ctx.translate(x + w / 2, y + h / 2);
+
+      // الاتجاه: اللاعب للأعلى (0) والمرور للأسفل (180 درجة) + تمايل طفيف مع الانعطاف
+      let angle = isPlayer ? 0 : Math.PI;
+      angle += (vx * 0.03); 
+
+      ctx.rotate(angle);
+
+      if (img.complete && img.naturalWidth !== 0) {
+        ctx.drawImage(img, -w / 2, -h / 2, w, h);
+      } else {
+        drawProceduralCar(w, h, color, isPlayer);
+      }
 
       ctx.restore();
     }
 
-    function renderCar(img, x, y, width, height, color, isFlipped = false) {
-      if (img.complete && img.naturalWidth !== 0) {
-        ctx.save();
-        ctx.translate(x + width / 2, y + height / 2);
-        if (isFlipped) ctx.rotate(Math.PI);
-        ctx.drawImage(img, -width / 2, -height / 2, width, height);
-        ctx.restore();
-      } else {
-        drawFallbackCar(x, y, width, height, color, isFlipped);
+    // كلاس الذكاء الاصطناعي الذكي لسيارات المرور
+    class AICarController {
+      constructor(model, laneIndex) {
+        this.model = model;
+        this.w = carWidth;
+        this.h = carHeight;
+        this.reset(laneIndex);
+      }
+
+      reset(laneIndex = Math.floor(Math.random() * lanes.length)) {
+        this.lane = laneIndex;
+        this.x = lanes[this.lane] - this.w / 2;
+        this.y = -this.h - Math.random() * 300;
+        this.speed = 3 + Math.random() * 2;
+        this.targetX = this.x;
+        this.vx = 0;
+      }
+
+      update(player, traffic) {
+        let speedMultiplier = 1 + (level * 0.1);
+        let currentSpeed = this.speed * speedMultiplier;
+
+        // 1. نظام الرادار: اكتشاف السيارات أمامها للحد من التصادامات بين AI ببعضه
+        let carAhead = null;
+        let minDistance = 180;
+
+        for (let other of traffic) {
+          if (other === this) continue;
+          if (Math.abs(other.x - this.x) < this.w * 0.8) {
+            let dist = other.y - this.y;
+            if (dist > 0 && dist < minDistance) {
+              minDistance = dist;
+              carAhead = other;
+            }
+          }
+        }
+
+        // 2. اتخاذ القرار التكتيكي (Decision Making)
+        if (carAhead) {
+          // تخفيف السرعة محلياً
+          currentSpeed = Math.max(1, carAhead.speed - 0.5);
+          
+          // محاولة تغيير المسار
+          let availableLanes = lanes.filter((l, idx) => idx !== this.lane);
+          let preferredLane = availableLanes[Math.floor(Math.random() * availableLanes.length)];
+          this.targetX = preferredLane - this.w / 2;
+        } else {
+          // في المستوى الصعب: محاولة إعاقة اللاعب بذكاء وبدون حركة فجائية
+          if (difficulty === "hard" && this.y < player.y && (player.y - this.y) < 350) {
+            this.targetX = player.x;
+          }
+        }
+
+        // 3. التوجيه السلس (Smooth Steering Physics)
+        let dx = this.targetX - this.x;
+        this.vx = dx * 0.08; 
+        this.x += this.vx;
+
+        // 4. الحركة للأمام
+        this.y += currentSpeed;
+
+        // إعادة التدوير عند الخروج من الشاشة
+        if (this.y > canvas.height + 100) {
+          this.reset();
+          score += 1;
+          dodgedCars += 1;
+          level = Math.floor(dodgedCars / 8) + 1;
+        }
       }
     }
 
-    function setupTraffic() {
-      activeTraffic = [];
+    function setupAI() {
+      aiVehicles = [];
       const opponents = allCars.filter(c => c.id !== currentCar);
-      const count = (difficulty === "easy") ? 2 : 3;
+      const count = difficulty === "easy" ? 2 : 3;
 
       for (let i = 0; i < count; i++) {
-        activeTraffic.push({
-          id: opponents[i].id,
-          img: opponents[i].img,
-          color: opponents[i].color,
-          x: Math.random() * (canvas.width - carWidth),
-          y: -250 - (i * 300),
-          speedFactor: 1 + (i * 0.2)
-        });
+        let laneIndex = i % lanes.length;
+        aiVehicles.push(new AICarController(opponents[i % opponents.length], laneIndex));
       }
     }
 
     function spawnCoin() {
       if (Math.random() < 0.015 && coins.length < 2) {
-        coins.push({ x: Math.random() * (canvas.width - 40) + 20, y: -40, size: 24 });
-      }
-    }
-
-    function addExhaustSmoke(x, y) {
-      if (Math.random() < 0.4) {
-        particles.push({
-          x: x + carWidth / 2 + (Math.random() * 10 - 5),
-          y: y + carHeight - 5,
-          vx: Math.random() * 2 - 1,
-          vy: Math.random() * 2 + 2,
-          radius: Math.random() * 4 + 2,
-          alpha: 0.6, color: "#888"
-        });
-      }
-    }
-
-    function createExplosion(x, y) {
-      for (let i = 0; i < 40; i++) {
-        particles.push({
-          x: x + carWidth / 2, y: y + carHeight / 2,
-          vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.5) * 12,
-          radius: Math.random() * 6 + 3, alpha: 1,
-          color: ["#ff0000", "#ff7700", "#ffff00"][Math.floor(Math.random() * 3)]
-        });
+        coins.push({ x: Math.random() * (canvas.width - 40) + 20, y: -40, size: 22 });
       }
     }
 
     function resetGame() {
       resizeCanvas();
-      carX = canvas.width / 2 - carWidth / 2;
-      carY = canvas.height - carHeight - 40; 
+      playerX = canvas.width / 2 - carWidth / 2;
+      playerY = canvas.height - carHeight - 40; 
+      playerVx = 0;
       roadY = 0;
       score = 0; 
       dodgedCars = 0; 
@@ -249,28 +295,21 @@
       gameOver = false; 
       paused = false;
       controlPanel.style.display = "none";
-      setupTraffic();
+      setupAI();
     }
 
-    // فحص تصادم السيارات بدقة عالية وبدون هوامش وهمية
-    function checkCarCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
-      const padX = 12;
-      const padY = 15;
+    // خوارزمية التصادم الدقيقة (Proportional Bounding Box)
+    function checkAccurateCollision(aX, aY, aW, aH, bX, bY, bW, bH) {
+      // اقتطاع 15% من الحواف الجانبية و10% من الحواف الطولية لمنع التصادم الوهمي
+      const marginX = aW * 0.15;
+      const marginY = aH * 0.10;
+
       return (
-        x1 + padX < x2 + w2 - padX &&
-        x1 + w1 - padX > x2 + padX &&
-        y1 + padY < y2 + h2 - padY &&
-        y1 + h1 - padY > y2 + padY
+        aX + marginX < bX + bW - marginX &&
+        aX + aW - marginX > bX + marginX &&
+        aY + marginY < bY + bH - marginY &&
+        aY + aH - marginY > bY + marginY
       );
-    }
-
-    // فحص تصادم النقود الدائري السلس
-    function checkCoinCollision(carX, carY, carW, carH, coinX, coinY, coinSize) {
-      const closestX = Math.max(carX, Math.min(coinX, carX + carW));
-      const closestY = Math.max(carY, Math.min(coinY, carY + carH));
-      const distX = coinX - closestX;
-      const distY = coinY - closestY;
-      return (distX * distX + distY * distY) < ((coinSize / 2) * (coinSize / 2));
     }
 
     function drawGame() {
@@ -278,9 +317,10 @@
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      let scrollSpeed = (difficulty === "easy" ? 5 : 7) + level;
-      roadY = (roadY + scrollSpeed) % canvas.height;
+      let roadSpeed = (difficulty === "easy" ? 5 : 7) + level;
+      roadY = (roadY + roadSpeed) % canvas.height;
 
+      // رسم الطريق
       if (roadImg.complete && roadImg.naturalWidth !== 0) {
         ctx.drawImage(roadImg, 0, roadY, canvas.width, canvas.height);
         ctx.drawImage(roadImg, 0, roadY - canvas.height, canvas.width, canvas.height);
@@ -288,36 +328,22 @@
         ctx.fillStyle = "#333"; ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#FFF";
         for (let i = -canvas.height; i < canvas.height; i += 80) {
-          ctx.fillRect(canvas.width / 2 - 4, i + (roadY % 80), 8, 40);
+          ctx.fillRect(canvas.width / 2 - 3, i + (roadY % 80), 6, 35);
         }
       }
 
-      addExhaustSmoke(carX, carY);
-
-      // رسم وتحديث الجسيمات
-      for (let i = particles.length - 1; i >= 0; i--) {
-        let p = particles[i];
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = p.alpha;
-        ctx.fill();
-        ctx.globalAlpha = 1.0;
-        p.x += p.vx; p.y += p.vy; p.alpha -= 0.02;
-        if (p.alpha <= 0) particles.splice(i, 1);
-      }
-
-      // رسم وتحديث العملات الذهبية (تضيف نقاط فقط دون رفع السرعة فجأة)
+      // رسم وتحديث النقود (تزود النقاط فقط دون تأثير على السرعة)
       spawnCoin();
       for (let i = coins.length - 1; i >= 0; i--) {
         let c = coins[i];
-        c.y += scrollSpeed;
+        c.y += roadSpeed;
         ctx.beginPath();
         ctx.arc(c.x, c.y, c.size / 2, 0, Math.PI * 2);
         ctx.fillStyle = "gold"; ctx.fill();
         ctx.lineWidth = 2; ctx.strokeStyle = "#fff"; ctx.stroke();
 
-        if (checkCoinCollision(carX, carY, carWidth, carHeight, c.x, c.y, c.size)) {
+        // التقاط النقود
+        if (Math.hypot((playerX + carWidth / 2) - c.x, (playerY + carHeight / 2) - c.y) < carWidth / 2 + c.size / 2) {
           score += 10;
           coins.splice(i, 1);
         } else if (c.y > canvas.height) {
@@ -325,52 +351,34 @@
         }
       }
 
-      // رسم سيارة اللاعب (تظهر دائماً في الاتجاه الصحيح للأمام)
-      const playerCarObj = allCars.find(c => c.id === currentCar);
-      renderCar(playerCarObj.img, carX, carY, carWidth, carHeight, playerCarObj.color, false);
+      // رسم سيارة اللاعب بترخيص اتجاه صحيح 100%
+      const playerModel = allCars.find(c => c.id === currentCar);
+      renderVehicle(playerModel.img, playerX, playerY, carWidth, carHeight, playerModel.color, true, playerVx);
 
-      // رسم وتحديث حركة سيارات المرور
-      for (let i = 0; i < activeTraffic.length; i++) {
-        let tCar = activeTraffic[i];
-        let baseSpeed = (difficulty === "easy" ? 2.5 : 4) * tCar.speedFactor + (level * 0.8);
+      // تحديث ورسم سيارات الذكاء الاصطناعي
+      for (let ai of aiVehicles) {
+        ai.update({ x: playerX, y: playerY }, aiVehicles);
+        renderVehicle(ai.model.img, ai.x, ai.y, ai.w, ai.h, ai.model.color, false, ai.vx);
 
-        if (difficulty === "hard") {
-          if (tCar.x < carX) tCar.x += 0.8;
-          else if (tCar.x > carX) tCar.x -= 0.8;
-        }
-
-        tCar.y += baseSpeed;
-        renderCar(tCar.img, tCar.x, tCar.y, carWidth, carHeight, tCar.color, true);
-
-        // فحص التصادم مع سيارات المرور
-        if (checkCarCollision(carX, carY, carWidth, carHeight, tCar.x, tCar.y, carWidth, carHeight)) {
+        // فحص التصادم الدقيق مع سيارة اللاعب
+        if (checkAccurateCollision(playerX, playerY, carWidth, carHeight, ai.x, ai.y, ai.w, ai.h)) {
           endGame();
-        }
-
-        // إرجاع السيارات بعد تجاوز الشاشة
-        if (tCar.y > canvas.height) {
-          tCar.y = -carHeight - Math.random() * 200 - 50;
-          tCar.x = Math.random() * (canvas.width - carWidth);
-          score += 1;
-          dodgedCars += 1;
-          // تدرج المستوى بناءً على عدد السيارات المتجاوزة فقط
-          level = Math.floor(dodgedCars / 10) + 1;
         }
       }
 
-      // طباعة العدادات والنقاط
+      // طباعة العدادات
       const t = i18n[currentLang];
-      ctx.fillStyle = "white"; ctx.font = "bold 18px Arial";
+      ctx.fillStyle = "white"; ctx.font = "bold 16px Arial";
       if (currentLang === "ar") {
         ctx.textAlign = "right";
-        ctx.fillText(`${t.score} ${score}`, canvas.width - 20, 35);
-        ctx.fillText(`${t.highScore} ${highScore}`, canvas.width - 20, 65);
-        ctx.fillText(`${t.level} ${level}`, canvas.width - 20, 95);
+        ctx.fillText(`${t.score} ${score}`, canvas.width - 20, 30);
+        ctx.fillText(`${t.highScore} ${highScore}`, canvas.width - 20, 55);
+        ctx.fillText(`${t.level} ${level}`, canvas.width - 20, 80);
       } else {
         ctx.textAlign = "left";
-        ctx.fillText(`${t.score} ${score}`, 20, 35);
-        ctx.fillText(`${t.highScore} ${highScore}`, 20, 65);
-        ctx.fillText(`${t.level} ${level}`, 20, 95);
+        ctx.fillText(`${t.score} ${score}`, 20, 30);
+        ctx.fillText(`${t.highScore} ${highScore}`, 20, 55);
+        ctx.fillText(`${t.level} ${level}`, 20, 80);
       }
 
       requestAnimationFrame(drawGame);
@@ -378,7 +386,6 @@
 
     function endGame() {
       gameOver = true;
-      createExplosion(carX, carY);
       bgMusic.pause();
       try { crashSound.play(); } catch(e){}
 
@@ -398,25 +405,27 @@
 
     document.onkeydown = (e) => {
       if (gameOver || paused) return;
-      let step = 25;
-      if (e.key === "ArrowLeft" && carX > 0) carX -= step;
-      if (e.key === "ArrowRight" && carX < canvas.width - carWidth) carX += step;
-      if (e.key === "ArrowUp" && carY > 0) carY -= step;
-      if (e.key === "ArrowDown" && carY < canvas.height - carHeight) carY += step;
+      let step = 20;
+      if (e.key === "ArrowLeft" && playerX > 0) { playerX -= step; playerVx = -5; }
+      if (e.key === "ArrowRight" && playerX < canvas.width - carWidth) { playerX += step; playerVx = 5; }
+      if (e.key === "ArrowUp" && playerY > 0) playerY -= step;
+      if (e.key === "ArrowDown" && playerY < canvas.height - carHeight) playerY += step;
     };
+    document.onkeyup = () => { playerVx = 0; };
 
     function handleTouch(e) {
       if (gameOver || paused) return;
       const touch = e.touches[0];
       const rect = canvas.getBoundingClientRect();
-      carX = (touch.clientX - rect.left) - carWidth / 2;
-      carY = (touch.clientY - rect.top) - carHeight / 2;
-      if (carX < 0) carX = 0; if (carX > canvas.width - carWidth) carX = canvas.width - carWidth;
-      if (carY < 0) carY = 0; if (carY > canvas.height - carHeight) carY = canvas.height - carHeight;
+      let targetX = (touch.clientX - rect.left) - carWidth / 2;
+      playerVx = targetX - playerX;
+      playerX = Math.max(0, Math.min(canvas.width - carWidth, targetX));
+      playerY = Math.max(0, Math.min(canvas.height - carHeight, (touch.clientY - rect.top) - carHeight / 2));
     }
 
     canvas.addEventListener("touchmove", (e) => { handleTouch(e); e.preventDefault(); }, { passive: false });
-    canvas.addEventListener("touchstart", (e) => { handleTouch(e); }, { passive: true });
+    canvas.addEventListener("touchstart", (e) => handleTouch(e), { passive: true });
+    canvas.addEventListener("touchend", () => { playerVx = 0; });
 
     function togglePause() {
       if (gameOver) return;
@@ -434,15 +443,8 @@
     }
 
     pauseBtn.onclick = togglePause;
-
     restartBtn.onclick = () => { resetGame(); try { bgMusic.play(); } catch(e){} drawGame(); };
     startBtn.onclick = () => { startScreen.style.display = "none"; canvas.style.display = "block"; resetGame(); try { bgMusic.play(); } catch(e){} drawGame(); };
-
-    window.addEventListener("deviceorientation", (e) => {
-      if (gameOver || paused || !e.gamma) return;
-      if (e.gamma < -5 && carX > 0) carX -= 6;
-      if (e.gamma > 5 && carX < canvas.width - carWidth) carX += 6;
-    });
   </script>
 </body>
 </html>
