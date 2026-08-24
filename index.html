@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>🏎️ Car Race Shop & Attack Edition</title>
+  <title>🏎️ Precision Hitbox & AI Car Race</title>
   <style>
     body { background-color: #0d0d0d; margin: 0; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; user-select: none; }
     canvas { display: none; background-color: #222; margin: 0 auto; display: block; }
@@ -31,7 +31,7 @@
       <button id="langEn" class="lang-btn">🇬🇧 English</button>
     </div>
 
-    <h2 id="titleTxt">🏎️ سباق ومتجر السيارات</h2>
+    <h2 id="titleTxt">🏎️ سباق وتصادم دقيق 100%</h2>
     <div class="money-badge" id="startMoneyTxt">💰 النقود: $0</div>
     
     <p id="selectCarTxt" style="margin: 5px 0; font-size: 14px; color: #aaa;">اختر أو اشترِ سيارتك:</p>
@@ -92,20 +92,20 @@
 
     const i18n = {
       ar: {
-        title: "🏎️ سباق ومتجر السيارات",
+        title: "🏎️ سباق وتصادم دقيق 100%",
         easy: "😎 هجوم عادي", hard: "🔥 هجوم شرس", start: "▶ بدء اللعب",
         resume: "⏸ استئناف", restart: "🔄 إعادة التشغيل",
         selectCar: "اختر أو اشترِ سيارتك:", money: "💰 النقود: $",
         score: "النقاط: ", highScore: "أعلى نتيجة: ", level: "المستوى: ",
-        gameOver: "💥 انتهت اللعبة!\nالنقاط: ", driving: "مختارة", drive: "قيادة", buy: "شراء"
+        gameOver: "💥 تصادم ملموس!\nالنقاط: ", driving: "مختارة", drive: "قيادة", buy: "شراء"
       },
       en: {
-        title: "🏎️ Car Race & Garage Shop",
+        title: "🏎️ Precision Hitbox Race",
         easy: "😎 Normal Attack", hard: "🔥 Aggressive", start: "▶ Start Game",
         resume: "⏸ Resume", restart: "🔄 Restart",
         selectCar: "Choose or Buy Your Car:", money: "💰 Cash: $",
         score: "Score: ", highScore: "High Score: ", level: "Level: ",
-        gameOver: "💥 Game Over!\nScore: ", driving: "Active", drive: "Select", buy: "Buy"
+        gameOver: "💥 Direct Impact!\nScore: ", driving: "Active", drive: "Select", buy: "Buy"
       }
     };
 
@@ -178,10 +178,10 @@
 
     let difficulty = "easy"; 
     let paused = false, gameOver = false, roadY = 0;
-    let coins = [], attackerCars = [];
+    let coins = [], attackerCars = [], sparks = [];
 
-    const carWidth = 55;
-    const carHeight = 110;
+    const carWidth = 52;
+    const carHeight = 105;
 
     easyBtn.onclick = () => { difficulty = "easy"; easyBtn.style.border = "2px solid gold"; hardBtn.style.border = "none"; };
     hardBtn.onclick = () => { difficulty = "hard"; hardBtn.style.border = "2px solid gold"; easyBtn.style.border = "none"; };
@@ -233,6 +233,37 @@
       ctx.restore();
     }
 
+    // ==========================================
+    // نظام الدوائر الهيكلية لتصادم ملموس ومُحكَم 100%
+    // ==========================================
+    function getCarHitNodes(x, y, w, h) {
+      const radius = w * 0.38; // نطاق نصف قطر دقيق يغطي عرض السيارة الفعلي
+      return [
+        { x: x + w / 2, y: y + h * 0.20, r: radius }, // عقدة المقدمة
+        { x: x + w / 2, y: y + h * 0.50, r: radius }, // عقدة المنتصف
+        { x: x + w / 2, y: y + h * 0.80, r: radius }  // عقدة الخلفية
+      ];
+    }
+
+    function checkNodeCollision(carA, carB) {
+      const nodesA = getCarHitNodes(carA.x, carA.y, carA.w, carA.h);
+      const nodesB = getCarHitNodes(carB.x, carB.y, carB.w, carB.h);
+
+      for (let nA of nodesA) {
+        for (let nB of nodesB) {
+          const dx = nA.x - nB.x;
+          const dy = nA.y - nB.y;
+          const distanceSq = dx * dx + dy * dy;
+          const minDistance = nA.r + nB.r;
+
+          if (distanceSq < minDistance * minDistance) {
+            return true; // اصطدام ملموس ومباشر بين جسمي السيارتين
+          }
+        }
+      }
+      return false;
+    }
+
     class AttackerVehicle {
       constructor(carModel) {
         this.model = carModel;
@@ -245,7 +276,7 @@
         this.x = Math.random() * (canvas.width - this.w);
         this.y = -this.h - Math.random() * 300;
         this.speed = (difficulty === "easy" ? 3.5 : 5) + Math.random() * 2;
-        this.attackAgility = difficulty === "easy" ? 0.025 : 0.055;
+        this.attackAgility = difficulty === "easy" ? 0.022 : 0.048;
         this.vx = 0;
       }
 
@@ -253,7 +284,7 @@
         let diffX = targetPlayerX - this.x;
         this.vx = diffX * this.attackAgility;
         this.x += this.vx;
-        this.y += this.speed + (level * 0.5);
+        this.y += this.speed + (level * 0.4);
 
         if (this.y > canvas.height + 50) {
           this.reset();
@@ -280,6 +311,18 @@
       }
     }
 
+    function createCrashSparks(x, y) {
+      for (let i = 0; i < 30; i++) {
+        sparks.push({
+          x: x, y: y,
+          vx: (Math.random() - 0.5) * 14,
+          vy: (Math.random() - 0.5) * 14,
+          size: Math.random() * 4 + 2,
+          life: 1
+        });
+      }
+    }
+
     function resetGame() {
       resizeCanvas();
       playerX = canvas.width / 2 - carWidth / 2;
@@ -290,21 +333,11 @@
       dodgedCars = 0; 
       level = 1; 
       coins = [];
+      sparks = [];
       gameOver = false; 
       paused = false;
       controlPanel.style.display = "none";
       setupAttackers();
-    }
-
-    function checkHitbox(ax, ay, aw, ah, bx, by, bw, bh) {
-      const padX = aw * 0.15;
-      const padY = ah * 0.10;
-      return (
-        ax + padX < bx + bw - padX &&
-        ax + aw - padX > bx + padX &&
-        ay + padY < by + bh - padY &&
-        ay + ah - padY > by + padY
-      );
     }
 
     function drawGame() {
@@ -348,16 +381,35 @@
         }
       }
 
+      // رسم سيارة اللاعب
       const playerModel = allCars.find(c => c.id === currentCar);
       renderCarVehicle(playerModel.img, playerX, playerY, carWidth, carHeight, playerModel.color, true, playerVx);
 
+      const playerObj = { x: playerX, y: playerY, w: carWidth, h: carHeight };
+
+      // تحديث ورسم سيارات الهجوم وتطبيق التصادم الملموس
       for (let attacker of attackerCars) {
         attacker.update(playerX);
         renderCarVehicle(attacker.model.img, attacker.x, attacker.y, attacker.w, attacker.h, attacker.model.color, false, attacker.vx);
 
-        if (checkHitbox(playerX, playerY, carWidth, carHeight, attacker.x, attacker.y, attacker.w, attacker.h)) {
+        const attackerObj = { x: attacker.x, y: attacker.y, w: attacker.w, h: attacker.h };
+
+        // فحص التصادم الهيكلي الدقيق
+        if (checkNodeCollision(playerObj, attackerObj)) {
+          createCrashSparks(playerX + carWidth / 2, playerY + carHeight / 4);
           endGame();
         }
+      }
+
+      // رسم شرارات الاصطدام
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        let s = sparks[i];
+        ctx.fillStyle = `rgba(255, ${Math.floor(s.life * 255)}, 0, ${s.life})`;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+        ctx.fill();
+        s.x += s.vx; s.y += s.vy; s.life -= 0.05;
+        if (s.life <= 0) sparks.splice(i, 1);
       }
 
       const t = i18n[currentLang];
