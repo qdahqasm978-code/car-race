@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>🏎️ Precision Hitbox & AI Car Race</title>
+  <title>🏎️ Precision Hitbox & Smart AI Edition</title>
   <style>
     body { background-color: #0d0d0d; margin: 0; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; user-select: none; }
     canvas { display: none; background-color: #222; margin: 0 auto; display: block; }
@@ -31,7 +31,7 @@
       <button id="langEn" class="lang-btn">🇬🇧 English</button>
     </div>
 
-    <h2 id="titleTxt">🏎️ سباق وتصادم دقيق 100%</h2>
+    <h2 id="titleTxt">🏎️ تصادم ملموس وذكاء اصطناعي</h2>
     <div class="money-badge" id="startMoneyTxt">💰 النقود: $0</div>
     
     <p id="selectCarTxt" style="margin: 5px 0; font-size: 14px; color: #aaa;">اختر أو اشترِ سيارتك:</p>
@@ -92,20 +92,20 @@
 
     const i18n = {
       ar: {
-        title: "🏎️ سباق وتصادم دقيق 100%",
+        title: "🏎️ تصادم ملموس وذكاء اصطناعي",
         easy: "😎 هجوم عادي", hard: "🔥 هجوم شرس", start: "▶ بدء اللعب",
         resume: "⏸ استئناف", restart: "🔄 إعادة التشغيل",
         selectCar: "اختر أو اشترِ سيارتك:", money: "💰 النقود: $",
         score: "النقاط: ", highScore: "أعلى نتيجة: ", level: "المستوى: ",
-        gameOver: "💥 تصادم ملموس!\nالنقاط: ", driving: "مختارة", drive: "قيادة", buy: "شراء"
+        gameOver: "💥 تصادم ملموس حقيقي!\nالنقاط: ", driving: "مختارة", drive: "قيادة", buy: "شراء"
       },
       en: {
-        title: "🏎️ Precision Hitbox Race",
+        title: "🏎️ True Physical Collision AI",
         easy: "😎 Normal Attack", hard: "🔥 Aggressive", start: "▶ Start Game",
         resume: "⏸ Resume", restart: "🔄 Restart",
         selectCar: "Choose or Buy Your Car:", money: "💰 Cash: $",
         score: "Score: ", highScore: "High Score: ", level: "Level: ",
-        gameOver: "💥 Direct Impact!\nScore: ", driving: "Active", drive: "Select", buy: "Buy"
+        gameOver: "💥 Real Direct Contact!\nScore: ", driving: "Active", drive: "Select", buy: "Buy"
       }
     };
 
@@ -220,7 +220,7 @@
       ctx.translate(x + w / 2, y + h / 2);
 
       let rotationAngle = isPlayer ? 0 : Math.PI;
-      rotationAngle += (tilt * 0.04); 
+      rotationAngle += (tilt * 0.03); 
 
       ctx.rotate(rotationAngle);
 
@@ -233,38 +233,34 @@
       ctx.restore();
     }
 
-    // ==========================================
-    // نظام الدوائر الهيكلية لتصادم ملموس ومُحكَم 100%
-    // ==========================================
-    function getCarHitNodes(x, y, w, h) {
-      const radius = w * 0.38; // نطاق نصف قطر دقيق يغطي عرض السيارة الفعلي
-      return [
-        { x: x + w / 2, y: y + h * 0.20, r: radius }, // عقدة المقدمة
-        { x: x + w / 2, y: y + h * 0.50, r: radius }, // عقدة المنتصف
-        { x: x + w / 2, y: y + h * 0.80, r: radius }  // عقدة الخلفية
-      ];
+    // ==========================================================
+    // حساب الهيكل المعدني الحقيقي الملموس للسيارة (Inner Inset Hitbox)
+    // إلغاء الحواف الشفافة للصورة 100%
+    // ==========================================================
+    function getSolidBodyHitbox(x, y, w, h) {
+      const insetX = w * 0.22; // إزالة 22% من الشفافية من الجوانب
+      const insetY = h * 0.12; // إزالة 12% من الشفافية من الأمام والخلف
+      return {
+        x: x + insetX,
+        y: y + insetY,
+        w: w - (insetX * 2),
+        h: h - (insetY * 2)
+      };
     }
 
-    function checkNodeCollision(carA, carB) {
-      const nodesA = getCarHitNodes(carA.x, carA.y, carA.w, carA.h);
-      const nodesB = getCarHitNodes(carB.x, carB.y, carB.w, carB.h);
-
-      for (let nA of nodesA) {
-        for (let nB of nodesB) {
-          const dx = nA.x - nB.x;
-          const dy = nA.y - nB.y;
-          const distanceSq = dx * dx + dy * dy;
-          const minDistance = nA.r + nB.r;
-
-          if (distanceSq < minDistance * minDistance) {
-            return true; // اصطدام ملموس ومباشر بين جسمي السيارتين
-          }
-        }
-      }
-      return false;
+    function checkSolidTouch(rectA, rectB) {
+      return (
+        rectA.x < rectB.x + rectB.w &&
+        rectA.x + rectA.w > rectB.x &&
+        rectA.y < rectB.y + rectB.h &&
+        rectA.y + rectA.h > rectB.y
+      );
     }
 
-    class AttackerVehicle {
+    // ==========================================================
+    // ذكاء اصطناعي محاكي للقيادة الذكية (Smart Steering AI)
+    // ==========================================================
+    class SmartAICar {
       constructor(carModel) {
         this.model = carModel;
         this.w = carWidth;
@@ -274,19 +270,31 @@
 
       reset() {
         this.x = Math.random() * (canvas.width - this.w);
-        this.y = -this.h - Math.random() * 300;
-        this.speed = (difficulty === "easy" ? 3.5 : 5) + Math.random() * 2;
-        this.attackAgility = difficulty === "easy" ? 0.022 : 0.048;
+        this.y = -this.h - Math.random() * 350;
+        this.baseSpeed = (difficulty === "easy" ? 3.5 : 5.2) + Math.random() * 1.5;
+        this.steeringPower = difficulty === "easy" ? 0.025 : 0.05;
         this.vx = 0;
       }
 
-      update(targetPlayerX) {
-        let diffX = targetPlayerX - this.x;
-        this.vx = diffX * this.attackAgility;
-        this.x += this.vx;
-        this.y += this.speed + (level * 0.4);
+      update(targetX, targetY) {
+        // توجيه ذكي بسلاسة في اتجاه اللاعب دون القفز المفاجئ
+        let distanceY = targetY - this.y;
+        
+        // إذا كانت السيارة قريبة في المحور العمودي تبدأ المناورة الذكية
+        if (distanceY > 0 && distanceY < canvas.height * 0.75) {
+          let diffX = targetX - this.x;
+          this.vx += (diffX * this.steeringPower - this.vx) * 0.1;
+        } else {
+          this.vx *= 0.9;
+        }
 
-        if (this.y > canvas.height + 50) {
+        this.x += this.vx;
+        this.y += this.baseSpeed + (level * 0.4);
+
+        // الحفاظ على حدود الشارع
+        this.x = Math.max(5, Math.min(canvas.width - this.w - 5, this.x));
+
+        if (this.y > canvas.height + 60) {
           this.reset();
           score += 1;
           dodgedCars += 1;
@@ -301,7 +309,7 @@
       const count = difficulty === "easy" ? 2 : 3;
 
       for (let i = 0; i < count; i++) {
-        attackerCars.push(new AttackerVehicle(opponents[i % opponents.length]));
+        attackerCars.push(new SmartAICar(opponents[i % opponents.length]));
       }
     }
 
@@ -312,12 +320,12 @@
     }
 
     function createCrashSparks(x, y) {
-      for (let i = 0; i < 30; i++) {
+      for (let i = 0; i < 35; i++) {
         sparks.push({
           x: x, y: y,
-          vx: (Math.random() - 0.5) * 14,
-          vy: (Math.random() - 0.5) * 14,
-          size: Math.random() * 4 + 2,
+          vx: (Math.random() - 0.5) * 16,
+          vy: (Math.random() - 0.5) * 16,
+          size: Math.random() * 5 + 2,
           life: 1
         });
       }
@@ -385,18 +393,22 @@
       const playerModel = allCars.find(c => c.id === currentCar);
       renderCarVehicle(playerModel.img, playerX, playerY, carWidth, carHeight, playerModel.color, true, playerVx);
 
-      const playerObj = { x: playerX, y: playerY, w: carWidth, h: carHeight };
+      // استخراج الهيكل الصلب الملموس للاعب
+      const playerSolidBox = getSolidBodyHitbox(playerX, playerY, carWidth, carHeight);
 
-      // تحديث ورسم سيارات الهجوم وتطبيق التصادم الملموس
+      // تحديث المنافسين بالذكاء الاصطناعي وفحص التصادم الحقيقي
       for (let attacker of attackerCars) {
-        attacker.update(playerX);
+        attacker.update(playerX, playerY);
         renderCarVehicle(attacker.model.img, attacker.x, attacker.y, attacker.w, attacker.h, attacker.model.color, false, attacker.vx);
 
-        const attackerObj = { x: attacker.x, y: attacker.y, w: attacker.w, h: attacker.h };
+        // استخراج الهيكل الصلب للمنافس
+        const attackerSolidBox = getSolidBodyHitbox(attacker.x, attacker.y, attacker.w, attacker.h);
 
-        // فحص التصادم الهيكلي الدقيق
-        if (checkNodeCollision(playerObj, attackerObj)) {
-          createCrashSparks(playerX + carWidth / 2, playerY + carHeight / 4);
+        // فحص التلامس الفعلي بين الهيكلين الصلبين
+        if (checkSolidTouch(playerSolidBox, attackerSolidBox)) {
+          const impactX = (playerSolidBox.x + attackerSolidBox.x + playerSolidBox.w) / 2;
+          const impactY = (playerSolidBox.y + attackerSolidBox.y) / 2;
+          createCrashSparks(impactX, impactY);
           endGame();
         }
       }
