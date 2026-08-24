@@ -3,14 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>🏎️ Car Race Game</title>
+  <title>🏎️ Car Race Game Deluxe</title>
   <style>
     body { background-color: black; margin: 0; overflow: hidden; font-family: Arial, sans-serif; user-select: none; }
     canvas { display: none; background-color: #333; border: 2px solid white; width: 100vw; height: 100vh; }
     
     #startScreen { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white; width: 90%; z-index: 30; }
-    
-    /* أزرار اختيار اللغة في شاشة البداية */
     .lang-container { margin-bottom: 20px; display: flex; justify-content: center; gap: 15px; }
     .lang-select-btn { padding: 10px 20px; font-size: 16px; background: #333; color: white; border: 2px solid white; border-radius: 8px; cursor: pointer; transition: 0.2s; }
     .lang-select-btn.active { background: #ff0000; border-color: gold; font-weight: bold; }
@@ -18,20 +16,19 @@
     button { margin: 8px; padding: 12px 24px; font-size: 18px; background: linear-gradient(45deg, #ff0000, #cc0000); color: white; border: none; cursor: pointer; border-radius: 10px; transition: 0.2s; }
     button:active { transform: scale(0.95); }
     
-    #controlPanel { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background: rgba(0,0,0,0.9); padding: 20px; border-radius: 15px; box-shadow: 0 0 20px rgba(255,0,0,0.5); z-index: 20; min-width: 260px; }
+    #controlPanel { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background: rgba(0,0,0,0.92); padding: 20px; border-radius: 15px; box-shadow: 0 0 25px rgba(255,0,0,0.6); z-index: 20; min-width: 260px; }
     #controlPanel button { display: block; margin: 10px auto; width: 100%; max-width: 220px; }
   </style>
 </head>
 <body>
 
   <div id="startScreen">
-    <!-- اختيار اللغة قبل البدء -->
     <div class="lang-container">
       <button id="langAr" class="lang-select-btn active">🇸🇦 العربية</button>
       <button id="langEn" class="lang-select-btn">🇬🇧 English</button>
     </div>
 
-    <h1 id="titleTxt">🏎️ لعبة سباق السيارات</h1>
+    <h1 id="titleTxt">🏎️ لعبة سباق السيارات Pro</h1>
     <p id="subTitleTxt">اختر مستوى الصعوبة ثم اضغط تشغيل</p>
     <button id="easyBtn" style="border: 2px solid gold;">😎 سهل</button>
     <button id="hardBtn">🔥 صعب</button>
@@ -46,10 +43,10 @@
     <button id="restartBtn">🔄 إعادة التشغيل</button>
     <hr style="border-color: #555; margin: 15px 0;">
     <p id="selectCarTxt" style="color: white; margin: 5px 0; font-size: 16px;">اختر سيارتك:</p>
-    <button id="car2Btn" style="font-size: 15px; padding: 10px;">🔴 السيارة الحمراء (Car 2)</button>
-    <button id="car32Btn" style="font-size: 15px; padding: 10px;">🔵 السيارة الزرقاء (Car 32)</button>
-    <button id="carExtraBtn" style="font-size: 15px; padding: 10px;">🟢 السيارة الخضراء (Car Extra)</button>
-    <button id="car50Btn" style="font-size: 15px; padding: 10px;">⬛ السيارة السوداء (Car 50)</button>
+    <button id="car2Btn" style="font-size: 15px; padding: 10px;">🔴 السيارة الحمراء</button>
+    <button id="car32Btn" style="font-size: 15px; padding: 10px;">🔵 السيارة الزرقاء</button>
+    <button id="carExtraBtn" style="font-size: 15px; padding: 10px;">🟢 السيارة الخضراء</button>
+    <button id="car50Btn" style="font-size: 15px; padding: 10px;">⬛ السيارة السوداء</button>
   </div>
   
   <script>
@@ -74,87 +71,58 @@
     const langEn = document.getElementById("langEn");
 
     let currentLang = "ar";
+    let highScore = localStorage.getItem("carRace_highScore") || 0;
+
     const i18n = {
       ar: {
-        title: "🏎️ لعبة سباق السيارات",
+        title: "🏎️ لعبة سباق السيارات Pro",
         subtitle: "اختر لغتك ومستوى الصعوبة ثم اضغط بدء",
-        easy: "😎 سهل",
-        hard: "🔥 صعب",
-        start: "▶ بدء اللعب",
-        resume: "⏸ استئناف",
-        restart: "🔄 إعادة التشغيل",
-        selectCar: "اختر سيارتك:",
-        carRed: "🔴 السيارة الحمراء (Car 2)",
-        carBlue: "🔵 السيارة الزرقاء (Car 32)",
-        carGreen: "🟢 السيارة الخضراء (Car Extra)",
-        carBlack: "⬛ السيارة السوداء (Car 50)",
-        score: "النقاط: ",
-        level: "المستوى: ",
-        difficulty: "الصعوبة: ",
-        gameOver: "💥 انتهت اللعبة!\nالنقاط: ",
-        levelText: "\nالمستوى: ",
-        easyText: "سهل",
-        hardText: "صعب"
+        easy: "😎 سهل", hard: "🔥 صعب", start: "▶ بدء اللعب",
+        resume: "⏸ استئناف", restart: "🔄 إعادة التشغيل",
+        selectCar: "اختر سيارتك:", carRed: "🔴 السيارة الحمراء",
+        carBlue: "🔵 السيارة الزرقاء", carGreen: "🟢 السيارة الخضراء",
+        carBlack: "⬛ السيارة السوداء", score: "النقاط: ",
+        highScore: "أعلى نتيجة: ", level: "المستوى: ",
+        gameOver: "💥 انتهت اللعبة!\nالنقاط: "
       },
       en: {
-        title: "🏎️ Car Race Game",
+        title: "🏎️ Car Race Game Pro",
         subtitle: "Choose language & difficulty, then press Start",
-        easy: "😎 Easy",
-        hard: "🔥 Hard",
-        start: "▶ Start",
-        resume: "⏸ Resume",
-        restart: "🔄 Restart",
-        selectCar: "Choose Your Car:",
-        carRed: "🔴 Red Car (Car 2)",
-        carBlue: "🔵 Blue Car (Car 32)",
-        carGreen: "🟢 Green Car (Car Extra)",
-        carBlack: "⬛ Black Car (Car 50)",
-        score: "Score: ",
-        level: "Level: ",
-        difficulty: "Difficulty: ",
-        gameOver: "💥 Game Over!\nScore: ",
-        levelText: "\nLevel: ",
-        easyText: "EASY",
-        hardText: "HARD"
+        easy: "😎 Easy", hard: "🔥 Hard", start: "▶ Start",
+        resume: "⏸ Resume", restart: "🔄 Restart",
+        selectCar: "Choose Your Car:", carRed: "🔴 Red Car",
+        carBlue: "🔵 Blue Car", carGreen: "🟢 Green Car",
+        carBlack: "⬛ Black Car", score: "Score: ",
+        highScore: "High Score: ", level: "Level: ",
+        gameOver: "💥 Game Over!\nScore: "
       }
     };
 
     function setLanguage(lang) {
       currentLang = lang;
       document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-      
       langAr.classList.toggle("active", lang === "ar");
       langEn.classList.toggle("active", lang === "en");
-
       const t = i18n[lang];
       document.getElementById("titleTxt").innerText = t.title;
       document.getElementById("subTitleTxt").innerText = t.subtitle;
-      easyBtn.innerText = t.easy;
-      hardBtn.innerText = t.hard;
-      startBtn.innerText = t.start;
-      pauseBtn.innerText = t.resume;
-      restartBtn.innerText = t.restart;
+      easyBtn.innerText = t.easy; hardBtn.innerText = t.hard; startBtn.innerText = t.start;
+      pauseBtn.innerText = t.resume; restartBtn.innerText = t.restart;
       document.getElementById("selectCarTxt").innerText = t.selectCar;
-
-      car2Btn.innerText = t.carRed;
-      car32Btn.innerText = t.carBlue;
-      carExtraBtn.innerText = t.carGreen;
-      car50Btn.innerText = t.carBlack;
+      car2Btn.innerText = t.carRed; car32Btn.innerText = t.carBlue;
+      carExtraBtn.innerText = t.carGreen; car50Btn.innerText = t.carBlack;
     }
 
     langAr.onclick = () => setLanguage("ar");
     langEn.onclick = () => setLanguage("en");
 
     let difficulty = "easy"; 
-    let paused = false;
-    let gameOver = false;
-    let currentCar = "car2";
-    let roadY = 0; 
-    let wakeLock = null;
+    let paused = false, gameOver = false, currentCar = "car2", roadY = 0;
+    let particles = [], coins = [], activeTraffic = [];
 
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let touchStartTime = 0;
+    // أبعاد موحدة لجميع السيارات
+    const carWidth = 65;
+    const carHeight = 130;
 
     easyBtn.onclick = () => { difficulty = "easy"; easyBtn.style.border = "2px solid gold"; hardBtn.style.border = "none"; };
     hardBtn.onclick = () => { difficulty = "hard"; hardBtn.style.border = "2px solid gold"; easyBtn.style.border = "none"; };
@@ -164,10 +132,7 @@
     carExtraBtn.onclick = () => { currentCar = "carExtra"; togglePause(); };
     car50Btn.onclick = () => { currentCar = "car50"; togglePause(); };
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.onresize = resizeCanvas;
     resizeCanvas();
 
@@ -177,16 +142,18 @@
     const carExtraImg = new Image(); carExtraImg.src = "carExtra.png";
     const car50Img = new Image(); car50Img.src = "car50.png";
 
-    const bgMusic = new Audio("background.mp3");
-    bgMusic.loop = true;
+    const allCars = [
+      { id: "car2", img: carImg, color: "#e74c3c" },
+      { id: "car32", img: car32Img, color: "#3498db" },
+      { id: "carExtra", img: carExtraImg, color: "#2ecc71" },
+      { id: "car50", img: car50Img, color: "#2c3e50" }
+    ];
+
+    const bgMusic = new Audio("background.mp3"); bgMusic.loop = true;
     const crashSound = new Audio("explosion.mp3");
 
-    let carX, carY, car32X, car32Y, carExtraX, carExtraY;
-    let score, level;
-    const carWidth = 70;
-    const carHeight = 140;
+    let carX, carY, score, level;
 
-    // دالة رسم السيارة البديلة بألوانها المحددة في حال عدم وجود صور
     function drawFallbackCar(x, y, width, height, bodyColor, isFlipped = false) {
       ctx.save();
       ctx.translate(x + width / 2, y + height / 2);
@@ -194,22 +161,18 @@
 
       ctx.fillStyle = bodyColor;
       ctx.beginPath();
-      ctx.roundRect(-width / 2, -height / 2, width, height, 15);
+      ctx.roundRect(-width / 2, -height / 2, width, height, 12);
       ctx.fill();
 
       ctx.fillStyle = "#87CEEB";
-      ctx.fillRect(-width / 2 + 8, -height / 4, width - 16, height / 5);
-      ctx.fillRect(-width / 2 + 10, height / 4, width - 20, height / 8);
+      ctx.fillRect(-width / 2 + 6, -height / 4, width - 12, height / 5);
+      ctx.fillRect(-width / 2 + 8, height / 4, width - 16, height / 8);
 
       ctx.fillStyle = "#111";
-      ctx.fillRect(-width / 2 - 4, -height / 3, 6, 25);
-      ctx.fillRect(width / 2 - 2, -height / 3, 6, 25);
-      ctx.fillRect(-width / 2 - 4, height / 4, 6, 25);
-      ctx.fillRect(width / 2 - 2, height / 4, 6, 25);
-
-      ctx.fillStyle = "#FFF";
-      ctx.fillRect(-width / 2 + 6, -height / 2, 12, 6);
-      ctx.fillRect(width / 2 - 18, -height / 2, 12, 6);
+      ctx.fillRect(-width / 2 - 4, -height / 3, 6, 22);
+      ctx.fillRect(width / 2 - 2, -height / 3, 6, 22);
+      ctx.fillRect(-width / 2 - 4, height / 4, 6, 22);
+      ctx.fillRect(width / 2 - 2, height / 4, 6, 22);
 
       ctx.restore();
     }
@@ -226,56 +189,70 @@
       }
     }
 
-    async function requestWakeLock() {
-      try {
-        if ('wakeLock' in navigator) {
-          wakeLock = await navigator.wakeLock.request('screen');
-        }
-      } catch (err) {}
+    function setupTraffic() {
+      activeTraffic = [];
+      const opponents = allCars.filter(c => c.id !== currentCar);
+      const count = (difficulty === "easy") ? 2 : 3;
+
+      for (let i = 0; i < count; i++) {
+        activeTraffic.push({
+          id: opponents[i].id,
+          img: opponents[i].img,
+          color: opponents[i].color,
+          x: Math.random() * (canvas.width - carWidth),
+          y: -250 - (i * 300),
+          speedFactor: 1 + (i * 0.25)
+        });
+      }
     }
 
-    function releaseWakeLock() {
-      if (wakeLock !== null) {
-        wakeLock.release();
-        wakeLock = null;
+    function spawnCoin() {
+      if (Math.random() < 0.015 && coins.length < 2) {
+        coins.push({ x: Math.random() * (canvas.width - 40) + 10, y: -40, size: 24 });
+      }
+    }
+
+    function addExhaustSmoke(x, y) {
+      if (Math.random() < 0.4) {
+        particles.push({
+          x: x + carWidth / 2 + (Math.random() * 10 - 5),
+          y: y + carHeight - 5,
+          vx: Math.random() * 2 - 1,
+          vy: Math.random() * 2 + 2,
+          radius: Math.random() * 4 + 2,
+          alpha: 0.6, color: "#888"
+        });
+      }
+    }
+
+    function createExplosion(x, y) {
+      for (let i = 0; i < 40; i++) {
+        particles.push({
+          x: x + carWidth / 2, y: y + carHeight / 2,
+          vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.5) * 12,
+          radius: Math.random() * 6 + 3, alpha: 1,
+          color: ["#ff0000", "#ff7700", "#ffff00"][Math.floor(Math.random() * 3)]
+        });
       }
     }
 
     function resetGame() {
       resizeCanvas();
       carX = canvas.width / 2 - carWidth / 2;
-      carY = canvas.height / 2 - carHeight / 2; 
-      
+      carY = canvas.height - carHeight - 40; 
       roadY = 0;
-      car32X = Math.random() * (canvas.width - carWidth);
-      car32Y = -160;
-      carExtraX = Math.random() * (canvas.width - carWidth);
-      carExtraY = -400;
-      window.car50X = Math.random() * (canvas.width - carWidth);
-      window.car50Y = -600;
-      score = 0;
-      level = 1;
-      gameOver = false;
-      paused = false;
+      score = 0; level = 1; particles = []; coins = [];
+      gameOver = false; paused = false;
       controlPanel.style.display = "none";
+      setupTraffic();
     }
 
     function checkCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
-      const shrinkW1 = w1 * 0.5;
-      const shrinkH1 = h1 * 0.5;
-      const shrinkW2 = w2 * 0.5;
-      const shrinkH2 = h2 * 0.5;
-
-      const offsetX1 = x1 + (w1 - shrinkW1) / 2;
-      const offsetY1 = y1 + (h1 - shrinkH1) / 2;
-      const offsetX2 = x2 + (w2 - shrinkW2) / 2;
-      const offsetY2 = y2 + (h2 - shrinkH2) / 2;
-
       return (
-        offsetX1 < offsetX2 + shrinkW2 &&
-        offsetX1 + shrinkW1 > offsetX2 &&
-        offsetY1 < offsetY2 + shrinkH2 &&
-        offsetY1 + shrinkH1 > offsetY2
+        x1 + w1 * 0.1 < x2 + w2 * 0.9 &&
+        x1 + w1 * 0.9 > x2 + w2 * 0.1 &&
+        y1 + h1 * 0.1 < y2 + h2 * 0.9 &&
+        y1 + h1 * 0.9 > y2 + h2 * 0.1
       );
     }
 
@@ -284,104 +261,98 @@
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      let scrollSpeed = (difficulty === "easy" ? 4 : 6) + level;
-      roadY += scrollSpeed;
-      if (roadY >= canvas.height) roadY = 0;
+      let scrollSpeed = (difficulty === "easy" ? 5 : 7) + level;
+      roadY = (roadY + scrollSpeed) % canvas.height;
 
       if (roadImg.complete && roadImg.naturalWidth !== 0) {
         ctx.drawImage(roadImg, 0, roadY, canvas.width, canvas.height);
         ctx.drawImage(roadImg, 0, roadY - canvas.height, canvas.width, canvas.height);
       } else {
-        ctx.fillStyle = "#333";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#333"; ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#FFF";
         for (let i = -canvas.height; i < canvas.height; i += 80) {
           ctx.fillRect(canvas.width / 2 - 4, i + (roadY % 80), 8, 40);
         }
       }
 
-      // رسم السيارات بالألوان المحددة:
-      // Car 2 = حمراء (#e74c3c)
-      // Car 32 = زرقاء (#3498db)
-      // Car Extra = خضراء (#2ecc71)
-      // Car 50 = سوداء (#2c3e50)
-      if (currentCar === "car2") renderCar(carImg, carX, carY, carWidth, carHeight, "#e74c3c", false);
-      else if (currentCar === "car32") renderCar(car32Img, carX, carY, carWidth, carHeight, "#3498db", true);
-      else if (currentCar === "carExtra") renderCar(carExtraImg, carX, carY, carWidth, carHeight, "#2ecc71", true);
-      else if (currentCar === "car50") renderCar(car50Img, carX, carY, carWidth, carHeight, "#2c3e50", true);
+      addExhaustSmoke(carX, carY);
 
-      if (currentCar !== "car32") renderCar(car32Img, car32X, car32Y, carWidth, carHeight, "#3498db", false);
-      if (currentCar !== "carExtra") renderCar(carExtraImg, carExtraX, carExtraY, carWidth, carHeight, "#2ecc71", false);
-
-      let baseSpeed32 = (difficulty === "easy") ? 2 : 3;
-      let baseSpeedExtra = (difficulty === "easy") ? 3 : 4.5;
-
-      if (difficulty === "hard") {
-        if (car32X < carX) car32X += 0.9;
-        else if (car32X > carX) car32X -= 0.9;
-        
-        if (carExtraX < carX) carExtraX += 1.2;
-        else if (carExtraX > carX) carExtraX -= 1.2;
-
-        if (window.car50X < carX) window.car50X += 1.4;
-        else if (window.car50X > carX) window.car50X -= 1.4;
+      // رسم وتحديث الجسيمات
+      for (let i = particles.length - 1; i >= 0; i--) {
+        let p = particles[i];
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha;
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+        p.x += p.vx; p.y += p.vy; p.alpha -= 0.02;
+        if (p.alpha <= 0) particles.splice(i, 1);
       }
 
-      car32Y += baseSpeed32 + level;
-      if (car32Y > canvas.height) {
-        car32Y = -160;
-        car32X = Math.random() * (canvas.width - carWidth);
-        score++;
-      }
+      // رسم وتحديث العملات الذهبية
+      spawnCoin();
+      for (let i = coins.length - 1; i >= 0; i--) {
+        let c = coins[i];
+        c.y += scrollSpeed;
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, c.size / 2, 0, Math.PI * 2);
+        ctx.fillStyle = "gold"; ctx.fill();
+        ctx.lineWidth = 2; ctx.strokeStyle = "#fff"; ctx.stroke();
 
-      carExtraY += baseSpeedExtra + level;
-      if (carExtraY > canvas.height) {
-        carExtraY = -160;
-        carExtraX = Math.random() * (canvas.width - carWidth);
-        score++;
-      }
-
-      if (difficulty === "hard") {
-        if (currentCar !== "car50") {
-          renderCar(car50Img, window.car50X, window.car50Y, carWidth, carHeight, "#2c3e50", false);
+        if (checkCollision(carX, carY, carWidth, carHeight, c.x - c.size/2, c.y - c.size/2, c.size, c.size)) {
+          score += 10;
+          coins.splice(i, 1);
+        } else if (c.y > canvas.height) {
+          coins.splice(i, 1);
         }
-        window.car50Y += 4.5 + level;
-        if (window.car50Y > canvas.height) {
-          window.car50Y = -160;
-          window.car50X = Math.random() * (canvas.width - carWidth);
-          score++;
+      }
+
+      // رسم سيارة اللاعب بحجم موحد
+      const playerCarObj = allCars.find(c => c.id === currentCar);
+      renderCar(playerCarObj.img, carX, carY, carWidth, carHeight, playerCarObj.color, false);
+
+      // رسم وتحديث حركة سيارات المرور (الخصوم)
+      for (let i = 0; i < activeTraffic.length; i++) {
+        let tCar = activeTraffic[i];
+        let baseSpeed = (difficulty === "easy" ? 2.5 : 4) * tCar.speedFactor + level;
+
+        if (difficulty === "hard") {
+          if (tCar.x < carX) tCar.x += 0.8;
+          else if (tCar.x > carX) tCar.x -= 0.8;
         }
-        if (currentCar !== "car50" && checkCollision(carX, carY, carWidth, carHeight, window.car50X, window.car50Y, carWidth, carHeight)) {
+
+        tCar.y += baseSpeed;
+        renderCar(tCar.img, tCar.x, tCar.y, carWidth, carHeight, tCar.color, true);
+
+        // فحص التصادم
+        if (checkCollision(carX, carY, carWidth, carHeight, tCar.x, tCar.y, carWidth, carHeight)) {
           endGame();
         }
+
+        // إعادة تدوير السيارات عند تجاوز الشاشة
+        if (tCar.y > canvas.height) {
+          tCar.y = -carHeight - Math.random() * 200 - 50;
+          tCar.x = Math.random() * (canvas.width - carWidth);
+          score++;
+        }
       }
 
-      if (score > 0 && score % 10 === 0) {
-        level = Math.floor(score / 10) + 1;
-      }
+      if (score > 0 && score % 15 === 0) level = Math.floor(score / 15) + 1;
 
-      // عرض العدادات والنقاط بوضوح تام حسب اللغة المختارة
+      // طباعة العدادات والنقاط
       const t = i18n[currentLang];
-      ctx.fillStyle = "white";
-      ctx.font = "bold 20px Arial";
-      
+      ctx.fillStyle = "white"; ctx.font = "bold 18px Arial";
       if (currentLang === "ar") {
         ctx.textAlign = "right";
-        ctx.fillText(`النقاط: ${score}`, canvas.width - 20, 40);
-        ctx.fillText(`المستوى: ${level}`, canvas.width - 20, 75);
-        ctx.fillText(`الصعوبة: ${difficulty === 'easy' ? t.easyText : t.hardText}`, canvas.width - 20, 110);
+        ctx.fillText(`${t.score} ${score}`, canvas.width - 20, 35);
+        ctx.fillText(`${t.highScore} ${highScore}`, canvas.width - 20, 65);
+        ctx.fillText(`${t.level} ${level}`, canvas.width - 20, 95);
       } else {
         ctx.textAlign = "left";
-        ctx.fillText(`Score: ${score}`, 20, 40);
-        ctx.fillText(`Level: ${level}`, 20, 75);
-        ctx.fillText(`Difficulty: ${difficulty === 'easy' ? t.easyText : t.hardText}`, 20, 110);
-      }
-
-      let crashWith32 = (currentCar !== "car32" && checkCollision(carX, carY, carWidth, carHeight, car32X, car32Y, carWidth, carHeight));
-      let crashWithExtra = (currentCar !== "carExtra" && checkCollision(carX, carY, carWidth, carHeight, carExtraX, carExtraY, carWidth, carHeight));
-
-      if (crashWith32 || crashWithExtra) {
-        endGame();
+        ctx.fillText(`${t.score} ${score}`, 20, 35);
+        ctx.fillText(`${t.highScore} ${highScore}`, 20, 65);
+        ctx.fillText(`${t.level} ${level}`, 20, 95);
       }
 
       requestAnimationFrame(drawGame);
@@ -389,24 +360,31 @@
 
     function endGame() {
       gameOver = true;
+      createExplosion(carX, carY);
       bgMusic.pause();
       try { crashSound.play(); } catch(e){}
-      releaseWakeLock(); 
 
-      const t = i18n[currentLang];
-      alert(t.gameOver + score + t.levelText + level);
-      controlPanel.style.display = "block"; 
-      pauseBtn.style.display = "none";
-      restartBtn.style.display = "block";
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem("carRace_highScore", highScore);
+      }
+
+      setTimeout(() => {
+        const t = i18n[currentLang];
+        alert(t.gameOver + score + "\n" + t.highScore + highScore);
+        controlPanel.style.display = "block";
+        pauseBtn.style.display = "none";
+        restartBtn.style.display = "block";
+      }, 100);
     }
 
     document.onkeydown = (e) => {
       if (gameOver || paused) return;
-      let moveStep = (difficulty === "easy") ? 25 : 20;
-      if (e.key === "ArrowLeft" && carX > 0) carX -= moveStep;
-      if (e.key === "ArrowRight" && carX < canvas.width - carWidth) carX += moveStep;
-      if (e.key === "ArrowUp" && carY > 0) carY -= moveStep; 
-      if (e.key === "ArrowDown" && carY < canvas.height - carHeight) carY += moveStep; 
+      let step = 25;
+      if (e.key === "ArrowLeft" && carX > 0) carX -= step;
+      if (e.key === "ArrowRight" && carX < canvas.width - carWidth) carX += step;
+      if (e.key === "ArrowUp" && carY > 0) carY -= step;
+      if (e.key === "ArrowDown" && carY < canvas.height - carHeight) carY += step;
     };
 
     function handleTouch(e) {
@@ -415,52 +393,23 @@
       const rect = canvas.getBoundingClientRect();
       carX = (touch.clientX - rect.left) - carWidth / 2;
       carY = (touch.clientY - rect.top) - carHeight / 2;
-
-      if (carX < 0) carX = 0;
-      if (carX > canvas.width - carWidth) carX = canvas.width - carWidth;
-      if (carY < 0) carY = 0;
-      if (carY > canvas.height - carHeight) carY = canvas.height - carHeight;
+      if (carX < 0) carX = 0; if (carX > canvas.width - carWidth) carX = canvas.width - carWidth;
+      if (carY < 0) carY = 0; if (carY > canvas.height - carHeight) carY = canvas.height - carHeight;
     }
 
-    canvas.addEventListener("touchstart", (e) => {
-      const touch = e.touches[0];
-      touchStartX = touch.clientX;
-      touchStartY = touch.clientY;
-      touchStartTime = Date.now();
-      handleTouch(e);
-    }, {passive: true});
-
-    canvas.addEventListener("touchmove", (e) => {
-      handleTouch(e);
-      e.preventDefault(); 
-    }, { passive: false });
-
-    canvas.addEventListener("touchend", (e) => {
-      const touch = e.changedTouches[0];
-      const moveDistance = Math.hypot(touch.clientX - touchStartX, touch.clientY - touchStartY);
-      const touchDuration = Date.now() - touchStartTime;
-
-      if (touchDuration < 200 && moveDistance < 15) {
-        togglePause();
-      }
-    });
-
-    canvas.onclick = () => {
-      togglePause();
-    };
+    canvas.addEventListener("touchmove", (e) => { handleTouch(e); e.preventDefault(); }, { passive: false });
+    canvas.addEventListener("touchstart", (e) => { handleTouch(e); }, { passive: true });
 
     function togglePause() {
       if (gameOver) return;
       paused = !paused;
       if (paused) {
         bgMusic.pause();
-        releaseWakeLock(); 
         controlPanel.style.display = "block";
         pauseBtn.style.display = "block";
         restartBtn.style.display = "block";
       } else {
         try { bgMusic.play(); } catch(e){}
-        requestWakeLock(); 
         controlPanel.style.display = "none";
         drawGame();
       }
@@ -468,38 +417,13 @@
 
     pauseBtn.onclick = togglePause;
 
-    restartBtn.onclick = () => {
-      resetGame();
-      try { bgMusic.play(); } catch(e){}
-      requestWakeLock(); 
-      drawGame();
-    };
+    restartBtn.onclick = () => { resetGame(); try { bgMusic.play(); } catch(e){} drawGame(); };
+    startBtn.onclick = () => { startScreen.style.display = "none"; canvas.style.display = "block"; resetGame(); try { bgMusic.play(); } catch(e){} drawGame(); };
 
-    startBtn.onclick = () => {
-      startScreen.style.display = "none";
-      canvas.style.display = "block";
-      resetGame();
-      try { bgMusic.play(); } catch(e){}
-      requestWakeLock(); 
-      drawGame();
-    };
-
-    document.addEventListener('visibilitychange', async () => {
-      if (wakeLock !== null && document.visibilityState === 'visible' && !paused && !gameOver) {
-        await requestWakeLock();
-      }
-    });
-
-    window.addEventListener("deviceorientation", (event) => {
-      if (gameOver || paused) return;
-      const tiltX = event.gamma; 
-      const tiltY = event.beta;  
-      let moveStep = (difficulty === "easy") ? 8 : 5;
-
-      if (tiltX < -6 && carX > 0) carX -= moveStep;
-      if (tiltX > 6 && carX < canvas.width - carWidth) carX += moveStep;
-      if (tiltY < 40 && carY > 0) carY -= moveStep; 
-      if (tiltY > 60 && carY < canvas.height - carHeight) carY += moveStep; 
+    window.addEventListener("deviceorientation", (e) => {
+      if (gameOver || paused || !e.gamma) return;
+      if (e.gamma < -5 && carX > 0) carX -= 6;
+      if (e.gamma > 5 && carX < canvas.width - carWidth) carX += 6;
     });
   </script>
 </body>
