@@ -3,50 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>🏎️ Oncoming Attack Car Race</title>
+  <title>🏎️ Car Race Shop & Attack Edition</title>
   <style>
     body { background-color: #0d0d0d; margin: 0; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; user-select: none; }
     canvas { display: none; background-color: #222; margin: 0 auto; display: block; }
     
-    #startScreen { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white; width: 90%; max-width: 400px; z-index: 30; background: rgba(15,15,15,0.92); padding: 25px; border-radius: 15px; border: 2px solid #e74c3c; box-shadow: 0 0 25px rgba(231,76,60,0.4); }
-    .lang-container { margin-bottom: 15px; display: flex; justify-content: center; gap: 10px; }
-    .lang-btn { padding: 8px 16px; font-size: 14px; background: #222; color: white; border: 1px solid #555; border-radius: 6px; cursor: pointer; }
+    .overlay-card { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white; width: 90%; max-width: 420px; z-index: 30; background: rgba(15,15,15,0.95); padding: 20px; border-radius: 15px; border: 2px solid #e74c3c; box-shadow: 0 0 25px rgba(231,76,60,0.4); }
+    .lang-container { margin-bottom: 12px; display: flex; justify-content: center; gap: 10px; }
+    .lang-btn { padding: 6px 14px; font-size: 13px; background: #222; color: white; border: 1px solid #555; border-radius: 6px; cursor: pointer; }
     .lang-btn.active { background: #e74c3c; border-color: gold; font-weight: bold; }
 
-    button { margin: 6px; padding: 12px 20px; font-size: 16px; background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; border: none; cursor: pointer; border-radius: 8px; font-weight: bold; transition: 0.2s; }
-    button:active { transform: scale(0.95); }
+    button.menu-btn { margin: 6px; padding: 10px 18px; font-size: 15px; background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; border: none; cursor: pointer; border-radius: 8px; font-weight: bold; transition: 0.2s; }
+    button.menu-btn:active { transform: scale(0.95); }
+
+    .car-shop { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
+    .car-btn { padding: 10px; font-size: 13px; color: white; border: 1px solid #444; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+    .car-btn:active { transform: scale(0.95); }
     
-    #controlPanel { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background: rgba(0,0,0,0.95); padding: 20px; border-radius: 15px; border: 1px solid #444; box-shadow: 0 0 20px rgba(231,76,60,0.5); z-index: 20; min-width: 260px; }
-    #controlPanel button { display: block; margin: 8px auto; width: 100%; }
+    .money-badge { background: #27ae60; color: #fff; padding: 6px 14px; border-radius: 20px; font-weight: bold; display: inline-block; margin: 8px 0; font-size: 16px; border: 1px solid #2ecc71; }
   </style>
 </head>
 <body>
 
-  <div id="startScreen">
+  <div id="startScreen" class="overlay-card">
     <div class="lang-container">
       <button id="langAr" class="lang-btn active">🇸🇦 العربية</button>
       <button id="langEn" class="lang-btn">🇬🇧 English</button>
     </div>
 
-    <h1 id="titleTxt">🏎️ سباق هجوم السيارات</h1>
-    <p id="subTitleTxt">احذر! السيارات المعاكسة تهاجم سيارتك ومهمتك جمع النقود والمراوغة</p>
-    <button id="easyBtn" style="border: 2px solid gold;">😎 هجوم عادي</button>
-    <button id="hardBtn">🔥 هجوم شرس</button>
-    <br><br>
-    <button id="startBtn">▶ بدء اللعب</button>
+    <h2 id="titleTxt">🏎️ سباق ومتجر السيارات</h2>
+    <div class="money-badge" id="startMoneyTxt">💰 النقود: $0</div>
+    
+    <p id="selectCarTxt" style="margin: 5px 0; font-size: 14px; color: #aaa;">اختر أو اشترِ سيارتك:</p>
+    <div class="car-shop">
+      <button id="car2Btn" class="car-btn"></button>
+      <button id="car32Btn" class="car-btn"></button>
+      <button id="carExtraBtn" class="car-btn"></button>
+      <button id="car50Btn" class="car-btn"></button>
+    </div>
+
+    <button id="easyBtn" class="menu-btn" style="border: 2px solid gold;">😎 هجوم عادي</button>
+    <button id="hardBtn" class="menu-btn">🔥 هجوم شرس</button>
+    <br>
+    <button id="startBtn" class="menu-btn" style="width: 80%; margin-top: 10px; font-size: 18px;">▶ بدء اللعب</button>
   </div>
 
   <canvas id="gameCanvas"></canvas>
   
-  <div id="controlPanel">
-    <button id="pauseBtn">⏸ استئناف</button>
-    <button id="restartBtn">🔄 إعادة التشغيل</button>
-    <hr style="border-color: #444; margin: 10px 0;">
-    <p id="selectCarTxt" style="color: white; margin: 5px 0;">اختر سيارتك:</p>
-    <button id="car2Btn">🔴 الحمراء</button>
-    <button id="car32Btn">🔵 الزرقاء</button>
-    <button id="carExtraBtn">🟢 الخضراء</button>
-    <button id="car50Btn">⬛ السوداء</button>
+  <div id="controlPanel" class="overlay-card" style="display: none;">
+    <button id="pauseBtn" class="menu-btn" style="width: 100%;">⏸ استئناف</button>
+    <button id="restartBtn" class="menu-btn" style="width: 100%;">🔄 إعادة التشغيل</button>
   </div>
   
   <script>
@@ -58,79 +64,18 @@
     const controlPanel = document.getElementById("controlPanel");
     const restartBtn = document.getElementById("restartBtn");
     const pauseBtn = document.getElementById("pauseBtn");
+    const startMoneyTxt = document.getElementById("startMoneyTxt");
     
     const easyBtn = document.getElementById("easyBtn");
     const hardBtn = document.getElementById("hardBtn");
-
-    const car2Btn = document.getElementById("car2Btn");
-    const car32Btn = document.getElementById("car32Btn");
-    const carExtraBtn = document.getElementById("carExtraBtn");
-    const car50Btn = document.getElementById("car50Btn");
-
     const langAr = document.getElementById("langAr");
     const langEn = document.getElementById("langEn");
 
     let currentLang = "ar";
     let highScore = parseInt(localStorage.getItem("carRace_highScore")) || 0;
     let money = parseInt(localStorage.getItem("carRace_money")) || 0;
-
-    const i18n = {
-      ar: {
-        title: "🏎️ سباق هجوم السيارات",
-        subtitle: "السيارات المعاكسة تهاجمك مباشرة! اجمع النقود وتفادَ التصادم",
-        easy: "😎 هجوم عادي", hard: "🔥 هجوم شرس", start: "▶ بدء اللعب",
-        resume: "⏸ استئناف", restart: "🔄 إعادة التشغيل",
-        selectCar: "اختر سيارتك:", carRed: "🔴 الحمراء", carBlue: "🔵 الزرقاء", carGreen: "🟢 الخضراء", carBlack: "⬛ السوداء",
-        score: "النقاط: ", highScore: "أعلى نتيجة: ", money: "💰 النقود: $", level: "المستوى: ", gameOver: "💥 انتهت اللعبة!\nالنقاط: "
-      },
-      en: {
-        title: "🏎️ Oncoming Attack Race",
-        subtitle: "Oncoming traffic is attacking you! Collect cash and dodge!",
-        easy: "😎 Normal Attack", hard: "🔥 Aggressive Attack", start: "▶ Start Game",
-        resume: "⏸ Resume", restart: "🔄 Restart",
-        selectCar: "Choose Your Car:", carRed: "🔴 Red", carBlue: "🔵 Blue", carGreen: "🟢 Green", carBlack: "⬛ Black",
-        score: "Score: ", highScore: "High Score: ", money: "💰 Cash: $", level: "Level: ", gameOver: "💥 Game Over!\nScore: "
-      }
-    };
-
-    function setLanguage(lang) {
-      currentLang = lang;
-      document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-      langAr.classList.toggle("active", lang === "ar");
-      langEn.classList.toggle("active", lang === "en");
-      const t = i18n[lang];
-      document.getElementById("titleTxt").innerText = t.title;
-      document.getElementById("subTitleTxt").innerText = t.subtitle;
-      easyBtn.innerText = t.easy; hardBtn.innerText = t.hard; startBtn.innerText = t.start;
-      pauseBtn.innerText = t.resume; restartBtn.innerText = t.restart;
-      document.getElementById("selectCarTxt").innerText = t.selectCar;
-      car2Btn.innerText = t.carRed; car32Btn.innerText = t.carBlue; carExtraBtn.innerText = t.carGreen; car50Btn.innerText = t.carBlack;
-    }
-
-    langAr.onclick = () => setLanguage("ar");
-    langEn.onclick = () => setLanguage("en");
-
-    let difficulty = "easy"; 
-    let paused = false, gameOver = false, currentCar = "car2", roadY = 0;
-    let particles = [], coins = [], attackerCars = [];
-
-    const carWidth = 55;
-    const carHeight = 110;
-
-    easyBtn.onclick = () => { difficulty = "easy"; easyBtn.style.border = "2px solid gold"; hardBtn.style.border = "none"; };
-    hardBtn.onclick = () => { difficulty = "hard"; hardBtn.style.border = "2px solid gold"; easyBtn.style.border = "none"; };
-
-    car2Btn.onclick = () => { currentCar = "car2"; togglePause(); };
-    car32Btn.onclick = () => { currentCar = "car32"; togglePause(); };
-    carExtraBtn.onclick = () => { currentCar = "carExtra"; togglePause(); };
-    car50Btn.onclick = () => { currentCar = "car50"; togglePause(); };
-
-    function resizeCanvas() { 
-      canvas.width = Math.min(window.innerWidth, 480); 
-      canvas.height = window.innerHeight;
-    }
-    window.onresize = resizeCanvas;
-    resizeCanvas();
+    let unlockedCars = JSON.parse(localStorage.getItem("carRace_unlockedCars")) || ["car2"];
+    let currentCar = localStorage.getItem("carRace_currentCar") || "car2";
 
     const carImg = new Image(); carImg.src = "car2.png";
     const roadImg = new Image(); roadImg.src = "road.png";
@@ -139,11 +84,114 @@
     const car50Img = new Image(); car50Img.src = "car50.png";
 
     const allCars = [
-      { id: "car2", img: carImg, color: "#e74c3c" },
-      { id: "car32", img: car32Img, color: "#3498db" },
-      { id: "carExtra", img: carExtraImg, color: "#2ecc71" },
-      { id: "car50", img: car50Img, color: "#34495e" }
+      { id: "car2", img: carImg, color: "#e74c3c", price: 0, nameAr: "🔴 الحمراء", nameEn: "🔴 Red" },
+      { id: "car32", img: car32Img, color: "#3498db", price: 100, nameAr: "🔵 الزرقاء", nameEn: "🔵 Blue" },
+      { id: "carExtra", img: carExtraImg, color: "#2ecc71", price: 250, nameAr: "🟢 الخضراء", nameEn: "🟢 Green" },
+      { id: "car50", img: car50Img, color: "#34495e", price: 500, nameAr: "⬛ السوداء", nameEn: "⬛ Black" }
     ];
+
+    const i18n = {
+      ar: {
+        title: "🏎️ سباق ومتجر السيارات",
+        easy: "😎 هجوم عادي", hard: "🔥 هجوم شرس", start: "▶ بدء اللعب",
+        resume: "⏸ استئناف", restart: "🔄 إعادة التشغيل",
+        selectCar: "اختر أو اشترِ سيارتك:", money: "💰 النقود: $",
+        score: "النقاط: ", highScore: "أعلى نتيجة: ", level: "المستوى: ",
+        gameOver: "💥 انتهت اللعبة!\nالنقاط: ", driving: "مختارة", drive: "قيادة", buy: "شراء"
+      },
+      en: {
+        title: "🏎️ Car Race & Garage Shop",
+        easy: "😎 Normal Attack", hard: "🔥 Aggressive", start: "▶ Start Game",
+        resume: "⏸ Resume", restart: "🔄 Restart",
+        selectCar: "Choose or Buy Your Car:", money: "💰 Cash: $",
+        score: "Score: ", highScore: "High Score: ", level: "Level: ",
+        gameOver: "💥 Game Over!\nScore: ", driving: "Active", drive: "Select", buy: "Buy"
+      }
+    };
+
+    function updateCarButtons() {
+      const t = i18n[currentLang];
+      startMoneyTxt.innerText = `${t.money}${money}`;
+      
+      allCars.forEach(car => {
+        const btn = document.getElementById(car.id + "Btn");
+        if (!btn) return;
+
+        const isUnlocked = unlockedCars.includes(car.id);
+        const isSelected = currentCar === car.id;
+        const carName = currentLang === "ar" ? car.nameAr : car.nameEn;
+
+        if (isSelected) {
+          btn.innerText = `${carName}\n(✔ ${t.driving})`;
+          btn.style.background = "linear-gradient(45deg, #27ae60, #2ecc71)";
+        } else if (isUnlocked) {
+          btn.innerText = `${carName}\n(${t.drive})`;
+          btn.style.background = "linear-gradient(45deg, #2980b9, #3498db)";
+        } else {
+          btn.innerText = `${carName}\n🔒 $${car.price}`;
+          btn.style.background = "linear-gradient(45deg, #7f8c8d, #95a5a6)";
+        }
+      });
+    }
+
+    function handleCarClick(carId) {
+      const car = allCars.find(c => c.id === carId);
+      if (!car) return;
+
+      if (unlockedCars.includes(carId)) {
+        currentCar = carId;
+        localStorage.setItem("carRace_currentCar", currentCar);
+      } else {
+        if (money >= car.price) {
+          money -= car.price;
+          unlockedCars.push(carId);
+          currentCar = carId;
+          localStorage.setItem("carRace_money", money);
+          localStorage.setItem("carRace_unlockedCars", JSON.stringify(unlockedCars));
+          localStorage.setItem("carRace_currentCar", currentCar);
+        } else {
+          alert(currentLang === "ar" ? `تحتاج إلى $${car.price - money} إضافية لشراء هذه السيارة!` : `You need $${car.price - money} more cash!`);
+        }
+      }
+      updateCarButtons();
+    }
+
+    allCars.forEach(car => {
+      document.getElementById(car.id + "Btn").onclick = () => handleCarClick(car.id);
+    });
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+      langAr.classList.toggle("active", lang === "ar");
+      langEn.classList.toggle("active", lang === "en");
+      const t = i18n[lang];
+      document.getElementById("titleTxt").innerText = t.title;
+      document.getElementById("selectCarTxt").innerText = t.selectCar;
+      easyBtn.innerText = t.easy; hardBtn.innerText = t.hard; startBtn.innerText = t.start;
+      pauseBtn.innerText = t.resume; restartBtn.innerText = t.restart;
+      updateCarButtons();
+    }
+
+    langAr.onclick = () => setLanguage("ar");
+    langEn.onclick = () => setLanguage("en");
+
+    let difficulty = "easy"; 
+    let paused = false, gameOver = false, roadY = 0;
+    let coins = [], attackerCars = [];
+
+    const carWidth = 55;
+    const carHeight = 110;
+
+    easyBtn.onclick = () => { difficulty = "easy"; easyBtn.style.border = "2px solid gold"; hardBtn.style.border = "none"; };
+    hardBtn.onclick = () => { difficulty = "hard"; hardBtn.style.border = "2px solid gold"; easyBtn.style.border = "none"; };
+
+    function resizeCanvas() { 
+      canvas.width = Math.min(window.innerWidth, 480); 
+      canvas.height = window.innerHeight;
+    }
+    window.onresize = resizeCanvas;
+    resizeCanvas();
 
     const bgMusic = new Audio("background.mp3"); bgMusic.loop = true;
     const crashSound = new Audio("explosion.mp3");
@@ -167,12 +215,10 @@
       ctx.fillRect(w / 2 - 1, h / 4, 4, 18);
     }
 
-    // رسم السيارة واتجاهها المعاكس بشكل صحيح
     function renderCarVehicle(img, x, y, w, h, color, isPlayer, tilt = 0) {
       ctx.save();
       ctx.translate(x + w / 2, y + h / 2);
 
-      // سيارة اللاعب للأعلى (0)، والسيارات المعاكسة متجهة للأسفل نحو اللاعب (180 درجة)
       let rotationAngle = isPlayer ? 0 : Math.PI;
       rotationAngle += (tilt * 0.04); 
 
@@ -187,7 +233,6 @@
       ctx.restore();
     }
 
-    // كلاس الذكاء الاصطناعي الخاص بالمهاجمة
     class AttackerVehicle {
       constructor(carModel) {
         this.model = carModel;
@@ -205,15 +250,11 @@
       }
 
       update(targetPlayerX) {
-        // ملاحقة ومهاجمة سيارة اللاعب في اتجاه X
         let diffX = targetPlayerX - this.x;
         this.vx = diffX * this.attackAgility;
         this.x += this.vx;
-
-        // الحركة للأسفل باتجاه اللاعب
         this.y += this.speed + (level * 0.5);
 
-        // عند اجتياز الشاشة
         if (this.y > canvas.height + 50) {
           this.reset();
           score += 1;
@@ -235,12 +276,7 @@
 
     function spawnCoin() {
       if (Math.random() < 0.02 && coins.length < 3) {
-        coins.push({ 
-          x: Math.random() * (canvas.width - 40) + 20, 
-          y: -40, 
-          value: 10,
-          size: 24 
-        });
+        coins.push({ x: Math.random() * (canvas.width - 40) + 20, y: -40, value: 10, size: 24 });
       }
     }
 
@@ -253,7 +289,6 @@
       score = 0; 
       dodgedCars = 0; 
       level = 1; 
-      particles = []; 
       coins = [];
       gameOver = false; 
       paused = false;
@@ -261,7 +296,6 @@
       setupAttackers();
     }
 
-    // خوارزمية فحص التصادم المتناسبة
     function checkHitbox(ax, ay, aw, ah, bx, by, bw, bh) {
       const padX = aw * 0.15;
       const padY = ah * 0.10;
@@ -281,20 +315,17 @@
       let roadSpeed = (difficulty === "easy" ? 6 : 8) + level;
       roadY = (roadY + roadSpeed) % canvas.height;
 
-      // رسم الطريق المتصل ومسار road.png
       if (roadImg.complete && roadImg.naturalWidth !== 0) {
         ctx.drawImage(roadImg, 0, roadY, canvas.width, canvas.height);
         ctx.drawImage(roadImg, 0, roadY - canvas.height, canvas.width, canvas.height);
       } else {
-        ctx.fillStyle = "#333"; 
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#333"; ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#f1c40f";
         for (let i = -canvas.height; i < canvas.height; i += 70) {
           ctx.fillRect(canvas.width / 2 - 3, i + (roadY % 70), 6, 35);
         }
       }
 
-      // رسم النقود وجمعها
       spawnCoin();
       for (let i = coins.length - 1; i >= 0; i--) {
         let c = coins[i];
@@ -307,7 +338,6 @@
         ctx.fillStyle = "#fff"; ctx.font = "bold 12px Arial"; ctx.textAlign = "center";
         ctx.fillText("$", c.x, c.y + 4);
 
-        // عند التقاط النقود
         if (Math.hypot((playerX + carWidth / 2) - c.x, (playerY + carHeight / 2) - c.y) < carWidth / 2 + c.size / 2) {
           money += c.value;
           score += 5;
@@ -318,22 +348,18 @@
         }
       }
 
-      // رسم سيارة اللاعب (متجهة للأعلى)
       const playerModel = allCars.find(c => c.id === currentCar);
       renderCarVehicle(playerModel.img, playerX, playerY, carWidth, carHeight, playerModel.color, true, playerVx);
 
-      // تحديث ورسم السيارات المهاجمة (معاكسة ومتجهة للأسفل)
       for (let attacker of attackerCars) {
         attacker.update(playerX);
         renderCarVehicle(attacker.model.img, attacker.x, attacker.y, attacker.w, attacker.h, attacker.model.color, false, attacker.vx);
 
-        // فحص تصادم الهجوم
         if (checkHitbox(playerX, playerY, carWidth, carHeight, attacker.x, attacker.y, attacker.w, attacker.h)) {
           endGame();
         }
       }
 
-      // طباعة العدادات وكمية النقود
       const t = i18n[currentLang];
       ctx.fillStyle = "white"; ctx.font = "bold 15px Arial";
       if (currentLang === "ar") {
@@ -366,9 +392,9 @@
       setTimeout(() => {
         const t = i18n[currentLang];
         alert(t.gameOver + score + "\n" + t.money + money + "\n" + t.highScore + highScore);
-        controlPanel.style.display = "block";
-        pauseBtn.style.display = "none";
-        restartBtn.style.display = "block";
+        startScreen.style.display = "block";
+        canvas.style.display = "none";
+        updateCarButtons();
       }, 100);
     }
 
@@ -402,8 +428,6 @@
       if (paused) {
         bgMusic.pause();
         controlPanel.style.display = "block";
-        pauseBtn.style.display = "block";
-        restartBtn.style.display = "block";
       } else {
         try { bgMusic.play(); } catch(e){}
         controlPanel.style.display = "none";
@@ -414,6 +438,8 @@
     pauseBtn.onclick = togglePause;
     restartBtn.onclick = () => { resetGame(); try { bgMusic.play(); } catch(e){} drawGame(); };
     startBtn.onclick = () => { startScreen.style.display = "none"; canvas.style.display = "block"; resetGame(); try { bgMusic.play(); } catch(e){} drawGame(); };
+
+    setLanguage("ar");
   </script>
 </body>
 </html>
