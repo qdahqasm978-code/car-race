@@ -242,7 +242,7 @@ canvas{
     </div>
 
 
-    <!-- الطرق -->
+    <!-- طرق -->
 
     <div
         id="roadShopBox"
@@ -337,6 +337,17 @@ canvas{
         id="hardBtn"
         class="menu-btn">
         🔥 هجوم شرس
+    </button>
+
+
+    <br>
+
+    <!-- زر شحن العملات -->
+    <button
+        id="cheatBtn"
+        class="menu-btn"
+        style="background: linear-gradient(45deg, #8e44ad, #9b59b6); border: 1px solid #be90d4; margin-top:6px;">
+        🔑 شحن العملات
     </button>
 
 
@@ -441,15 +452,12 @@ const easyBtn =
 const hardBtn =
     document.getElementById("hardBtn");
 
+const cheatBtn =
+    document.getElementById("cheatBtn");
+
 
 /* =====================================================
    مسارات الملفات
-=====================================================
-
-   مهم:
-
-   جميع الصور والصوت يجب أن تكون بجانب index.html
-
 ===================================================== */
 
 const FILES = {
@@ -515,6 +523,9 @@ const i18n = {
 
         hard:
             "🔥 هجوم شرس",
+
+        cheat:
+            "🔑 شحن العملات",
 
         start:
             "▶ بدء اللعب",
@@ -583,6 +594,9 @@ const i18n = {
 
         hard:
             "🔥 Aggressive",
+
+        cheat:
+            "🔑 Redeem Code",
 
         start:
             "▶ Start Game",
@@ -1450,6 +1464,10 @@ function setLanguage(lang){
         t.hard;
 
 
+    cheatBtn.innerText =
+        t.cheat;
+
+
     startBtn.innerText =
         t.start;
 
@@ -1507,6 +1525,45 @@ hardBtn.onclick =
             "none";
 
     };
+
+
+/* =====================================================
+   شحن العملات بكلمة السر jfjf747g
+===================================================== */
+
+cheatBtn.onclick = function(){
+
+    const pass = prompt(
+        currentLang === "ar"
+        ? "أدخل كلمة السر لشحن العملات:"
+        : "Enter cheat code to add cash:"
+    );
+
+    if(pass === "jfjf747g"){
+
+        money += 5000;
+
+        localStorage.setItem("carRace_money", money);
+
+        updateCarButtons();
+
+        alert(
+            currentLang === "ar"
+            ? "🎉 تم شحن 5000$ بنجاح!"
+            : "🎉 $5000 added successfully!"
+        );
+
+    }else if(pass !== null){
+
+        alert(
+            currentLang === "ar"
+            ? "❌ كلمة السر غير صحيحة!"
+            : "❌ Invalid code!"
+        );
+
+    }
+
+};
 
 
 /* =====================================================
@@ -1657,7 +1714,7 @@ function renderCar(
 
 
 /* =====================================================
-   Hitbox
+   Hitbox (تم تصغير منطقة التصادم بنسبة 10%)
 ===================================================== */
 
 function getHitbox(
@@ -1673,20 +1730,33 @@ function getHitbox(
     const insetY =
         h * .12;
 
+    const origW =
+        w - insetX * 2;
+
+    const origH =
+        h - insetY * 2;
+
+    // تقليل الأبعاد 10%
+    const boxW =
+        origW * 0.90;
+
+    const boxH =
+        origH * 0.90;
+
 
     return {
 
         x:
-            x + insetX,
+            x + insetX + (origW - boxW) / 2,
 
         y:
-            y + insetY,
+            y + insetY + (origH - boxH) / 2,
 
         w:
-            w - insetX * 2,
+            boxW,
 
         h:
-            h - insetY * 2
+            boxH
 
     };
 
@@ -2899,11 +2969,6 @@ startBtn.onclick =
         resetGame();
 
 
-        /*
-           تشغيل الصوت بعد ضغط المستخدم
-           حتى لا يمنعه المتصفح
-        */
-
         bgMusic.currentTime = 0;
 
 
@@ -2916,21 +2981,6 @@ startBtn.onclick =
         drawGame();
 
     };
-
-
-/* =====================================================
-   فحص الملفات
-===================================================== */
-
-console.log(
-    "🏎️ Game loaded successfully"
-);
-
-
-console.log(
-    "Images:",
-    FILES
-);
 
 
 /* =====================================================
