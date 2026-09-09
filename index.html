@@ -487,7 +487,10 @@ const FILES = {
         "background.mp3",
 
     crash:
-        "explosion.mp3"
+        "explosion.mp3",
+
+    coin:
+        "coin.mp3"
 
 };
 
@@ -899,6 +902,12 @@ const crashSound =
     new Audio(FILES.crash);
 
 crashSound.volume = 0.8;
+
+
+const coinSound =
+    new Audio(FILES.coin);
+
+coinSound.volume = 0.7;
 
 
 /* =====================================================
@@ -1714,29 +1723,40 @@ function renderCar(
 
 
 /* =====================================================
-   Hitbox (تم تصغير منطقة التصادم بنسبة 10%)
+   Hitbox (تقليص المنطقة الأمامية بنسبة 5% إضافية)
 ===================================================== */
 
 function getHitbox(
     x,
     y,
     w,
-    h
+    h,
+    isPlayer = true
 ){
 
     const insetX =
         w * .22;
 
-    const insetY =
+    let insetYTop =
         h * .12;
+
+    let insetYBottom =
+        h * .12;
+
+    // تقليص المنطقة الأمامية للسيارة بنسبة 5% إضافية
+    if(isPlayer){
+        insetYTop += h * 0.05; // مقدمة سيارة اللاعب بالفي الأعلى
+    } else {
+        insetYBottom += h * 0.05; // مقدمة سيارة الخصم في الأسفل
+    }
 
     const origW =
         w - insetX * 2;
 
     const origH =
-        h - insetY * 2;
+        h - (insetYTop + insetYBottom);
 
-    // تقليل الأبعاد 10%
+    // تقليل الأبعاد الكلية 10%
     const boxW =
         origW * 0.90;
 
@@ -1750,7 +1770,7 @@ function getHitbox(
             x + insetX + (origW - boxW) / 2,
 
         y:
-            y + insetY + (origH - boxH) / 2,
+            y + insetYTop + (origH - boxH) / 2,
 
         w:
             boxW,
@@ -2291,6 +2311,14 @@ function drawGame(){
             score += 5;
 
 
+            coinSound.currentTime = 0;
+
+            coinSound.play()
+                .catch(
+                    () => {}
+                );
+
+
             localStorage.setItem(
                 "carRace_money",
                 money
@@ -2356,7 +2384,8 @@ function drawGame(){
             playerX,
             playerY,
             carWidth,
-            carHeight
+            carHeight,
+            true
         );
 
 
@@ -2400,7 +2429,9 @@ function drawGame(){
 
                 attacker.w,
 
-                attacker.h
+                attacker.h,
+
+                false
 
             );
 
