@@ -9,7 +9,7 @@
       maximum-scale=1.0,
       user-scalable=no">
 
-<title>🏎️ النجاة من التصادم</title>
+<title>🎮 مركز الألعاب: التصادم والحظ</title>
 
 <style>
 
@@ -134,7 +134,8 @@ canvas{
 
 .menu-btn:active,
 .car-btn:active,
-.lang-btn:active{
+.lang-btn:active,
+.casino-btn:active{
     transform:scale(.96);
 }
 
@@ -201,39 +202,179 @@ canvas{
     display:none;
 }
 
+/* =====================================================
+   تنسيقات شاشة اختيار اللعبة ولعبة القمار
+===================================================== */
+.hub-btn {
+    width: 100%;
+    padding: 16px;
+    margin: 10px 0;
+    font-size: 18px;
+    border-radius: 12px;
+    border: 2px solid #f39c12;
+    background: linear-gradient(45deg, #2c3e50, #34495e);
+    color: gold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.slot-machine {
+    background: #111;
+    border: 3px solid gold;
+    border-radius: 12px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.reels-container {
+    display: flex;
+    justify-content: space-around;
+    background: #000;
+    border: 2px solid #444;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.reel {
+    width: 30%;
+    height: 70px;
+    background: #222;
+    border: 1px solid gold;
+    border-radius: 6px;
+    font-size: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+}
+
+.bet-controls {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.bet-btn {
+    padding: 6px 12px;
+    background: #333;
+    color: white;
+    border: 1px solid #777;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.bet-btn.active {
+    background: #f1c40f;
+    color: black;
+    font-weight: bold;
+    border-color: white;
+}
+
+#spinBtn {
+    width: 100%;
+    padding: 14px;
+    font-size: 18px;
+    background: linear-gradient(45deg, #f1c40f, #f39c12);
+    color: black;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.casino-msg {
+    margin-top: 10px;
+    font-size: 14px;
+    min-height: 20px;
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+.nav-back-btn {
+    background: #555;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-size: 12px;
+}
+
 </style>
 </head>
 
 <body>
 
-
 <!-- =====================================================
-     شاشة البداية
+     الشاشة الرئيسية (مركز الألعاب)
 ===================================================== -->
-
-<div id="startScreen" class="overlay-card">
-
+<div id="hubScreen" class="overlay-card">
     <div class="lang-container">
-
-        <button
-            id="langAr"
-            class="lang-btn active">
-            🇸🇦 العربية
-        </button>
-
-        <button
-            id="langEn"
-            class="lang-btn">
-            🇬🇧 English
-        </button>
-
+        <button id="hubLangAr" class="lang-btn active">🇸🇦 العربية</button>
+        <button id="hubLangEn" class="lang-btn">🇬🇧 English</button>
     </div>
 
+    <h2 id="hubTitle">🎰 صالة الألعاب 🏎️</h2>
+    <div id="hubMoneyTxt" class="money-badge">💰 النقود: $0</div>
+
+    <button id="goToCarGameBtn" class="hub-btn">
+        🏎️ لعبة النجاة من التصادم
+    </button>
+
+    <button id="goToCasinoBtn" class="hub-btn" style="border-color: #2ecc71; color: #2ecc71;">
+        🎰 لعبة الرهان والحظ
+    </button>
+
+    <button id="hubCheatBtn" class="menu-btn" style="background: linear-gradient(45deg, #8e44ad, #9b59b6); border: 1px solid #be90d4; margin-top:15px; width:100%;">
+        🔑 شحن العملات
+    </button>
+</div>
+
+
+<!-- =====================================================
+     شاشة لعبة القمار (ماكينة السلوت)
+===================================================== -->
+<div id="casinoScreen" class="overlay-card" style="display:none; border-color: gold; box-shadow: 0 0 25px rgba(241,196,15,.4);">
+    <button id="casinoBackBtn" class="nav-back-btn">⬅️ القائمة الرئيسية</button>
+    
+    <h2 id="casinoTitle">🎰 ماكينة الحظ والرهان</h2>
+    <div id="casinoMoneyTxt" class="money-badge">💰 النقود: $0</div>
+
+    <div class="slot-machine">
+        <div class="reels-container">
+            <div id="reel1" class="reel">7️⃣</div>
+            <div id="reel2" class="reel">🎰</div>
+            <div id="reel3" class="reel">💎</div>
+        </div>
+
+        <p style="margin:5px; font-size:12px; color:#aaa;" id="betLabel">اختر قيمة الرهان:</p>
+        <div class="bet-controls">
+            <button class="bet-btn active" onclick="setBet(10)">$10</button>
+            <button class="bet-btn" onclick="setBet(50)">$50</button>
+            <button class="bet-btn" onclick="setBet(100)">$100</button>
+            <button class="bet-btn" onclick="setBet('max')">MAX</button>
+        </div>
+
+        <button id="spinBtn" onclick="spinSlots()">🎲 تدوير (سحب)</button>
+        <div id="casinoMsg" class="casino-msg"></div>
+    </div>
+</div>
+
+
+<!-- =====================================================
+     شاشة بداية لعبة السيارات
+===================================================== -->
+
+<div id="startScreen" class="overlay-card" style="display:none;">
+    <button id="carBackBtn" class="nav-back-btn">⬅️ القائمة الرئيسية</button>
 
     <h2 id="titleTxt">
         🏎️ النجاة من التصادم
     </h2>
-
 
     <div
         id="startMoneyTxt"
@@ -241,9 +382,7 @@ canvas{
         💰 النقود: $0
     </div>
 
-
     <!-- طرق -->
-
     <div
         id="roadShopBox"
         class="road-shop-box">
@@ -258,7 +397,6 @@ canvas{
             ">
             🛤️ اختر الطريق:
         </p>
-
 
         <button
             id="roadBtn"
@@ -275,18 +413,14 @@ canvas{
             🛣️ الطريق العادي
         </button>
 
-
         <div
             id="swipeHintTxt"
             class="swipe-hint">
             👈 اسحب للشمال لتغيير الطريق
         </div>
-
     </div>
 
-
     <!-- السيارات -->
-
     <p
         id="selectCarTxt"
         style="
@@ -297,34 +431,14 @@ canvas{
         اختر أو اشترِ سيارتك:
     </p>
 
-
     <div class="car-shop">
-
-        <button
-            id="car2Btn"
-            class="car-btn">
-        </button>
-
-        <button
-            id="car32Btn"
-            class="car-btn">
-        </button>
-
-        <button
-            id="carExtraBtn"
-            class="car-btn">
-        </button>
-
-        <button
-            id="car50Btn"
-            class="car-btn">
-        </button>
-
+        <button id="car2Btn" class="car-btn"></button>
+        <button id="car32Btn" class="car-btn"></button>
+        <button id="carExtraBtn" class="car-btn"></button>
+        <button id="car50Btn" class="car-btn"></button>
     </div>
 
-
     <!-- الصعوبة -->
-
     <button
         id="easyBtn"
         class="menu-btn"
@@ -332,50 +446,32 @@ canvas{
         😎 هجوم عادي
     </button>
 
-
     <button
         id="hardBtn"
         class="menu-btn">
         🔥 هجوم شرس
     </button>
 
-
     <br>
-
-    <!-- زر شحن العملات -->
-    <button
-        id="cheatBtn"
-        class="menu-btn"
-        style="background: linear-gradient(45deg, #8e44ad, #9b59b6); border: 1px solid #be90d4; margin-top:6px;">
-        🔑 شحن العملات
-    </button>
-
-
-    <br>
-
 
     <!-- بدء -->
-
     <button
         id="startBtn"
         class="menu-btn">
         ▶ بدء اللعب
     </button>
-
 </div>
 
 
-
 <!-- =====================================================
-     اللعبة
+     اللعبة (Canvas)
 ===================================================== -->
 
 <canvas id="gameCanvas"></canvas>
 
 
-
 <!-- =====================================================
-     لوحة التحكم
+     لوحة التحكم أثناء اللعب
 ===================================================== -->
 
 <div
@@ -389,2642 +485,824 @@ canvas{
         ▶ استئناف
     </button>
 
-
     <button
         id="restartBtn"
         class="menu-btn"
         style="width:100%;">
         🔄 إعادة التشغيل
     </button>
-
+    
+    <button
+        id="quitToHubBtn"
+        class="menu-btn"
+        style="width:100%; background: #555;">
+        🏠 القائمة الرئيسية
+    </button>
 </div>
 
 
-
 <script>
-
 
 /* =====================================================
    مراجع HTML
 ===================================================== */
 
-const canvas =
-    document.getElementById("gameCanvas");
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
-const ctx =
-    canvas.getContext("2d");
+const hubScreen = document.getElementById("hubScreen");
+const casinoScreen = document.getElementById("casinoScreen");
+const startScreen = document.getElementById("startScreen");
+const startBtn = document.getElementById("startBtn");
 
+const controlPanel = document.getElementById("controlPanel");
+const pauseBtn = document.getElementById("pauseBtn");
+const restartBtn = document.getElementById("restartBtn");
+const quitToHubBtn = document.getElementById("quitToHubBtn");
 
-const startScreen =
-    document.getElementById("startScreen");
+const roadShopBox = document.getElementById("roadShopBox");
+const roadBtn = document.getElementById("roadBtn");
 
-const startBtn =
-    document.getElementById("startBtn");
-
-
-const controlPanel =
-    document.getElementById("controlPanel");
-
-const pauseBtn =
-    document.getElementById("pauseBtn");
-
-const restartBtn =
-    document.getElementById("restartBtn");
-
-
-const roadShopBox =
-    document.getElementById("roadShopBox");
-
-const roadBtn =
-    document.getElementById("roadBtn");
-
-
-const langAr =
-    document.getElementById("langAr");
-
-const langEn =
-    document.getElementById("langEn");
-
-
-const easyBtn =
-    document.getElementById("easyBtn");
-
-const hardBtn =
-    document.getElementById("hardBtn");
-
-const cheatBtn =
-    document.getElementById("cheatBtn");
-
+const easyBtn = document.getElementById("easyBtn");
+const hardBtn = document.getElementById("hardBtn");
+const hubCheatBtn = document.getElementById("hubCheatBtn");
 
 /* =====================================================
    مسارات الملفات
 ===================================================== */
 
 const FILES = {
-
-    car2:
-        "car2.png",
-
-    car32:
-        "car32.png",
-
-    carExtra:
-        "carExtra.png",
-
-    car50:
-        "car50.png",
-
-    road:
-        "road.png",
-
-    desert:
-        "desert.png",
-
-    snow:
-        "snow.png",
-
-    music:
-        "background.mp3",
-
-    crash:
-        "explosion.mp3",
-
-    coin:
-        "coin.mp3"
-
+    car2: "car2.png",
+    car32: "car32.png",
+    carExtra: "carExtra.png",
+    car50: "car50.png",
+    road: "road.png",
+    desert: "desert.png",
+    snow: "snow.png",
+    music: "background.mp3",
+    crash: "explosion.mp3",
+    coin: "coin.mp3"
 };
 
-
 /* =====================================================
-   اللغة
+   اللغة والترجمة
 ===================================================== */
 
 let currentLang = "ar";
 
-
 const i18n = {
-
     ar:{
-
-        title:
-            "🏎️ النجاة من التصادم",
-
-        money:
-            "💰 النقود: $",
-
-        selectCar:
-            "اختر أو اشترِ سيارتك:",
-
-        selectRoad:
-            "🛤️ اختر الطريق:",
-
-        swipe:
-            "👈 اسحب للشمال لتغيير الطريق",
-
-        easy:
-            "😎 هجوم عادي",
-
-        hard:
-            "🔥 هجوم شرس",
-
-        cheat:
-            "🔑 شحن العملات",
-
-        start:
-            "▶ بدء اللعب",
-
-        resume:
-            "▶ استئناف",
-
-        pause:
-            "⏸ إيقاف",
-
-        restart:
-            "🔄 إعادة التشغيل",
-
-        selected:
-            "✔ مختارة",
-
-        select:
-            "قيادة",
-
-        roadSelected:
-            "✔ مختار",
-
-        roadSelect:
-            "اختيار",
-
-        score:
-            "النقاط:",
-
-        high:
-            "أعلى نتيجة:",
-
-        level:
-            "المستوى:",
-
-        crash:
-            "💥 لقد اصطدمت!",
-
-        need:
-            "تحتاج إلى $",
-
-        more:
-            " إضافية!"
-
+        hubTitle: "🎰 صالة الألعاب 🏎️",
+        title: "🏎️ النجاة من التصادم",
+        casinoTitle: "🎰 ماكينة الحظ والرهان",
+        money: "💰 النقود: $",
+        selectCar: "اختر أو اشترِ سيارتك:",
+        selectRoad: "🛤️ اختر الطريق:",
+        swipe: "👈 اسحب للشمال لتغيير الطريق",
+        easy: "😎 هجوم عادي",
+        hard: "🔥 هجوم شرس",
+        cheat: "🔑 شحن العملات",
+        start: "▶ بدء اللعب",
+        resume: "▶ استئناف",
+        pause: "⏸ إيقاف",
+        restart: "🔄 إعادة التشغيل",
+        selected: "✔ مختارة",
+        select: "قيادة",
+        roadSelected: "✔ مختار",
+        roadSelect: "اختيار",
+        score: "النقاط:",
+        high: "أعلى نتيجة:",
+        level: "المستوى:",
+        crash: "💥 لقد اصطدمت!",
+        need: "تحتاج إلى $",
+        more: " إضافية!",
+        betLabel: "اختر قيمة الرهان:",
+        spin: "🎲 تدوير (سحب)",
+        winMsg: "🎉 مبروك! فزت بـ $",
+        loseMsg: "❌ حظاً أوفراً في المرة القادمة!",
+        noMoney: "⚠️ ليس لديك عملات كافية لهذا الرهان!"
     },
-
-
     en:{
-
-        title:
-            "🏎️ Survive the Collision",
-
-        money:
-            "💰 Cash: $",
-
-        selectCar:
-            "Choose or Buy Your Car:",
-
-        selectRoad:
-            "🛤️ Choose Track:",
-
-        swipe:
-            "👉 Swipe right to change track",
-
-        easy:
-            "😎 Normal Attack",
-
-        hard:
-            "🔥 Aggressive",
-
-        cheat:
-            "🔑 Redeem Code",
-
-        start:
-            "▶ Start Game",
-
-        resume:
-            "▶ Resume",
-
-        pause:
-            "⏸ Pause",
-
-        restart:
-            "🔄 Restart",
-
-        selected:
-            "✔ Active",
-
-        select:
-            "Drive",
-
-        roadSelected:
-            "✔ Active",
-
-        roadSelect:
-            "Select",
-
-        score:
-            "Score:",
-
-        high:
-            "High Score:",
-
-        level:
-            "Level:",
-
-        crash:
-            "💥 You Crashed!",
-
-        need:
-            "You need $",
-
-        more:
-            " more!"
-
+        hubTitle: "🎰 Game Hub 🏎️",
+        title: "🏎️ Survive the Collision",
+        casinoTitle: "🎰 Slot Machine Casino",
+        money: "💰 Cash: $",
+        selectCar: "Choose or Buy Your Car:",
+        selectRoad: "🛤️ Choose Track:",
+        swipe: "👉 Swipe right to change track",
+        easy: "😎 Normal Attack",
+        hard: "🔥 Aggressive",
+        cheat: "🔑 Redeem Code",
+        start: "▶ Start Game",
+        resume: "▶ Resume",
+        pause: "⏸ Pause",
+        restart: "🔄 Restart",
+        selected: "✔ Active",
+        select: "Drive",
+        roadSelected: "✔ Active",
+        roadSelect: "Select",
+        score: "Score:",
+        high: "High Score:",
+        level: "Level:",
+        crash: "💥 You Crashed!",
+        need: "You need $",
+        more: " more!",
+        betLabel: "Select Bet Amount:",
+        spin: "🎲 SPIN",
+        winMsg: "🎉 Congrats! You won $",
+        loseMsg: "❌ Better luck next time!",
+        noMoney: "⚠️ Not enough cash for this bet!"
     }
-
 };
 
-
 /* =====================================================
-   LocalStorage
+   LocalStorage والبيانات الموحدة
 ===================================================== */
 
-let highScore =
-    Number(
-        localStorage.getItem(
-            "carRace_highScore"
-        )
-    ) || 0;
-
-
-let money =
-    Number(
-        localStorage.getItem(
-            "carRace_money"
-        )
-    ) || 0;
-
+let highScore = Number(localStorage.getItem("carRace_highScore")) || 0;
+let money = Number(localStorage.getItem("carRace_money")) || 0;
 
 let unlockedCars;
-
 try{
-
-    unlockedCars =
-        JSON.parse(
-            localStorage.getItem(
-                "carRace_unlockedCars"
-            )
-        ) || ["car2"];
-
+    unlockedCars = JSON.parse(localStorage.getItem("carRace_unlockedCars")) || ["car2"];
 }catch{
-
-    unlockedCars =
-        ["car2"];
-
+    unlockedCars = ["car2"];
 }
 
-
-let currentCar =
-    localStorage.getItem(
-        "carRace_currentCar"
-    ) || "car2";
-
+let currentCar = localStorage.getItem("carRace_currentCar") || "car2";
 
 let unlockedRoads;
-
 try{
-
-    unlockedRoads =
-        JSON.parse(
-            localStorage.getItem(
-                "carRace_unlockedRoads"
-            )
-        ) || ["road"];
-
+    unlockedRoads = JSON.parse(localStorage.getItem("carRace_unlockedRoads")) || ["road"];
 }catch{
-
-    unlockedRoads =
-        ["road"];
-
+    unlockedRoads = ["road"];
 }
 
+let currentRoad = localStorage.getItem("carRace_currentRoad") || "road";
 
-let currentRoad =
-    localStorage.getItem(
-        "carRace_currentRoad"
-    ) || "road";
+function saveMoney() {
+    localStorage.setItem("carRace_money", money);
+    updateAllMoneyDisplays();
+}
 
+function updateAllMoneyDisplays() {
+    const t = i18n[currentLang];
+    document.getElementById("hubMoneyTxt").innerText = t.money + money;
+    document.getElementById("casinoMoneyTxt").innerText = t.money + money;
+    document.getElementById("startMoneyTxt").innerText = t.money + money;
+}
 
 /* =====================================================
-   تحميل الصور
+   إدارة الشاشات والملاحة
+===================================================== */
+
+function showScreen(screenId) {
+    hubScreen.style.display = "none";
+    casinoScreen.style.display = "none";
+    startScreen.style.display = "none";
+    canvas.style.display = "none";
+    controlPanel.style.display = "none";
+
+    if(screenId === "hub") hubScreen.style.display = "block";
+    if(screenId === "casino") casinoScreen.style.display = "block";
+    if(screenId === "carStart") startScreen.style.display = "block";
+    if(screenId === "canvas") canvas.style.display = "block";
+    
+    updateAllMoneyDisplays();
+}
+
+document.getElementById("goToCarGameBtn").onclick = () => showScreen("carStart");
+document.getElementById("goToCasinoBtn").onclick = () => showScreen("casino");
+document.getElementById("casinoBackBtn").onclick = () => showScreen("hub");
+document.getElementById("carBackBtn").onclick = () => showScreen("hub");
+quitToHubBtn.onclick = () => {
+    gameOver = true;
+    bgMusic.pause();
+    showScreen("hub");
+};
+
+/* =====================================================
+   منطق لعبة القمار (Slot Machine)
+===================================================== */
+
+const slotSymbols = ["7️⃣", "🎰", "💎", "🔔", "🍋", "🪙"];
+let currentBet = 10;
+let isSpinning = false;
+
+function setBet(amount) {
+    if(isSpinning) return;
+    
+    if(amount === 'max') {
+        currentBet = money > 0 ? money : 10;
+    } else {
+        currentBet = amount;
+    }
+
+    const btns = document.querySelectorAll(".bet-btn");
+    btns.forEach(b => b.classList.remove("active"));
+    
+    // تمييز الزر المختار
+    event.target.classList.add("active");
+}
+
+function spinSlots() {
+    if(isSpinning) return;
+
+    if(money < currentBet || money <= 0) {
+        document.getElementById("casinoMsg").innerText = i18n[currentLang].noMoney;
+        document.getElementById("casinoMsg").style.color = "#e74c3c";
+        return;
+    }
+
+    // الخصم
+    money -= currentBet;
+    saveMoney();
+    
+    isSpinning = true;
+    document.getElementById("casinoMsg").innerText = "";
+
+    const reel1 = document.getElementById("reel1");
+    const reel2 = document.getElementById("reel2");
+    const reel3 = document.getElementById("reel3");
+
+    let counter = 0;
+    const interval = setInterval(() => {
+        reel1.innerText = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+        reel2.innerText = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+        reel3.innerText = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+        counter++;
+
+        if(counter > 15) {
+            clearInterval(interval);
+            finishSpin(reel1.innerText, reel2.innerText, reel3.innerText);
+        }
+    }, 80);
+}
+
+function finishSpin(s1, s2, s3) {
+    isSpinning = false;
+    let winAmount = 0;
+
+    // احتساب الأرباح
+    if(s1 === s2 && s2 === s3) {
+        if(s1 === "7️⃣") winAmount = currentBet * 25; // الجائزة الكبرى
+        else if(s1 === "💎") winAmount = currentBet * 15;
+        else winAmount = currentBet * 8;
+    } else if(s1 === s2 || s2 === s3 || s1 === s3) {
+        winAmount = currentBet * 2; // تطابق رمزين
+    }
+
+    const msgEl = document.getElementById("casinoMsg");
+    if(winAmount > 0) {
+        money += winAmount;
+        saveMoney();
+        msgEl.innerText = i18n[currentLang].winMsg + winAmount;
+        msgEl.style.color = "#2ecc71";
+        coinSound.currentTime = 0;
+        coinSound.play().catch(() => {});
+    } else {
+        msgEl.innerText = i18n[currentLang].loseMsg;
+        msgEl.style.color = "#e74c3c";
+    }
+}
+
+/* =====================================================
+   تحميل الصور والأصوات
 ===================================================== */
 
 function loadImage(src){
-
-    const img =
-        new Image();
-
+    const img = new Image();
     img.src = src;
-
     return img;
-
 }
 
-
-const carImg =
-    loadImage(FILES.car2);
-
-const car32Img =
-    loadImage(FILES.car32);
-
-const carExtraImg =
-    loadImage(FILES.carExtra);
-
-const car50Img =
-    loadImage(FILES.car50);
-
-
-const roadImg =
-    loadImage(FILES.road);
-
-const desertImg =
-    loadImage(FILES.desert);
-
-const snowImg =
-    loadImage(FILES.snow);
-
-
-/* =====================================================
-   السيارات
-===================================================== */
-
-const allCars = [
-
-    {
-        id:"car2",
-
-        img:carImg,
-
-        color:"#e74c3c",
-
-        price:0,
-
-        nameAr:"🔴 الحمراء",
-
-        nameEn:"🔴 Red"
-    },
-
-
-    {
-        id:"car32",
-
-        img:car32Img,
-
-        color:"#3498db",
-
-        price:100,
-
-        nameAr:"🔵 الزرقاء",
-
-        nameEn:"🔵 Blue"
-    },
-
-
-    {
-        id:"carExtra",
-
-        img:carExtraImg,
-
-        color:"#2ecc71",
-
-        price:250,
-
-        nameAr:"🟢 الخضراء",
-
-        nameEn:"🟢 Green"
-    },
-
-
-    {
-        id:"car50",
-
-        img:car50Img,
-
-        color:"#34495e",
-
-        price:500,
-
-        nameAr:"⬛ السوداء",
-
-        nameEn:"⬛ Black"
-    }
-
-];
-
-
-/* =====================================================
-   الطرق
-===================================================== */
-
-const allRoads = [
-
-    {
-        id:"road",
-
-        img:roadImg,
-
-        price:0,
-
-        nameAr:"🛣️ الطريق العادي",
-
-        nameEn:"🛣️ Default Road"
-    },
-
-
-    {
-        id:"desert",
-
-        img:desertImg,
-
-        price:1000,
-
-        nameAr:"🌵 الطريق الصحراوي",
-
-        nameEn:"🌵 Desert Track"
-    },
-
-
-    {
-        id:"snow",
-
-        img:snowImg,
-
-        price:2000,
-
-        nameAr:"❄️ الطريق الثلجي",
-
-        nameEn:"❄️ Snow Track"
-    }
-
-];
-
-
-let currentRoadIndex =
-    allRoads.findIndex(
-        road => road.id === currentRoad
-    );
-
-
-if(currentRoadIndex < 0){
-
-    currentRoadIndex = 0;
-
-    currentRoad = "road";
-
-}
-
-
-/* =====================================================
-   الصوت
-===================================================== */
-
-const bgMusic =
-    new Audio(FILES.music);
-
+const carImg = loadImage(FILES.car2);
+const car32Img = loadImage(FILES.car32);
+const carExtraImg = loadImage(FILES.carExtra);
+const car50Img = loadImage(FILES.car50);
+
+const roadImg = loadImage(FILES.road);
+const desertImg = loadImage(FILES.desert);
+const snowImg = loadImage(FILES.snow);
+
+const bgMusic = new Audio(FILES.music);
 bgMusic.loop = true;
 bgMusic.volume = 0.4;
 
-
-const crashSound =
-    new Audio(FILES.crash);
-
+const crashSound = new Audio(FILES.crash);
 crashSound.volume = 0.8;
 
-
-const coinSound =
-    new Audio(FILES.coin);
-
+const coinSound = new Audio(FILES.coin);
 coinSound.volume = 0.7;
 
-
 /* =====================================================
-   حالة اللعبة
+   السيارات والطرق
 ===================================================== */
 
-let difficulty = "easy";
+const allCars = [
+    { id:"car2", img:carImg, color:"#e74c3c", price:0, nameAr:"🔴 الحمراء", nameEn:"🔴 Red" },
+    { id:"car32", img:car32Img, color:"#3498db", price:100, nameAr:"🔵 الزرقاء", nameEn:"🔵 Blue" },
+    { id:"carExtra", img:carExtraImg, color:"#2ecc71", price:250, nameAr:"🟢 الخضراء", nameEn:"🟢 Green" },
+    { id:"car50", img:car50Img, color:"#34495e", price:500, nameAr:"⬛ السوداء", nameEn:"⬛ Black" }
+];
 
-let paused = false;
+const allRoads = [
+    { id:"road", img:roadImg, price:0, nameAr:"🛣️ الطريق العادي", nameEn:"🛣️ Default Road" },
+    { id:"desert", img:desertImg, price:1000, nameAr:"🌵 الطريق الصحراوي", nameEn:"🌵 Desert Track" },
+    { id:"snow", img:snowImg, price:2000, nameAr:"❄️ الطريق الثلجي", nameEn:"❄️ Snow Track" }
+];
 
-let gameOver = false;
-
-let playerX = 0;
-
-let playerY = 0;
-
-let playerVx = 0;
-
-let score = 0;
-
-let level = 1;
-
-let dodgedCars = 0;
-
-let roadY = 0;
-
-let coins = [];
-
-let attackerCars = [];
-
-let sparks = [];
-
-
-const carWidth = 52;
-
-const carHeight = 105;
-
+let currentRoadIndex = allRoads.findIndex(road => road.id === currentRoad);
+if(currentRoadIndex < 0) { currentRoadIndex = 0; currentRoad = "road"; }
 
 /* =====================================================
-   حجم Canvas
-===================================================== */
-
-function resizeCanvas(){
-
-    canvas.width =
-        Math.min(
-            window.innerWidth,
-            480
-        );
-
-    canvas.height =
-        window.innerHeight;
-
-}
-
-
-window.addEventListener(
-    "resize",
-    resizeCanvas
-);
-
-resizeCanvas();
-
-
-/* =====================================================
-   تحديث السيارات
+   تحديث واجهات السيارات والطرق
 ===================================================== */
 
 function updateCarButtons(){
-
-    const t =
-        i18n[currentLang];
-
-
-    document.getElementById(
-        "startMoneyTxt"
-    ).innerText =
-        t.money + money;
-
+    const t = i18n[currentLang];
+    updateAllMoneyDisplays();
 
     allCars.forEach(car => {
-
-        const btn =
-            document.getElementById(
-                car.id + "Btn"
-            );
-
-
-        const unlocked =
-            unlockedCars.includes(
-                car.id
-            );
-
-
-        const selected =
-            currentCar === car.id;
-
-
-        const name =
-            currentLang === "ar"
-            ? car.nameAr
-            : car.nameEn;
-
+        const btn = document.getElementById(car.id + "Btn");
+        const unlocked = unlockedCars.includes(car.id);
+        const selected = currentCar === car.id;
+        const name = currentLang === "ar" ? car.nameAr : car.nameEn;
 
         if(selected){
-
-            btn.innerText =
-                name +
-                "\n(" +
-                t.selected +
-                ")";
-
-            btn.style.background =
-                "linear-gradient(45deg,#27ae60,#2ecc71)";
-
+            btn.innerText = name + "\n(" + t.selected + ")";
+            btn.style.background = "linear-gradient(45deg,#27ae60,#2ecc71)";
+        } else if(unlocked){
+            btn.innerText = name + "\n(" + t.select + ")";
+            btn.style.background = "linear-gradient(45deg,#2980b9,#3498db)";
+        } else {
+            btn.innerText = name + "\n🔒 $" + car.price;
+            btn.style.background = "linear-gradient(45deg,#7f8c8d,#95a5a6)";
         }
-
-        else if(unlocked){
-
-            btn.innerText =
-                name +
-                "\n(" +
-                t.select +
-                ")";
-
-            btn.style.background =
-                "linear-gradient(45deg,#2980b9,#3498db)";
-
-        }
-
-        else{
-
-            btn.innerText =
-                name +
-                "\n🔒 $" +
-                car.price;
-
-            btn.style.background =
-                "linear-gradient(45deg,#7f8c8d,#95a5a6)";
-
-        }
-
     });
-
 }
-
-
-/* =====================================================
-   شراء / اختيار سيارة
-===================================================== */
 
 function handleCarClick(id){
+    const car = allCars.find(item => item.id === id);
+    if(!car) return;
 
-    const car =
-        allCars.find(
-            item => item.id === id
-        );
-
-
-    if(!car)
-        return;
-
-
-    if(
-        unlockedCars.includes(id)
-    ){
-
+    if(unlockedCars.includes(id)){
         currentCar = id;
-
-        localStorage.setItem(
-            "carRace_currentCar",
-            currentCar
-        );
-
-    }
-
-    else{
-
-        if(
-            money < car.price
-        ){
-
-            alert(
-                i18n[currentLang].need +
-                (car.price - money) +
-                i18n[currentLang].more
-            );
-
+        localStorage.setItem("carRace_currentCar", currentCar);
+    } else {
+        if(money < car.price){
+            alert(i18n[currentLang].need + (car.price - money) + i18n[currentLang].more);
             return;
-
         }
-
-
         money -= car.price;
-
         unlockedCars.push(id);
-
         currentCar = id;
 
-
-        localStorage.setItem(
-            "carRace_money",
-            money
-        );
-
-
-        localStorage.setItem(
-            "carRace_unlockedCars",
-            JSON.stringify(
-                unlockedCars
-            )
-        );
-
-
-        localStorage.setItem(
-            "carRace_currentCar",
-            currentCar
-        );
-
+        saveMoney();
+        localStorage.setItem("carRace_unlockedCars", JSON.stringify(unlockedCars));
+        localStorage.setItem("carRace_currentCar", currentCar);
     }
-
-
     updateCarButtons();
-
 }
-
 
 allCars.forEach(car => {
-
-    document.getElementById(
-        car.id + "Btn"
-    ).onclick = function(){
-
-        handleCarClick(
-            car.id
-        );
-
-    };
-
+    document.getElementById(car.id + "Btn").onclick = () => handleCarClick(car.id);
 });
 
-
-/* =====================================================
-   تحديث الطرق
-===================================================== */
-
 function updateRoadUI(){
-
-    const t =
-        i18n[currentLang];
-
-
-    const road =
-        allRoads[
-            currentRoadIndex
-        ];
-
-
-    const unlocked =
-        unlockedRoads.includes(
-            road.id
-        );
-
-
-    const selected =
-        currentRoad === road.id;
-
-
-    const name =
-        currentLang === "ar"
-        ? road.nameAr
-        : road.nameEn;
-
+    const t = i18n[currentLang];
+    const road = allRoads[currentRoadIndex];
+    const unlocked = unlockedRoads.includes(road.id);
+    const selected = currentRoad === road.id;
+    const name = currentLang === "ar" ? road.nameAr : road.nameEn;
 
     if(selected){
-
-        roadBtn.innerText =
-            name +
-            " (" +
-            t.roadSelected +
-            ")";
-
-        roadBtn.style.background =
-            "linear-gradient(45deg,#27ae60,#2ecc71)";
-
+        roadBtn.innerText = name + " (" + t.roadSelected + ")";
+        roadBtn.style.background = "linear-gradient(45deg,#27ae60,#2ecc71)";
+    } else if(unlocked){
+        roadBtn.innerText = name + " (" + t.roadSelect + ")";
+        roadBtn.style.background = "linear-gradient(45deg,#2980b9,#3498db)";
+    } else {
+        roadBtn.innerText = name + " 🔒 $" + road.price;
+        roadBtn.style.background = "linear-gradient(45deg,#d35400,#e67e22)";
     }
-
-    else if(unlocked){
-
-        roadBtn.innerText =
-            name +
-            " (" +
-            t.roadSelect +
-            ")";
-
-        roadBtn.style.background =
-            "linear-gradient(45deg,#2980b9,#3498db)";
-
-    }
-
-    else{
-
-        roadBtn.innerText =
-            name +
-            " 🔒 $" +
-            road.price;
-
-        roadBtn.style.background =
-            "linear-gradient(45deg,#d35400,#e67e22)";
-
-    }
-
 }
 
-
-/* =====================================================
-   اختيار / شراء الطريق
-===================================================== */
-
 roadBtn.onclick = function(){
-
-    const road =
-        allRoads[
-            currentRoadIndex
-        ];
-
-
-    if(
-        unlockedRoads.includes(
-            road.id
-        )
-    ){
-
-        currentRoad =
-            road.id;
-
-        localStorage.setItem(
-            "carRace_currentRoad",
-            currentRoad
-        );
-
-    }
-
-    else{
-
-        if(
-            money < road.price
-        ){
-
-            alert(
-                i18n[currentLang].need +
-                (road.price - money) +
-                i18n[currentLang].more
-            );
-
+    const road = allRoads[currentRoadIndex];
+    if(unlockedRoads.includes(road.id)){
+        currentRoad = road.id;
+        localStorage.setItem("carRace_currentRoad", currentRoad);
+    } else {
+        if(money < road.price){
+            alert(i18n[currentLang].need + (road.price - money) + i18n[currentLang].more);
             return;
-
         }
-
-
         money -= road.price;
+        unlockedRoads.push(road.id);
+        currentRoad = road.id;
 
-        unlockedRoads.push(
-            road.id
-        );
-
-        currentRoad =
-            road.id;
-
-
-        localStorage.setItem(
-            "carRace_money",
-            money
-        );
-
-
-        localStorage.setItem(
-            "carRace_unlockedRoads",
-            JSON.stringify(
-                unlockedRoads
-            )
-        );
-
-
-        localStorage.setItem(
-            "carRace_currentRoad",
-            currentRoad
-        );
-
+        saveMoney();
+        localStorage.setItem("carRace_unlockedRoads", JSON.stringify(unlockedRoads));
+        localStorage.setItem("carRace_currentRoad", currentRoad);
     }
-
-
     updateCarButtons();
-
     updateRoadUI();
-
 };
 
-
-/* =====================================================
-   Swipe للطرق
-===================================================== */
-
+/* Swipe للطرق */
 let touchStartX = 0;
+roadShopBox.addEventListener("touchstart", (e) => touchStartX = e.touches[0].clientX, {passive:true});
+roadShopBox.addEventListener("touchend", (e) => {
+    const diff = e.changedTouches[0].clientX - touchStartX;
+    if(Math.abs(diff) < 30) return;
 
-
-roadShopBox.addEventListener(
-    "touchstart",
-    function(e){
-
-        touchStartX =
-            e.touches[0].clientX;
-
-    },
-    {passive:true}
-);
-
-
-roadShopBox.addEventListener(
-    "touchend",
-    function(e){
-
-        const touchEndX =
-            e.changedTouches[0].clientX;
-
-
-        const diff =
-            touchEndX -
-            touchStartX;
-
-
-        if(
-            Math.abs(diff) < 30
-        )
-            return;
-
-
-        if(
-            currentLang === "ar"
-        ){
-
-            if(diff < 0){
-
-                currentRoadIndex =
-                    (
-                        currentRoadIndex + 1
-                    ) %
-                    allRoads.length;
-
-            }
-
-            else{
-
-                currentRoadIndex =
-                    (
-                        currentRoadIndex -
-                        1 +
-                        allRoads.length
-                    ) %
-                    allRoads.length;
-
-            }
-
-        }
-
-        else{
-
-            if(diff > 0){
-
-                currentRoadIndex =
-                    (
-                        currentRoadIndex + 1
-                    ) %
-                    allRoads.length;
-
-            }
-
-            else{
-
-                currentRoadIndex =
-                    (
-                        currentRoadIndex -
-                        1 +
-                        allRoads.length
-                    ) %
-                    allRoads.length;
-
-            }
-
-        }
-
-
-        updateRoadUI();
-
-    },
-    {passive:true}
-);
-
+    if((currentLang === "ar" && diff < 0) || (currentLang === "en" && diff > 0)) {
+        currentRoadIndex = (currentRoadIndex + 1) % allRoads.length;
+    } else {
+        currentRoadIndex = (currentRoadIndex - 1 + allRoads.length) % allRoads.length;
+    }
+    updateRoadUI();
+}, {passive:true});
 
 /* =====================================================
-   تغيير اللغة
+   اللغة وشحن العملات
 ===================================================== */
 
 function setLanguage(lang){
-
     currentLang = lang;
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
 
+    document.getElementById("hubLangAr").classList.toggle("active", lang === "ar");
+    document.getElementById("hubLangEn").classList.toggle("active", lang === "en");
 
-    document.documentElement.lang =
-        lang;
-
-    document.documentElement.dir =
-        lang === "ar"
-        ? "rtl"
-        : "ltr";
-
-
-    langAr.classList.toggle(
-        "active",
-        lang === "ar"
-    );
-
-
-    langEn.classList.toggle(
-        "active",
-        lang === "en"
-    );
-
-
-    const t =
-        i18n[lang];
-
-
-    document.getElementById(
-        "titleTxt"
-    ).innerText =
-        t.title;
-
-
-    document.getElementById(
-        "selectCarTxt"
-    ).innerText =
-        t.selectCar;
-
-
-    document.getElementById(
-        "selectRoadTxt"
-    ).innerText =
-        t.selectRoad;
-
-
-    document.getElementById(
-        "swipeHintTxt"
-    ).innerText =
-        t.swipe;
-
-
-    easyBtn.innerText =
-        t.easy;
-
-
-    hardBtn.innerText =
-        t.hard;
-
-
-    cheatBtn.innerText =
-        t.cheat;
-
-
-    startBtn.innerText =
-        t.start;
-
-
-    pauseBtn.innerText =
-        t.resume;
-
-
-    restartBtn.innerText =
-        t.restart;
-
+    const t = i18n[lang];
+    document.getElementById("hubTitle").innerText = t.hubTitle;
+    document.getElementById("titleTxt").innerText = t.title;
+    document.getElementById("casinoTitle").innerText = t.casinoTitle;
+    document.getElementById("selectCarTxt").innerText = t.selectCar;
+    document.getElementById("selectRoadTxt").innerText = t.selectRoad;
+    document.getElementById("swipeHintTxt").innerText = t.swipe;
+    easyBtn.innerText = t.easy;
+    hardBtn.innerText = t.hard;
+    hubCheatBtn.innerText = t.cheat;
+    startBtn.innerText = t.start;
+    pauseBtn.innerText = t.resume;
+    restartBtn.innerText = t.restart;
+    document.getElementById("betLabel").innerText = t.betLabel;
+    document.getElementById("spinBtn").innerText = t.spin;
 
     updateCarButtons();
-
     updateRoadUI();
-
 }
 
+document.getElementById("hubLangAr").onclick = () => setLanguage("ar");
+document.getElementById("hubLangEn").onclick = () => setLanguage("en");
 
-langAr.onclick =
-    () => setLanguage("ar");
-
-
-langEn.onclick =
-    () => setLanguage("en");
-
-
-/* =====================================================
-   اختيار الصعوبة
-===================================================== */
-
-easyBtn.onclick =
-    function(){
-
-        difficulty = "easy";
-
-        easyBtn.style.border =
-            "2px solid gold";
-
-        hardBtn.style.border =
-            "none";
-
-    };
-
-
-hardBtn.onclick =
-    function(){
-
-        difficulty = "hard";
-
-        hardBtn.style.border =
-            "2px solid gold";
-
-        easyBtn.style.border =
-            "none";
-
-    };
-
-
-/* =====================================================
-   شحن العملات بكلمة السر jfjf747g
-===================================================== */
-
-cheatBtn.onclick = function(){
-
-    const pass = prompt(
-        currentLang === "ar"
-        ? "أدخل كلمة السر لشحن العملات:"
-        : "Enter cheat code to add cash:"
-    );
-
+hubCheatBtn.onclick = function(){
+    const pass = prompt(currentLang === "ar" ? "أدخل كلمة السر لشحن العملات:" : "Enter cheat code to add cash:");
     if(pass === "jfjf747g"){
-
         money += 5000;
-
-        localStorage.setItem("carRace_money", money);
-
-        updateCarButtons();
-
-        alert(
-            currentLang === "ar"
-            ? "🎉 تم شحن 5000$ بنجاح!"
-            : "🎉 $5000 added successfully!"
-        );
-
+        saveMoney();
+        alert(currentLang === "ar" ? "🎉 تم شحن 5000$ بنجاح!" : "🎉 $5000 added successfully!");
     }else if(pass !== null){
-
-        alert(
-            currentLang === "ar"
-            ? "❌ كلمة السر غير صحيحة!"
-            : "❌ Invalid code!"
-        );
-
+        alert(currentLang === "ar" ? "❌ كلمة السر غير صحيحة!" : "❌ Invalid code!");
     }
-
 };
 
-
 /* =====================================================
-   رسم سيارة احتياطية
+   حالة وحسابات لعبة السيارات
 ===================================================== */
 
-function drawFallbackCar(
-    w,
-    h,
-    color
-){
+let difficulty = "easy";
+let paused = false;
+let gameOver = false;
+let playerX = 0, playerY = 0, playerVx = 0;
+let score = 0, level = 1, dodgedCars = 0, roadY = 0;
+let coins = [], attackerCars = [], sparks = [];
+const carWidth = 52, carHeight = 105;
 
-    ctx.fillStyle =
-        color;
+easyBtn.onclick = () => { difficulty = "easy"; easyBtn.style.border = "2px solid gold"; hardBtn.style.border = "none"; };
+hardBtn.onclick = () => { difficulty = "hard"; hardBtn.style.border = "2px solid gold"; easyBtn.style.border = "none"; };
 
+function resizeCanvas(){
+    canvas.width = Math.min(window.innerWidth, 480);
+    canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
 
+/* رسم السيارات و Hitbox */
+function drawFallbackCar(w, h, color){
+    ctx.fillStyle = color;
     ctx.beginPath();
-
-    ctx.roundRect(
-        -w / 2,
-        -h / 2,
-        w,
-        h,
-        8
-    );
-
+    ctx.roundRect(-w/2, -h/2, w, h, 8);
     ctx.fill();
-
-
-    ctx.fillStyle =
-        "#87CEEB";
-
-
-    ctx.fillRect(
-        -w / 2 + 5,
-        -h / 4,
-        w - 10,
-        h / 4
-    );
-
-
-    ctx.fillStyle =
-        "#111";
-
-
-    ctx.fillRect(
-        -w / 2 - 3,
-        -h / 3,
-        4,
-        18
-    );
-
-
-    ctx.fillRect(
-        w / 2 - 1,
-        -h / 3,
-        4,
-        18
-    );
-
-
-    ctx.fillRect(
-        -w / 2 - 3,
-        h / 4,
-        4,
-        18
-    );
-
-
-    ctx.fillRect(
-        w / 2 - 1,
-        h / 4,
-        4,
-        18
-    );
-
+    ctx.fillStyle = "#87CEEB";
+    ctx.fillRect(-w/2 + 5, -h/4, w - 10, h/4);
 }
 
-
-/* =====================================================
-   رسم السيارة
-===================================================== */
-
-function renderCar(
-    img,
-    x,
-    y,
-    w,
-    h,
-    color,
-    isPlayer,
-    tilt
-){
-
+function renderCar(img, x, y, w, h, color, isPlayer, tilt){
     ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+    let rotation = isPlayer ? 0 : Math.PI;
+    rotation += tilt * .03;
+    ctx.rotate(rotation);
 
-
-    ctx.translate(
-        x + w / 2,
-        y + h / 2
-    );
-
-
-    let rotation =
-        isPlayer
-        ? 0
-        : Math.PI;
-
-
-    rotation +=
-        tilt * .03;
-
-
-    ctx.rotate(
-        rotation
-    );
-
-
-    if(
-        img.complete &&
-        img.naturalWidth > 0
-    ){
-
-        ctx.drawImage(
-            img,
-            -w / 2,
-            -h / 2,
-            w,
-            h
-        );
-
-    }
-
-    else{
-
-        drawFallbackCar(
-            w,
-            h,
-            color
-        );
-
-    }
-
-
-    ctx.restore();
-
-}
-
-
-/* =====================================================
-   Hitbox (تقليص المنطقة الأمامية 5% والمنطقة الخلفية 15%)
-===================================================== */
-
-function getHitbox(
-    x,
-    y,
-    w,
-    h,
-    isPlayer = true
-){
-
-    const insetX =
-        w * .22;
-
-    let insetYTop =
-        h * .12;
-
-    let insetYBottom =
-        h * .12;
-
-    // تقليص المنطقة الأمامية (5%) والمنطقة الخلفية (15%)
-    if(isPlayer){
-        insetYTop += h * 0.05;    // مقدمة سيارة اللاعب (في الأعلى)
-        insetYBottom += h * 0.15; // خلفية سيارة اللاعب (في الأسفل)
+    if(img.complete && img.naturalWidth > 0){
+        ctx.drawImage(img, -w/2, -h/2, w, h);
     } else {
-        insetYBottom += h * 0.05; // مقدمة سيارة الخصم (في الأسفل)
-        insetYTop += h * 0.15;    // خلفية سيارة الخصم (في الأعلى)
+        drawFallbackCar(w, h, color);
+    }
+    ctx.restore();
+}
+
+function getHitbox(x, y, w, h, isPlayer = true){
+    const insetX = w * .22;
+    let insetYTop = h * .12, insetYBottom = h * .12;
+
+    if(isPlayer){
+        insetYTop += h * 0.05;
+        insetYBottom += h * 0.15;
+    } else {
+        insetYBottom += h * 0.05;
+        insetYTop += h * 0.15;
     }
 
-    const origW =
-        w - insetX * 2;
+    const origW = w - insetX * 2;
+    const origH = h - (insetYTop + insetYBottom);
+    const boxW = origW * 0.90, boxH = origH * 0.90;
 
-    const origH =
-        h - (insetYTop + insetYBottom);
-
-    // تقليل الأبعاد الكلية 10%
-    const boxW =
-        origW * 0.90;
-
-    const boxH =
-        origH * 0.90;
-
-
-    return {
-
-        x:
-            x + insetX + (origW - boxW) / 2,
-
-        y:
-            y + insetYTop + (origH - boxH) / 2,
-
-        w:
-            boxW,
-
-        h:
-            boxH
-
-    };
-
+    return { x: x + insetX + (origW - boxW) / 2, y: y + insetYTop + (origH - boxH) / 2, w: boxW, h: boxH };
 }
 
-
-function collision(a,b){
-
-    return (
-
-        a.x <
-        b.x + b.w &&
-
-        a.x + a.w >
-        b.x &&
-
-        a.y <
-        b.y + b.h &&
-
-        a.y + a.h >
-        b.y
-
-    );
-
+function collision(a, b){
+    return (a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y);
 }
 
-
-/* =====================================================
-   ذكاء السيارات
-===================================================== */
-
+/* AI السيارات المنافسة */
 class SmartAICar{
-
-    constructor(model){
-
-        this.model =
-            model;
-
-        this.w =
-            carWidth;
-
-        this.h =
-            carHeight;
-
-        this.reset();
-
-    }
-
-
+    constructor(model){ this.model = model; this.w = carWidth; this.h = carHeight; this.reset(); }
     reset(){
-
-        this.x =
-            Math.random() *
-            (
-                canvas.width -
-                this.w
-            );
-
-
-        this.y =
-            -this.h -
-            Math.random() * 400;
-
-
-        this.baseSpeed =
-            (
-                difficulty === "easy"
-                ? 3.5
-                : 5.2
-            )
-            +
-            Math.random() * 1.5;
-
-
-        this.steeringPower =
-            difficulty === "easy"
-            ? .025
-            : .05;
-
-
+        this.x = Math.random() * (canvas.width - this.w);
+        this.y = -this.h - Math.random() * 400;
+        this.baseSpeed = (difficulty === "easy" ? 3.5 : 5.2) + Math.random() * 1.5;
+        this.steeringPower = difficulty === "easy" ? .025 : .05;
         this.vx = 0;
-
     }
-
-
     update(){
-
-        const distanceY =
-            playerY -
-            this.y;
-
-
-        if(
-            distanceY > 0 &&
-            distanceY <
-            canvas.height * .75
-        ){
-
-            const diffX =
-                playerX -
-                this.x;
-
-
-            this.vx +=
-                (
-                    diffX *
-                    this.steeringPower -
-                    this.vx
-                ) * .1;
-
-        }
-
-        else{
-
+        const distanceY = playerY - this.y;
+        if(distanceY > 0 && distanceY < canvas.height * .75){
+            const diffX = playerX - this.x;
+            this.vx += (diffX * this.steeringPower - this.vx) * .1;
+        } else {
             this.vx *= .9;
-
         }
+        this.x += this.vx;
+        this.y += this.baseSpeed + level * .4;
+        this.x = Math.max(5, Math.min(canvas.width - this.w - 5, this.x));
 
-
-        this.x +=
-            this.vx;
-
-
-        this.y +=
-            this.baseSpeed +
-            level * .4;
-
-
-        this.x =
-            Math.max(
-                5,
-                Math.min(
-                    canvas.width -
-                    this.w -
-                    5,
-                    this.x
-                )
-            );
-
-
-        if(
-            this.y >
-            canvas.height + 60
-        ){
-
+        if(this.y > canvas.height + 60){
             this.reset();
-
             score++;
-
             dodgedCars++;
-
-            level =
-                Math.floor(
-                    dodgedCars / 7
-                ) + 1;
-
+            level = Math.floor(dodgedCars / 7) + 1;
         }
-
     }
-
 }
-
-
-/* =====================================================
-   إنشاء السيارات
-===================================================== */
 
 function setupAttackers(){
-
     attackerCars = [];
-
-
-    const opponents =
-        allCars.filter(
-            car =>
-                car.id !== currentCar
-        );
-
-
-    const count =
-        difficulty === "easy"
-        ? 2
-        : 3;
-
-
-    for(
-        let i=0;
-        i<count;
-        i++
-    ){
-
-        attackerCars.push(
-            new SmartAICar(
-                opponents[
-                    i % opponents.length
-                ]
-            )
-        );
-
+    const opponents = allCars.filter(car => car.id !== currentCar);
+    const count = difficulty === "easy" ? 2 : 3;
+    for(let i=0; i<count; i++){
+        attackerCars.push(new SmartAICar(opponents[i % opponents.length]));
     }
-
 }
-
-
-/* =====================================================
-   العملات
-===================================================== */
 
 function spawnCoin(){
-
-    if(
-        Math.random() < .02 &&
-        coins.length < 3
-    ){
-
-        coins.push({
-
-            x:
-                Math.random() *
-                (
-                    canvas.width - 40
-                ) + 20,
-
-            y:-40,
-
-            value:10,
-
-            size:24
-
-        });
-
+    if(Math.random() < .02 && coins.length < 3){
+        coins.push({ x: Math.random() * (canvas.width - 40) + 20, y: -40, value: 10, size: 24 });
     }
-
 }
 
-
-/* =====================================================
-   الشرارات
-===================================================== */
-
-function createSparks(x,y){
-
-    for(
-        let i=0;
-        i<35;
-        i++
-    ){
-
+function createSparks(x, y){
+    for(let i=0; i<35; i++){
         sparks.push({
-
-            x:x,
-
-            y:y,
-
-            vx:
-                (
-                    Math.random() -
-                    .5
-                ) * 16,
-
-            vy:
-                (
-                    Math.random() -
-                    .5
-                ) * 16,
-
-            size:
-                Math.random() * 5 + 2,
-
-            life:1
-
+            x: x, y: y,
+            vx: (Math.random() - .5) * 16,
+            vy: (Math.random() - .5) * 16,
+            size: Math.random() * 5 + 2,
+            life: 1
         });
-
     }
-
 }
-
-
-/* =====================================================
-   إعادة اللعبة
-===================================================== */
 
 function resetGame(){
-
     resizeCanvas();
-
-
-    playerX =
-        canvas.width / 2 -
-        carWidth / 2;
-
-
-    playerY =
-        canvas.height -
-        carHeight -
-        30;
-
-
-    playerVx = 0;
-
-
-    roadY = 0;
-
-    score = 0;
-
-    level = 1;
-
-    dodgedCars = 0;
-
-
-    coins = [];
-
-    sparks = [];
-
-
-    gameOver = false;
-
-    paused = false;
-
-
-    controlPanel.style.display =
-        "none";
-
-
+    playerX = canvas.width / 2 - carWidth / 2;
+    playerY = canvas.height - carHeight - 30;
+    playerVx = 0; roadY = 0; score = 0; level = 1; dodgedCars = 0;
+    coins = []; sparks = [];
+    gameOver = false; paused = false;
+    controlPanel.style.display = "none";
     setupAttackers();
-
 }
 
-
 /* =====================================================
-   رسم اللعبة
+   حلقة رسم اللعبة (Game Loop)
 ===================================================== */
 
 function drawGame(){
+    if(gameOver || paused) return;
 
-    if(
-        gameOver ||
-        paused
-    )
-        return;
-
-
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-
-    const roadSpeed =
-        (
-            difficulty === "easy"
-            ? 6
-            : 8
-        ) + level;
-
-
-    roadY =
-        (
-            roadY +
-            roadSpeed
-        ) %
-        canvas.height;
-
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const roadSpeed = (difficulty === "easy" ? 6 : 8) + level;
+    roadY = (roadY + roadSpeed) % canvas.height;
 
     /* الطريق */
+    const activeRoad = allRoads.find(road => road.id === currentRoad) || allRoads[0];
+    const roadImage = activeRoad.img;
 
-    const activeRoad =
-        allRoads.find(
-            road =>
-                road.id === currentRoad
-        ) ||
-        allRoads[0];
-
-
-    const roadImage =
-        activeRoad.img;
-
-
-    if(
-        roadImage.complete &&
-        roadImage.naturalWidth > 0
-    ){
-
-        ctx.drawImage(
-            roadImage,
-            0,
-            roadY,
-            canvas.width,
-            canvas.height
-        );
-
-
-        ctx.drawImage(
-            roadImage,
-            0,
-            roadY -
-            canvas.height,
-            canvas.width,
-            canvas.height
-        );
-
-    }
-
-    else{
-
-        ctx.fillStyle =
-            currentRoad === "desert"
-            ? "#c87520"
-            : currentRoad === "snow"
-            ? "#9eb5c7"
-            : "#333";
-
-
-        ctx.fillRect(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-
-        ctx.fillStyle =
-            "#f1c40f";
-
-
-        for(
-            let y=-canvas.height;
-            y<canvas.height;
-            y+=70
-        ){
-
-            ctx.fillRect(
-                canvas.width / 2 - 3,
-                y + (roadY % 70),
-                6,
-                35
-            );
-
+    if(roadImage.complete && roadImage.naturalWidth > 0){
+        ctx.drawImage(roadImage, 0, roadY, canvas.width, canvas.height);
+        ctx.drawImage(roadImage, 0, roadY - canvas.height, canvas.width, canvas.height);
+    } else {
+        ctx.fillStyle = currentRoad === "desert" ? "#c87520" : currentRoad === "snow" ? "#9eb5c7" : "#333";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#f1c40f";
+        for(let y=-canvas.height; y<canvas.height; y+=70){
+            ctx.fillRect(canvas.width / 2 - 3, y + (roadY % 70), 6, 35);
         }
-
     }
-
 
     /* العملات */
-
     spawnCoin();
-
-
-    for(
-        let i=coins.length-1;
-        i>=0;
-        i--
-    ){
-
-        const coin =
-            coins[i];
-
-
-        coin.y +=
-            roadSpeed;
-
+    for(let i=coins.length-1; i>=0; i--){
+        const coin = coins[i];
+        coin.y += roadSpeed;
 
         ctx.beginPath();
+        ctx.arc(coin.x, coin.y, coin.size / 2, 0, Math.PI * 2);
+        ctx.fillStyle = "#f39c12"; ctx.fill();
+        ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.stroke();
+        ctx.fillStyle = "#fff"; ctx.font = "bold 12px Arial"; ctx.textAlign = "center";
+        ctx.fillText("$", coin.x, coin.y + 4);
 
-        ctx.arc(
-            coin.x,
-            coin.y,
-            coin.size / 2,
-            0,
-            Math.PI * 2
-        );
-
-
-        ctx.fillStyle =
-            "#f39c12";
-
-        ctx.fill();
-
-
-        ctx.strokeStyle =
-            "#fff";
-
-        ctx.lineWidth = 2;
-
-        ctx.stroke();
-
-
-        ctx.fillStyle =
-            "#fff";
-
-        ctx.font =
-            "bold 12px Arial";
-
-        ctx.textAlign =
-            "center";
-
-
-        ctx.fillText(
-            "$",
-            coin.x,
-            coin.y + 4
-        );
-
-
-        if(
-
-            Math.hypot(
-
-                playerX +
-                carWidth / 2 -
-                coin.x,
-
-                playerY +
-                carHeight / 2 -
-                coin.y
-
-            )
-
-            <
-
-            carWidth / 2 +
-            coin.size / 2
-
-        ){
-
-            money +=
-                coin.value;
-
-
+        if(Math.hypot(playerX + carWidth / 2 - coin.x, playerY + carHeight / 2 - coin.y) < carWidth / 2 + coin.size / 2){
+            money += coin.value;
             score += 5;
-
-
             coinSound.currentTime = 0;
-
-            coinSound.play()
-                .catch(
-                    () => {}
-                );
-
-
-            localStorage.setItem(
-                "carRace_money",
-                money
-            );
-
-
-            coins.splice(
-                i,
-                1
-            );
-
+            coinSound.play().catch(() => {});
+            saveMoney();
+            coins.splice(i, 1);
+        } else if(coin.y > canvas.height + 20){
+            coins.splice(i, 1);
         }
-
-
-        else if(
-            coin.y >
-            canvas.height + 20
-        ){
-
-            coins.splice(
-                i,
-                1
-            );
-
-        }
-
     }
-
 
     /* اللاعب */
-
-    const playerModel =
-        allCars.find(
-            car =>
-                car.id === currentCar
-        ) ||
-        allCars[0];
-
-
-    renderCar(
-
-        playerModel.img,
-
-        playerX,
-
-        playerY,
-
-        carWidth,
-
-        carHeight,
-
-        playerModel.color,
-
-        true,
-
-        playerVx
-
-    );
-
-
-    const playerBox =
-        getHitbox(
-            playerX,
-            playerY,
-            carWidth,
-            carHeight,
-            true
-        );
-
+    const playerModel = allCars.find(car => car.id === currentCar) || allCars[0];
+    renderCar(playerModel.img, playerX, playerY, carWidth, carHeight, playerModel.color, true, playerVx);
+    const playerBox = getHitbox(playerX, playerY, carWidth, carHeight, true);
 
     /* الخصوم */
-
-    for(
-        const attacker
-        of attackerCars
-    ){
-
+    for(const attacker of attackerCars){
         attacker.update();
+        renderCar(attacker.model.img, attacker.x, attacker.y, attacker.w, attacker.h, attacker.model.color, false, attacker.vx);
+        const enemyBox = getHitbox(attacker.x, attacker.y, attacker.w, attacker.h, false);
 
-
-        renderCar(
-
-            attacker.model.img,
-
-            attacker.x,
-
-            attacker.y,
-
-            attacker.w,
-
-            attacker.h,
-
-            attacker.model.color,
-
-            false,
-
-            attacker.vx
-
-        );
-
-
-        const enemyBox =
-            getHitbox(
-
-                attacker.x,
-
-                attacker.y,
-
-                attacker.w,
-
-                attacker.h,
-
-                false
-
-            );
-
-
-        if(
-            collision(
-                playerBox,
-                enemyBox
-            )
-        ){
-
-            createSparks(
-
-                (
-                    playerBox.x +
-                    enemyBox.x
-                ) / 2,
-
-                (
-                    playerBox.y +
-                    enemyBox.y
-                ) / 2
-
-            );
-
-
+        if(collision(playerBox, enemyBox)){
+            createSparks((playerBox.x + enemyBox.x) / 2, (playerBox.y + enemyBox.y) / 2);
             endGame();
-
             return;
-
         }
-
     }
-
 
     /* الشرارات */
-
-    for(
-        let i=sparks.length-1;
-        i>=0;
-        i--
-    ){
-
-        const spark =
-            sparks[i];
-
-
-        ctx.fillStyle =
-            `rgba(
-                255,
-                ${Math.floor(
-                    spark.life * 255
-                )},
-                0,
-                ${spark.life}
-            )`;
-
-
+    for(let i=sparks.length-1; i>=0; i--){
+        const spark = sparks[i];
+        ctx.fillStyle = `rgba(255, ${Math.floor(spark.life * 255)}, 0, ${spark.life})`;
         ctx.beginPath();
-
-        ctx.arc(
-            spark.x,
-            spark.y,
-            spark.size,
-            0,
-            Math.PI * 2
-        );
-
+        ctx.arc(spark.x, spark.y, spark.size, 0, Math.PI * 2);
         ctx.fill();
-
-
-        spark.x +=
-            spark.vx;
-
-        spark.y +=
-            spark.vy;
-
-        spark.life -=
-            .05;
-
-
-        if(
-            spark.life <= 0
-        ){
-
-            sparks.splice(
-                i,
-                1
-            );
-
-        }
-
+        spark.x += spark.vx; spark.y += spark.vy; spark.life -= .05;
+        if(spark.life <= 0) sparks.splice(i, 1);
     }
 
-
-    /* المعلومات */
-
-    const t =
-        i18n[currentLang];
-
-
-    ctx.fillStyle =
-        "white";
-
-    ctx.font =
-        "bold 15px Arial";
-
-
-    if(
-        currentLang === "ar"
-    ){
-
-        ctx.textAlign =
-            "right";
-
-
-        ctx.fillText(
-            t.money + money,
-            canvas.width - 15,
-            30
-        );
-
-
-        ctx.fillText(
-            t.score + " " + score,
-            canvas.width - 15,
-            55
-        );
-
-
-        ctx.fillText(
-            t.high + " " + highScore,
-            canvas.width - 15,
-            80
-        );
-
-
-        ctx.fillText(
-            t.level + " " + level,
-            canvas.width - 15,
-            105
-        );
-
+    /* المعلومات على الشاشة */
+    const t = i18n[currentLang];
+    ctx.fillStyle = "white"; ctx.font = "bold 15px Arial";
+    if(currentLang === "ar"){
+        ctx.textAlign = "right";
+        ctx.fillText(t.money + money, canvas.width - 15, 30);
+        ctx.fillText(t.score + " " + score, canvas.width - 15, 55);
+        ctx.fillText(t.high + " " + highScore, canvas.width - 15, 80);
+        ctx.fillText(t.level + " " + level, canvas.width - 15, 105);
+    } else {
+        ctx.textAlign = "left";
+        ctx.fillText(t.money + money, 15, 30);
+        ctx.fillText(t.score + " " + score, 15, 55);
+        ctx.fillText(t.high + " " + highScore, 15, 80);
+        ctx.fillText(t.level + " " + level, 15, 105);
     }
 
-    else{
-
-        ctx.textAlign =
-            "left";
-
-
-        ctx.fillText(
-            t.money + money,
-            15,
-            30
-        );
-
-
-        ctx.fillText(
-            t.score + " " + score,
-            15,
-            55
-        );
-
-
-        ctx.fillText(
-            t.high + " " + highScore,
-            15,
-            80
-        );
-
-
-        ctx.fillText(
-            t.level + " " + level,
-            15,
-            105
-        );
-
-    }
-
-
-    requestAnimationFrame(
-        drawGame
-    );
-
+    requestAnimationFrame(drawGame);
 }
-
-
-/* =====================================================
-   نهاية اللعبة
-===================================================== */
 
 function endGame(){
-
-    if(gameOver)
-        return;
-
-
+    if(gameOver) return;
     gameOver = true;
-
-
     bgMusic.pause();
-
-
     crashSound.currentTime = 0;
+    crashSound.play().catch(() => {});
 
-
-    crashSound.play()
-        .catch(
-            () => {}
-        );
-
-
-    if(
-        score > highScore
-    ){
-
-        highScore =
-            score;
-
-
-        localStorage.setItem(
-            "carRace_highScore",
-            highScore
-        );
-
+    if(score > highScore){
+        highScore = score;
+        localStorage.setItem("carRace_highScore", highScore);
     }
 
-
-    setTimeout(
-        function(){
-
-            const t =
-                i18n[currentLang];
-
-
-            alert(
-
-                t.crash +
-
-                "\n" +
-
-                t.score +
-                " " +
-                score +
-
-                "\n" +
-
-                t.money +
-                money +
-
-                "\n" +
-
-                t.high +
-                " " +
-                highScore
-
-            );
-
-
-            startScreen.style.display =
-                "block";
-
-
-            canvas.style.display =
-                "none";
-
-
-            updateCarButtons();
-
-            updateRoadUI();
-
-        },
-        300
-    );
-
+    setTimeout(() => {
+        const t = i18n[currentLang];
+        alert(t.crash + "\n" + t.score + " " + score + "\n" + t.money + money + "\n" + t.high + " " + highScore);
+        showScreen("carStart");
+    }, 300);
 }
 
-
 /* =====================================================
-   لوحة المفاتيح
+   أدوات التحكم (لوحة المفاتيح واللمس)
 ===================================================== */
 
-document.addEventListener(
-    "keydown",
-    function(e){
+document.addEventListener("keydown", (e) => {
+    if(gameOver || paused) return;
+    const step = 22;
+    if(e.key === "ArrowLeft") { playerX -= step; playerVx = -5; }
+    if(e.key === "ArrowRight") { playerX += step; playerVx = 5; }
+    if(e.key === "ArrowUp") playerY -= step;
+    if(e.key === "ArrowDown") playerY += step;
 
-        if(
-            gameOver ||
-            paused
-        )
-            return;
+    playerX = Math.max(0, Math.min(canvas.width - carWidth, playerX));
+    playerY = Math.max(0, Math.min(canvas.height - carHeight, playerY));
+});
 
-
-        const step = 22;
-
-
-        if(
-            e.key === "ArrowLeft"
-        ){
-
-            playerX -= step;
-
-            playerVx = -5;
-
-        }
-
-
-        if(
-            e.key === "ArrowRight"
-        ){
-
-            playerX += step;
-
-            playerVx = 5;
-
-        }
-
-
-        if(
-            e.key === "ArrowUp"
-        ){
-
-            playerY -= step;
-
-        }
-
-
-        if(
-            e.key === "ArrowDown"
-        ){
-
-            playerY += step;
-
-        }
-
-
-        playerX =
-            Math.max(
-                0,
-                Math.min(
-                    canvas.width -
-                    carWidth,
-                    playerX
-                )
-            );
-
-
-        playerY =
-            Math.max(
-                0,
-                Math.min(
-                    canvas.height -
-                    carHeight,
-                    playerY
-                )
-            );
-
-    }
-);
-
-
-document.addEventListener(
-    "keyup",
-    function(e){
-
-        if(
-            e.key === "ArrowLeft" ||
-            e.key === "ArrowRight"
-        ){
-
-            playerVx = 0;
-
-        }
-
-    }
-);
-
-
-/* =====================================================
-   التحكم باللمس
-===================================================== */
+document.addEventListener("keyup", (e) => {
+    if(e.key === "ArrowLeft" || e.key === "ArrowRight") playerVx = 0;
+});
 
 function movePlayerTouch(e){
+    if(gameOver || paused) return;
+    const touch = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    let targetX = touch.clientX - rect.left - carWidth / 2;
+    let targetY = touch.clientY - rect.top - carHeight / 2;
 
-    if(
-        gameOver ||
-        paused
-    )
-        return;
-
-
-    const touch =
-        e.touches[0];
-
-
-    const rect =
-        canvas.getBoundingClientRect();
-
-
-    let targetX =
-        touch.clientX -
-        rect.left -
-        carWidth / 2;
-
-
-    let targetY =
-        touch.clientY -
-        rect.top -
-        carHeight / 2;
-
-
-    playerVx =
-        targetX -
-        playerX;
-
-
-    playerX =
-        Math.max(
-            0,
-            Math.min(
-                canvas.width -
-                carWidth,
-                targetX
-            )
-        );
-
-
-    playerY =
-        Math.max(
-            0,
-            Math.min(
-                canvas.height -
-                carHeight,
-                targetY
-            )
-        );
-
+    playerVx = targetX - playerX;
+    playerX = Math.max(0, Math.min(canvas.width - carWidth, targetX));
+    playerY = Math.max(0, Math.min(canvas.height - carHeight, targetY));
 }
 
-
-canvas.addEventListener(
-    "touchstart",
-    movePlayerTouch,
-    {passive:true}
-);
-
-
-canvas.addEventListener(
-    "touchmove",
-    function(e){
-
-        movePlayerTouch(e);
-
-        e.preventDefault();
-
-    },
-    {passive:false}
-);
-
-
-canvas.addEventListener(
-    "touchend",
-    function(){
-
-        playerVx = 0;
-
-    }
-);
-
+canvas.addEventListener("touchstart", movePlayerTouch, {passive:true});
+canvas.addEventListener("touchmove", (e) => { movePlayerTouch(e); e.preventDefault(); }, {passive:false});
+canvas.addEventListener("touchend", () => playerVx = 0);
 
 /* =====================================================
-   إيقاف / استئناف
+   إيقاف / استئناف / بدء
 ===================================================== */
 
 function togglePause(){
-
-    if(gameOver)
-        return;
-
-
-    paused =
-        !paused;
-
+    if(gameOver) return;
+    paused = !paused;
 
     if(paused){
-
         bgMusic.pause();
-
-
-        pauseBtn.innerText =
-            i18n[currentLang].resume;
-
-
-        controlPanel.style.display =
-            "block";
-
-    }
-
-    else{
-
-        controlPanel.style.display =
-            "none";
-
-
-        pauseBtn.innerText =
-            i18n[currentLang].pause;
-
-
-        bgMusic.play()
-            .catch(
-                () => {}
-            );
-
-
+        pauseBtn.innerText = i18n[currentLang].resume;
+        controlPanel.style.display = "block";
+    } else {
+        controlPanel.style.display = "none";
+        pauseBtn.innerText = i18n[currentLang].pause;
+        bgMusic.play().catch(() => {});
         drawGame();
-
     }
-
 }
 
+pauseBtn.onclick = togglePause;
+restartBtn.onclick = () => { resetGame(); bgMusic.currentTime = 0; bgMusic.play().catch(() => {}); drawGame(); };
 
-pauseBtn.onclick =
-    togglePause;
-
-
-/* =====================================================
-   إعادة التشغيل
-===================================================== */
-
-restartBtn.onclick =
-    function(){
-
-        resetGame();
-
-
-        bgMusic.currentTime = 0;
-
-
-        bgMusic.play()
-            .catch(
-                () => {}
-            );
-
-
-        drawGame();
-
-    };
-
-
-/* =====================================================
-   بدء اللعبة
-===================================================== */
-
-startBtn.onclick =
-    function(){
-
-        startScreen.style.display =
-            "none";
-
-
-        canvas.style.display =
-            "block";
-
-
-        resetGame();
-
-
-        bgMusic.currentTime = 0;
-
-
-        bgMusic.play()
-            .catch(
-                () => {}
-            );
-
-
-        drawGame();
-
-    };
-
+startBtn.onclick = () => {
+    showScreen("canvas");
+    resetGame();
+    bgMusic.currentTime = 0;
+    bgMusic.play().catch(() => {});
+    drawGame();
+};
 
 /* =====================================================
    تشغيل أولي
 ===================================================== */
 
 setLanguage("ar");
-
-updateCarButtons();
-
-updateRoadUI();
+showScreen("hub");
 
 </script>
 
