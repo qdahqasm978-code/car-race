@@ -304,6 +304,24 @@ canvas{
     font-size: 12px;
 }
 
+.name-chip {
+    background: #333;
+    color: gold;
+    border: 1px solid #555;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.name-chip span {
+    color: #e74c3c;
+    cursor: pointer;
+    font-weight: bold;
+}
+
 </style>
 </head>
 
@@ -326,7 +344,11 @@ canvas{
     </button>
 
     <button id="goToCasinoBtn" class="hub-btn" style="border-color: #2ecc71; color: #2ecc71;">
-        🎰 لعبة الرهان والحظ
+        🎰 لعبة الرهان والحظ (ماكينة السلوت)
+    </button>
+
+    <button id="goToWheelBtn" class="hub-btn" style="border-color: #9b59b6; color: #be90d4;">
+        🎡 عجلة الأسماء والحظ
     </button>
 
     <button id="hubCheatBtn" class="menu-btn" style="background: linear-gradient(45deg, #8e44ad, #9b59b6); border: 1px solid #be90d4; margin-top:15px; width:100%;">
@@ -362,6 +384,47 @@ canvas{
         <button id="spinBtn" onclick="spinSlots()">🎲 تدوير (سحب)</button>
         <div id="casinoMsg" class="casino-msg"></div>
     </div>
+</div>
+
+
+<!-- =====================================================
+     شاشة لعبة عجلة الأسماء والحظ
+===================================================== -->
+<div id="wheelScreen" class="overlay-card" style="display:none; border-color: #9b59b6; box-shadow: 0 0 25px rgba(155,89,182,.4);">
+    <button id="wheelBackBtn" class="nav-back-btn">⬅️ القائمة الرئيسية</button>
+
+    <h2 id="wheelTitle">🎡 عجلة الأسماء والحظ</h2>
+    <div id="wheelMoneyTxt" class="money-badge">💰 النقود: $0</div>
+
+    <div style="margin: 10px 0;">
+        <div style="display: flex; gap: 5px; margin-bottom: 8px;">
+            <input type="text" id="nameInput" placeholder="أدخل اسماً جديداً..." style="flex:1; padding:8px; border-radius:6px; border:1px solid #555; background:#222; color:white; font-size:13px;">
+            <button id="addNameBtn" class="bet-btn" onclick="addWheelName()" style="background:#8e44ad; color:white; font-weight:bold;">➕ إضافة</button>
+        </div>
+        <div id="namesList" style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; max-height:80px; overflow-y:auto; padding:5px; background:#111; border-radius:6px; border:1px solid #333;">
+            <!-- سيتم توليد الأسماء هنا -->
+        </div>
+    </div>
+
+    <div style="position:relative; width:220px; height:220px; margin: 10px auto;">
+        <!-- السهم المؤشر -->
+        <div style="position:absolute; top:-10px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:18px solid gold; z-index:10;"></div>
+        <canvas id="wheelCanvas" width="220" height="220" style="display:block; background:transparent; border-radius:50%; box-shadow: 0 0 10px rgba(0,0,0,0.8);"></canvas>
+    </div>
+
+    <p style="margin:5px; font-size:12px; color:#aaa;" id="selectBetNameTxt">اختر الاسم الذي تراهن عليه:</p>
+    <select id="betNameSelect" style="width:100%; padding:8px; margin-bottom:10px; border-radius:6px; background:#222; color:gold; border:1px solid gold; font-weight:bold;"></select>
+
+    <p style="margin:5px; font-size:12px; color:#aaa;" id="wheelBetLabel">اختر قيمة الرهان:</p>
+    <div class="bet-controls">
+        <button class="bet-btn active" onclick="setWheelBet(10, this)">$10</button>
+        <button class="bet-btn" onclick="setWheelBet(50, this)">$50</button>
+        <button class="bet-btn" onclick="setWheelBet(100, this)">$100</button>
+        <button class="bet-btn" onclick="setWheelBet('max', this)">MAX</button>
+    </div>
+
+    <button id="spinWheelBtn" onclick="spinWheel()" style="width:100%; padding:12px; font-size:17px; background:linear-gradient(45deg, #8e44ad, #9b59b6); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:5px;">🎡 تدوير العجلة</button>
+    <div id="wheelMsg" class="casino-msg"></div>
 </div>
 
 
@@ -512,6 +575,7 @@ const ctx = canvas.getContext("2d");
 
 const hubScreen = document.getElementById("hubScreen");
 const casinoScreen = document.getElementById("casinoScreen");
+const wheelScreen = document.getElementById("wheelScreen");
 const startScreen = document.getElementById("startScreen");
 const startBtn = document.getElementById("startBtn");
 
@@ -555,6 +619,7 @@ const i18n = {
         hubTitle: "🎰 صالة الألعاب 🏎️",
         title: "🏎️ النجاة من التصادم",
         casinoTitle: "🎰 ماكينة الحظ والرهان",
+        wheelTitle: "🎡 عجلة الأسماء والحظ",
         money: "💰 النقود: $",
         selectCar: "اختر أو اشترِ سيارتك:",
         selectRoad: "🛤️ اختر الطريق:",
@@ -580,12 +645,18 @@ const i18n = {
         spin: "🎲 تدوير (سحب)",
         winMsg: "🎉 مبروك! فزت بـ $",
         loseMsg: "❌ حظاً أوفراً في المرة القادمة!",
-        noMoney: "⚠️ ليس لديك عملات كافية لهذا الرهان!"
+        noMoney: "⚠️ ليس لديك عملات كافية لهذا الرهان!",
+        addNamePlaceholder: "أدخل اسماً جديداً...",
+        addBtn: "➕ إضافة",
+        selectBetNameTxt: "اختر الاسم الذي تراهن عليه:",
+        spinWheelBtn: "🎡 تدوير العجلة",
+        minNamesErr: "⚠️ يجب إضافة اسمين على الأقل للتدوير!"
     },
     en:{
         hubTitle: "🎰 Game Hub 🏎️",
         title: "🏎️ Survive the Collision",
         casinoTitle: "🎰 Slot Machine Casino",
+        wheelTitle: "🎡 Wheel of Names",
         money: "💰 Cash: $",
         selectCar: "Choose or Buy Your Car:",
         selectRoad: "🛤️ Choose Track:",
@@ -611,7 +682,12 @@ const i18n = {
         spin: "🎲 SPIN",
         winMsg: "🎉 Congrats! You won $",
         loseMsg: "❌ Better luck next time!",
-        noMoney: "⚠️ Not enough cash for this bet!"
+        noMoney: "⚠️ Not enough cash for this bet!",
+        addNamePlaceholder: "Enter a name...",
+        addBtn: "➕ Add",
+        selectBetNameTxt: "Select the name you bet on:",
+        spinWheelBtn: "🎡 Spin Wheel",
+        minNamesErr: "⚠️ Add at least 2 names to spin!"
     }
 };
 
@@ -649,6 +725,7 @@ function updateAllMoneyDisplays() {
     const t = i18n[currentLang];
     document.getElementById("hubMoneyTxt").innerText = t.money + money;
     document.getElementById("casinoMoneyTxt").innerText = t.money + money;
+    document.getElementById("wheelMoneyTxt").innerText = t.money + money;
     document.getElementById("startMoneyTxt").innerText = t.money + money;
 }
 
@@ -659,12 +736,14 @@ function updateAllMoneyDisplays() {
 function showScreen(screenId) {
     hubScreen.style.display = "none";
     casinoScreen.style.display = "none";
+    wheelScreen.style.display = "none";
     startScreen.style.display = "none";
     canvas.style.display = "none";
     controlPanel.style.display = "none";
 
     if(screenId === "hub") hubScreen.style.display = "block";
     if(screenId === "casino") casinoScreen.style.display = "block";
+    if(screenId === "wheel") { wheelScreen.style.display = "block"; drawWheel(); }
     if(screenId === "carStart") startScreen.style.display = "block";
     if(screenId === "canvas") canvas.style.display = "block";
     
@@ -673,7 +752,9 @@ function showScreen(screenId) {
 
 document.getElementById("goToCarGameBtn").onclick = () => showScreen("carStart");
 document.getElementById("goToCasinoBtn").onclick = () => showScreen("casino");
+document.getElementById("goToWheelBtn").onclick = () => showScreen("wheel");
 document.getElementById("casinoBackBtn").onclick = () => showScreen("hub");
+document.getElementById("wheelBackBtn").onclick = () => showScreen("hub");
 document.getElementById("carBackBtn").onclick = () => showScreen("hub");
 quitToHubBtn.onclick = () => {
     gameOver = true;
@@ -698,10 +779,8 @@ function setBet(amount) {
         currentBet = amount;
     }
 
-    const btns = document.querySelectorAll(".bet-btn");
+    const btns = casinoScreen.querySelectorAll(".bet-btn");
     btns.forEach(b => b.classList.remove("active"));
-    
-    // تمييز الزر المختار
     event.target.classList.add("active");
 }
 
@@ -714,7 +793,6 @@ function spinSlots() {
         return;
     }
 
-    // الخصم
     money -= currentBet;
     saveMoney();
     
@@ -743,13 +821,12 @@ function finishSpin(s1, s2, s3) {
     isSpinning = false;
     let winAmount = 0;
 
-    // احتساب الأرباح
     if(s1 === s2 && s2 === s3) {
-        if(s1 === "7️⃣") winAmount = currentBet * 25; // الجائزة الكبرى
+        if(s1 === "7️⃣") winAmount = currentBet * 25;
         else if(s1 === "💎") winAmount = currentBet * 15;
         else winAmount = currentBet * 8;
     } else if(s1 === s2 || s2 === s3 || s1 === s3) {
-        winAmount = currentBet * 2; // تطابق رمزين
+        winAmount = currentBet * 2;
     }
 
     const msgEl = document.getElementById("casinoMsg");
@@ -765,6 +842,190 @@ function finishSpin(s1, s2, s3) {
         msgEl.style.color = "#e74c3c";
     }
 }
+
+/* =====================================================
+   منطق لعبة عجلة الأسماء والحظ (Wheel of Names)
+===================================================== */
+
+let wheelNames = ["علي", "أحمد", "سارة", "محمد"];
+let wheelColors = ["#e74c3c", "#3498db", "#2ecc71", "#f1c40f", "#9b59b6", "#e67e22", "#1abc9c", "#e84393"];
+let wheelAngle = 0;
+let isWheelSpinning = false;
+let currentWheelBet = 10;
+
+const wheelCanvas = document.getElementById("wheelCanvas");
+const wheelCtx = wheelCanvas.getContext("2d");
+
+function renderNameChips() {
+    const listEl = document.getElementById("namesList");
+    listEl.innerHTML = "";
+    wheelNames.forEach((name, index) => {
+        const chip = document.createElement("div");
+        chip.className = "name-chip";
+        chip.innerHTML = `${name} <span onclick="removeWheelName(${index})">✖</span>`;
+        listEl.appendChild(chip);
+    });
+
+    const selectEl = document.getElementById("betNameSelect");
+    selectEl.innerHTML = "";
+    wheelNames.forEach(name => {
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.innerText = name;
+        selectEl.appendChild(opt);
+    });
+
+    drawWheel();
+}
+
+function addWheelName() {
+    if(isWheelSpinning) return;
+    const input = document.getElementById("nameInput");
+    const name = input.value.trim();
+    if(name !== "" && !wheelNames.includes(name)) {
+        wheelNames.push(name);
+        input.value = "";
+        renderNameChips();
+    }
+}
+
+function removeWheelName(index) {
+    if(isWheelSpinning) return;
+    if(wheelNames.length > 1) {
+        wheelNames.splice(index, 1);
+        renderNameChips();
+    }
+}
+
+function drawWheel() {
+    const numSlices = wheelNames.length;
+    const centerX = wheelCanvas.width / 2;
+    const centerY = wheelCanvas.height / 2;
+    const radius = centerX - 5;
+
+    wheelCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
+
+    if(numSlices === 0) return;
+
+    const sliceAngle = (Math.PI * 2) / numSlices;
+
+    for(let i = 0; i < numSlices; i++) {
+        const startAngle = wheelAngle + i * sliceAngle;
+        const endAngle = startAngle + sliceAngle;
+
+        wheelCtx.beginPath();
+        wheelCtx.moveTo(centerX, centerY);
+        wheelCtx.arc(centerX, centerY, radius, startAngle, endAngle);
+        wheelCtx.fillStyle = wheelColors[i % wheelColors.length];
+        wheelCtx.fill();
+        wheelCtx.lineWidth = 2;
+        wheelCtx.strokeStyle = "#fff";
+        wheelCtx.stroke();
+
+        // رسم النص
+        wheelCtx.save();
+        wheelCtx.translate(centerX, centerY);
+        wheelCtx.rotate(startAngle + sliceAngle / 2);
+        wheelCtx.textAlign = "right";
+        wheelCtx.fillStyle = "#fff";
+        wheelCtx.font = "bold 13px Arial";
+        wheelCtx.shadowColor = "#000";
+        wheelCtx.shadowBlur = 4;
+        wheelCtx.fillText(wheelNames[i], radius - 15, 5);
+        wheelCtx.restore();
+    }
+}
+
+function setWheelBet(amount, btn) {
+    if(isWheelSpinning) return;
+    if(amount === 'max') {
+        currentWheelBet = money > 0 ? money : 10;
+    } else {
+        currentWheelBet = amount;
+    }
+    const btns = wheelScreen.querySelectorAll(".bet-btn");
+    btns.forEach(b => b.classList.remove("active"));
+    if(btn) btn.classList.add("active");
+}
+
+function spinWheel() {
+    if(isWheelSpinning) return;
+
+    if(wheelNames.length < 2) {
+        document.getElementById("wheelMsg").innerText = i18n[currentLang].minNamesErr;
+        document.getElementById("wheelMsg").style.color = "#e74c3c";
+        return;
+    }
+
+    if(money < currentWheelBet || money <= 0) {
+        document.getElementById("wheelMsg").innerText = i18n[currentLang].noMoney;
+        document.getElementById("wheelMsg").style.color = "#e74c3c";
+        return;
+    }
+
+    money -= currentWheelBet;
+    saveMoney();
+
+    isWheelSpinning = true;
+    document.getElementById("wheelMsg").innerText = "";
+
+    const selectedName = document.getElementById("betNameSelect").value;
+    const spinRotations = 5 + Math.random() * 5; 
+    const totalRotation = spinRotations * Math.PI * 2;
+    
+    let currentRotation = 0;
+    const duration = 4000;
+    const startTime = performance.now();
+
+    function animateWheel(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Easing out cubic
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        wheelAngle = easeOut * totalRotation;
+        drawWheel();
+
+        if(progress < 1) {
+            requestAnimationFrame(animateWheel);
+        } else {
+            finishWheelSpin(selectedName);
+        }
+    }
+
+    requestAnimationFrame(animateWheel);
+}
+
+function finishWheelSpin(selectedName) {
+    isWheelSpinning = false;
+    const numSlices = wheelNames.length;
+    const sliceAngle = (Math.PI * 2) / numSlices;
+    
+    // تصحيح زاوية المؤشر في الأعلى (-Math.PI/2)
+    let normalizedAngle = (1.5 * Math.PI - (wheelAngle % (Math.PI * 2))) % (Math.PI * 2);
+    if(normalizedAngle < 0) normalizedAngle += Math.PI * 2;
+
+    const winningIndex = Math.floor(normalizedAngle / sliceAngle) % numSlices;
+    const winningName = wheelNames[winningIndex];
+
+    const msgEl = document.getElementById("wheelMsg");
+
+    if(winningName === selectedName) {
+        const winAmount = currentWheelBet * numSlices; // الأرباح مضاعفة بحسب عدد الأسماء!
+        money += winAmount;
+        saveMoney();
+        msgEl.innerText = `${i18n[currentLang].winMsg}${winAmount}! (${winningName})`;
+        msgEl.style.color = "#2ecc71";
+        coinSound.currentTime = 0;
+        coinSound.play().catch(() => {});
+    } else {
+        msgEl.innerText = `${i18n[currentLang].loseMsg} [${winningName}]`;
+        msgEl.style.color = "#e74c3c";
+    }
+}
+
+// تهيئة أولية لعجلة الأسماء
+renderNameChips();
 
 /* =====================================================
    تحميل الصور والأصوات
@@ -941,6 +1202,7 @@ function setLanguage(lang){
     document.getElementById("hubTitle").innerText = t.hubTitle;
     document.getElementById("titleTxt").innerText = t.title;
     document.getElementById("casinoTitle").innerText = t.casinoTitle;
+    document.getElementById("wheelTitle").innerText = t.wheelTitle;
     document.getElementById("selectCarTxt").innerText = t.selectCar;
     document.getElementById("selectRoadTxt").innerText = t.selectRoad;
     document.getElementById("swipeHintTxt").innerText = t.swipe;
@@ -951,7 +1213,12 @@ function setLanguage(lang){
     pauseBtn.innerText = t.resume;
     restartBtn.innerText = t.restart;
     document.getElementById("betLabel").innerText = t.betLabel;
+    document.getElementById("wheelBetLabel").innerText = t.betLabel;
     document.getElementById("spinBtn").innerText = t.spin;
+    document.getElementById("spinWheelBtn").innerText = t.spinWheelBtn;
+    document.getElementById("nameInput").placeholder = t.addNamePlaceholder;
+    document.getElementById("addNameBtn").innerText = t.addBtn;
+    document.getElementById("selectBetNameTxt").innerText = t.selectBetNameTxt;
 
     updateCarButtons();
     updateRoadUI();
