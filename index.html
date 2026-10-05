@@ -370,7 +370,7 @@ canvas{
         <div class="reels-container">
             <div id="reel1" class="reel">7️⃣</div>
             <div id="reel2" class="reel">🎰</div>
-            <div id="reel3" class="reel">💎</div>
+            <div id="reel3" class="reel">🪙</div>
         </div>
 
         <p style="margin:5px; font-size:12px; color:#aaa;" id="betLabel">اختر قيمة الرهان:</p>
@@ -767,7 +767,7 @@ quitToHubBtn.onclick = () => {
    منطق لعبة القمار (Slot Machine)
 ===================================================== */
 
-const slotSymbols = ["7️⃣", "🎰", "💎", "🔔", "🍋", "🪙"];
+const slotSymbols = ["7️⃣", "🎰", "🔔", "🍋", "🪙"];
 let currentBet = 10;
 let isSpinning = false;
 
@@ -800,8 +800,9 @@ function spinSlots() {
     isSpinning = true;
     document.getElementById("casinoMsg").innerText = "";
 
-    // تشغيل صوت لعبة الحظ r.mp3
+    // تشغيل صوت التدوير بسرعة وتكراره أثناء الحركة
     spinSound.currentTime = 0;
+    spinSound.loop = true;
     spinSound.play().catch(() => {});
 
     const reel1 = document.getElementById("reel1");
@@ -824,11 +825,16 @@ function spinSlots() {
 
 function finishSpin(s1, s2, s3) {
     isSpinning = false;
+    
+    // إيقاف صوت التدوير فور التوقف
+    spinSound.pause();
+    spinSound.currentTime = 0;
+
     let winAmount = 0;
 
     if(s1 === s2 && s2 === s3) {
         if(s1 === "7️⃣") winAmount = currentBet * 25;
-        else if(s1 === "💎") winAmount = currentBet * 15;
+        else if(s1 === "🎰") winAmount = currentBet * 15;
         else winAmount = currentBet * 8;
     } else if(s1 === s2 || s2 === s3 || s1 === s3) {
         winAmount = currentBet * 2;
@@ -1000,15 +1006,15 @@ function spinWheel() {
     isWheelSpinning = true;
     document.getElementById("wheelMsg").innerText = "";
 
-    // تشغيل صوت لعبة الحظ r.mp3
+    // تشغيل صوت الدوران فوراً مع التكرار أثناء الحركة
     spinSound.currentTime = 0;
+    spinSound.loop = true;
     spinSound.play().catch(() => {});
 
     const selectedName = document.getElementById("betNameSelect").value;
     const spinRotations = 5 + Math.random() * 5; 
     const totalRotation = spinRotations * Math.PI * 2;
     
-    let currentRotation = 0;
     const duration = 4000;
     const startTime = performance.now();
 
@@ -1033,6 +1039,11 @@ function spinWheel() {
 
 function finishWheelSpin(selectedName) {
     isWheelSpinning = false;
+
+    // إيقاف صوت التدوير فور توقف العجلة
+    spinSound.pause();
+    spinSound.currentTime = 0;
+
     const numSlices = wheelNames.length;
     const sliceAngle = (Math.PI * 2) / numSlices;
     
