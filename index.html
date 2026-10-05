@@ -605,7 +605,8 @@ const FILES = {
     snow: "snow.png",
     music: "background.mp3",
     crash: "explosion.mp3",
-    coin: "coin.mp3"
+    coin: "coin.mp3",
+    spinSound: "r.mp3"
 };
 
 /* =====================================================
@@ -799,6 +800,10 @@ function spinSlots() {
     isSpinning = true;
     document.getElementById("casinoMsg").innerText = "";
 
+    // تشغيل صوت لعبة الحظ r.mp3
+    spinSound.currentTime = 0;
+    spinSound.play().catch(() => {});
+
     const reel1 = document.getElementById("reel1");
     const reel2 = document.getElementById("reel2");
     const reel3 = document.getElementById("reel3");
@@ -847,7 +852,7 @@ function finishSpin(s1, s2, s3) {
    منطق لعبة عجلة الأسماء والحظ (Wheel of Names)
 ===================================================== */
 
-let wheelNames = ["علي", "أحمد", "سارة", "محمد"];
+let wheelNames = [];
 let wheelColors = ["#e74c3c", "#3498db", "#2ecc71", "#f1c40f", "#9b59b6", "#e67e22", "#1abc9c", "#e84393"];
 let wheelAngle = 0;
 let isWheelSpinning = false;
@@ -859,21 +864,33 @@ const wheelCtx = wheelCanvas.getContext("2d");
 function renderNameChips() {
     const listEl = document.getElementById("namesList");
     listEl.innerHTML = "";
-    wheelNames.forEach((name, index) => {
-        const chip = document.createElement("div");
-        chip.className = "name-chip";
-        chip.innerHTML = `${name} <span onclick="removeWheelName(${index})">✖</span>`;
-        listEl.appendChild(chip);
-    });
+    
+    if(wheelNames.length === 0) {
+        listEl.innerHTML = `<span style="color:#777; font-size:12px; padding:4px;">${currentLang === "ar" ? "لا توجد أسماء مضافة بعد" : "No names added yet"}</span>`;
+    } else {
+        wheelNames.forEach((name, index) => {
+            const chip = document.createElement("div");
+            chip.className = "name-chip";
+            chip.innerHTML = `${name} <span onclick="removeWheelName(${index})">✖</span>`;
+            listEl.appendChild(chip);
+        });
+    }
 
     const selectEl = document.getElementById("betNameSelect");
     selectEl.innerHTML = "";
-    wheelNames.forEach(name => {
+    if(wheelNames.length === 0) {
         const opt = document.createElement("option");
-        opt.value = name;
-        opt.innerText = name;
+        opt.value = "";
+        opt.innerText = currentLang === "ar" ? "-- أضف أسماء أولاً --" : "-- Add names first --";
         selectEl.appendChild(opt);
-    });
+    } else {
+        wheelNames.forEach(name => {
+            const opt = document.createElement("option");
+            opt.value = name;
+            opt.innerText = name;
+            selectEl.appendChild(opt);
+        });
+    }
 
     drawWheel();
 }
@@ -891,7 +908,7 @@ function addWheelName() {
 
 function removeWheelName(index) {
     if(isWheelSpinning) return;
-    if(wheelNames.length > 1) {
+    if(wheelNames.length > 0) {
         wheelNames.splice(index, 1);
         renderNameChips();
     }
@@ -905,7 +922,21 @@ function drawWheel() {
 
     wheelCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
 
-    if(numSlices === 0) return;
+    if(numSlices === 0) {
+        wheelCtx.beginPath();
+        wheelCtx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        wheelCtx.fillStyle = "#222";
+        wheelCtx.fill();
+        wheelCtx.lineWidth = 2;
+        wheelCtx.strokeStyle = "#8e44ad";
+        wheelCtx.stroke();
+
+        wheelCtx.fillStyle = "#aaa";
+        wheelCtx.font = "bold 13px Arial";
+        wheelCtx.textAlign = "center";
+        wheelCtx.fillText(currentLang === "ar" ? "أضف أسماءً للبدء" : "Add names to start", centerX, centerY + 5);
+        return;
+    }
 
     const sliceAngle = (Math.PI * 2) / numSlices;
 
@@ -968,6 +999,10 @@ function spinWheel() {
 
     isWheelSpinning = true;
     document.getElementById("wheelMsg").innerText = "";
+
+    // تشغيل صوت لعبة الحظ r.mp3
+    spinSound.currentTime = 0;
+    spinSound.play().catch(() => {});
 
     const selectedName = document.getElementById("betNameSelect").value;
     const spinRotations = 5 + Math.random() * 5; 
@@ -1055,6 +1090,9 @@ crashSound.volume = 0.8;
 
 const coinSound = new Audio(FILES.coin);
 coinSound.volume = 0.7;
+
+const spinSound = new Audio(FILES.spinSound);
+spinSound.volume = 0.8;
 
 /* =====================================================
    السيارات والطرق
@@ -1220,6 +1258,7 @@ function setLanguage(lang){
     document.getElementById("addNameBtn").innerText = t.addBtn;
     document.getElementById("selectBetNameTxt").innerText = t.selectBetNameTxt;
 
+    renderNameChips();
     updateCarButtons();
     updateRoadUI();
 }
