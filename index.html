@@ -352,7 +352,7 @@ canvas{
     </div>
 </div>
 
-<!-- شاشة لعبة عجلة الأسماء والتحديات (تم حل مشاكل التمركز و undefined بنجاح) -->
+<!-- شاشة لعبة عجلة الأسماء والتحديات (تم ضبط الإطار والعجلة والمؤشر ليكونوا بالداخل تماماً) -->
 <div id="wheelScreen" class="overlay-card" style="display:none; border-color: #9b59b6; box-shadow: 0 0 25px rgba(155,89,182,.4);">
     <button id="wheelBackBtn" class="nav-back-btn">⬅️ القائمة الرئيسية</button>
 
@@ -375,16 +375,16 @@ canvas{
         <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي..." style="width:100%; padding:7px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:12px;">
     </div>
 
-    <!-- حاوية العجلة بنظام Flexbox المتناسق تماماً لضمان عدم خروج العجلة عن الإطار -->
-    <div style="position:relative; width:220px; height:220px; margin: 5px auto; display:flex; align-items:center; justify-content:center;">
-        <!-- المؤشر (k.png) في أعلى الإطار تماماً -->
-        <img src="k.png" alt="Pointer" style="position:absolute; top:-4px; left:50%; transform:translateX(-50%); width:28px; height:28px; z-index:15; pointer-events:none;" onerror="this.style.display='none'">
+    <!-- حاوية العجلة المحسنة: الإطار h.png بحجم 210، والعجلة داخلها تماماً، والمؤشر داخل الإطار بالأعلى -->
+    <div style="position:relative; width:210px; height:210px; margin: 5px auto; display:flex; align-items:center; justify-content:center;">
+        <!-- الإطار (h.png) كأساس -->
+        <img src="h.png" alt="Wheel Frame" style="position:absolute; top:0; left:0; width:210px; height:210px; z-index:10; pointer-events:none;" onerror="this.style.display='none'">
         
-        <!-- العجلة (Canvas) -->
-        <canvas id="wheelCanvas" width="160" height="160" style="background:transparent; border-radius:50%; z-index:11;"></canvas>
+        <!-- العجلة (Canvas) داخل الإطار تماماً -->
+        <canvas id="wheelCanvas" width="150" height="150" style="background:transparent; border-radius:50%; z-index:11;"></canvas>
 
-        <!-- الإطار (h.png) -->
-        <img src="h.png" alt="Wheel Frame" style="position:absolute; top:0; left:0; width:220px; height:220px; z-index:10; pointer-events:none;" onerror="this.style.display='none'">
+        <!-- المؤشر (k.png) في أعلى العجلة ولكن ضمن حيز الإطار -->
+        <img src="k.png" alt="Pointer" style="position:absolute; top:8px; left:50%; transform:translateX(-50%); width:26px; height:26px; z-index:15; pointer-events:none;" onerror="this.style.display='none'">
     </div>
 
     <button id="spinWheelBtn" onclick="spinWheel()" style="width:100%; padding:10px; font-size:16px; background:linear-gradient(45deg, #8e44ad, #9b59b6); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:4px;">🎡 تدوير العجلة</button>
@@ -541,7 +541,9 @@ const i18n = {
         loseMsg: "❌ حظاً أوفراً في المرة القادمة!",
         noMoney: "⚠️ ليس لديك عملات كافية لهذا الرهان!",
         minNamesErr: "⚠️ يجب إضافة اسمين على الأقل للتدوير!",
-        noReqErr: "⚠️ يرجى كتابة الطلب المرفق أولاً!"
+        noReqErr: "⚠️ يرجى كتابة الطلب المرفق أولاً!",
+        noNameText: "لا توجد أسماء مضافة بعد",
+        addPrompt: "أضف أسماءً"
     },
     en:{
         hubTitle: "🎰 Game Hub 🏎️",
@@ -575,7 +577,9 @@ const i18n = {
         loseMsg: "❌ Better luck next time!",
         noMoney: "⚠️ Not enough cash for this bet!",
         minNamesErr: "⚠️ Add at least 2 names to spin!",
-        noReqErr: "⚠️ Please enter an attached request first!"
+        noReqErr: "⚠️ Please enter an attached request first!",
+        noNameText: "No names added yet",
+        addPrompt: "Add names"
     }
 };
 
@@ -644,9 +648,10 @@ const wheelCtx = wheelCanvas.getContext("2d");
 function renderNameChips() {
     const listEl = document.getElementById("namesList");
     listEl.innerHTML = "";
+    const t = i18n[currentLang];
     
     if(wheelNames.length === 0) {
-        listEl.innerHTML = `<span style="color:#777; font-size:11px; padding:3px;">${currentLang === "ar" ? "لا توجد أسماء مضافة بعد" : "No names added yet"}</span>`;
+        listEl.innerHTML = `<span style="color:#777; font-size:11px; padding:3px;">${t.noNameText}</span>`;
     } else {
         wheelNames.forEach((name, index) => {
             const chip = document.createElement("div");
@@ -697,7 +702,7 @@ function drawWheel() {
         wheelCtx.fillStyle = "#aaa";
         wheelCtx.font = "bold 10px Arial";
         wheelCtx.textAlign = "center";
-        wheelCtx.fillText(currentLang === "ar" ? "أضف أسماءً" : "Add names", centerX, centerY + 3);
+        wheelCtx.fillText(i18n[currentLang].addPrompt, centerX, centerY + 3);
         return;
     }
 
@@ -724,7 +729,7 @@ function drawWheel() {
         wheelCtx.font = "bold 10px Arial";
         wheelCtx.shadowColor = "#000";
         wheelCtx.shadowBlur = 2;
-        wheelCtx.fillText(wheelNames[i] || "", radius - 10, 3);
+        wheelCtx.fillText(wheelNames[i] || (currentLang === "ar" ? "فائز" : "Winner"), radius - 10, 3);
         wheelCtx.restore();
     }
 }
