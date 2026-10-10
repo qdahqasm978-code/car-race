@@ -352,7 +352,7 @@ canvas{
     </div>
 </div>
 
-<!-- شاشة لعبة عجلة الأسماء والتحديات (تم ضبط الأبعاد بدقة ومنع ظهور undefined) -->
+<!-- شاشة لعبة عجلة الأسماء والتحديات (تم حل مشاكل التمركز و undefined بنجاح) -->
 <div id="wheelScreen" class="overlay-card" style="display:none; border-color: #9b59b6; box-shadow: 0 0 25px rgba(155,89,182,.4);">
     <button id="wheelBackBtn" class="nav-back-btn">⬅️ القائمة الرئيسية</button>
 
@@ -375,13 +375,13 @@ canvas{
         <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي..." style="width:100%; padding:7px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:12px;">
     </div>
 
-    <!-- حاوية العجلة (الإطار h.png بحجم 220، والعجلة الداخلية بدقة تتوسطه تماماً بقطر 160) -->
-    <div style="position:relative; width:220px; height:220px; margin: 5px auto;">
+    <!-- حاوية العجلة بنظام Flexbox المتناسق تماماً لضمان عدم خروج العجلة عن الإطار -->
+    <div style="position:relative; width:220px; height:220px; margin: 5px auto; display:flex; align-items:center; justify-content:center;">
         <!-- المؤشر (k.png) في أعلى الإطار تماماً -->
-        <img src="k.png" alt="Pointer" style="position:absolute; top:-6px; left:50%; transform:translateX(-50%); width:28px; height:28px; z-index:15; pointer-events:none;" onerror="this.style.display='none'">
+        <img src="k.png" alt="Pointer" style="position:absolute; top:-4px; left:50%; transform:translateX(-50%); width:28px; height:28px; z-index:15; pointer-events:none;" onerror="this.style.display='none'">
         
-        <!-- العجلة (Canvas) مصغرة لتكون بالداخل تماماً -->
-        <canvas id="wheelCanvas" width="160" height="160" style="display:block; position:absolute; top:30px; left:30px; background:transparent; border-radius:50%;"></canvas>
+        <!-- العجلة (Canvas) -->
+        <canvas id="wheelCanvas" width="160" height="160" style="background:transparent; border-radius:50%; z-index:11;"></canvas>
 
         <!-- الإطار (h.png) -->
         <img src="h.png" alt="Wheel Frame" style="position:absolute; top:0; left:0; width:220px; height:220px; z-index:10; pointer-events:none;" onerror="this.style.display='none'">
