@@ -352,43 +352,43 @@ canvas{
     </div>
 </div>
 
-<!-- شاشة لعبة عجلة الأسماء والتحديات -->
+<!-- شاشة لعبة عجلة الأسماء والتحديات (مع ضبط قياسات العجلة والإطار والمؤشر بدقة) -->
 <div id="wheelScreen" class="overlay-card" style="display:none; border-color: #9b59b6; box-shadow: 0 0 25px rgba(155,89,182,.4);">
     <button id="wheelBackBtn" class="nav-back-btn">⬅️ القائمة الرئيسية</button>
 
     <h2 id="wheelTitle">🎡 عجلة الأسماء والتحديات</h2>
     <div class="free-badge">✨ وضع مجاني بالكامل بدون رهان</div>
 
-    <div style="margin: 10px 0;">
-        <div style="display: flex; gap: 5px; margin-bottom: 8px;">
-            <input type="text" id="nameInput" placeholder="أدخل اسماً جديداً..." style="flex:1; padding:8px; border-radius:6px; border:1px solid #555; background:#222; color:white; font-size:13px;">
+    <div style="margin: 8px 0;">
+        <div style="display: flex; gap: 5px; margin-bottom: 6px;">
+            <input type="text" id="nameInput" placeholder="أدخل اسماً جديداً..." style="flex:1; padding:7px; border-radius:6px; border:1px solid #555; background:#222; color:white; font-size:13px;">
             <button id="addNameBtn" class="bet-btn" onclick="addWheelName()" style="background:#8e44ad; color:white; font-weight:bold;">➕ إضافة</button>
         </div>
-        <div id="namesList" style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; max-height:80px; overflow-y:auto; padding:5px; background:#111; border-radius:6px; border:1px solid #333;">
+        <div id="namesList" style="display:flex; flex-wrap:wrap; gap:4px; justify-content:center; max-height:70px; overflow-y:auto; padding:4px; background:#111; border-radius:6px; border:1px solid #333;">
             <!-- الأسماء -->
         </div>
     </div>
 
     <!-- الطلب / التحدي المرفق -->
-    <div style="margin: 10px 0; text-align: right;">
-        <label id="reqLabel" style="font-size:12px; color:#f39c12; font-weight:bold; display:block; margin-bottom:4px;">📋 الطلب / التحدي المرفق:</label>
-        <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي..." style="width:100%; padding:9px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:13px;">
+    <div style="margin: 8px 0; text-align: right;">
+        <label id="reqLabel" style="font-size:12px; color:#f39c12; font-weight:bold; display:block; margin-bottom:3px;">📋 الطلب / التحدي المرفق:</label>
+        <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي..." style="width:100%; padding:8px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:13px;">
     </div>
 
-    <!-- حاوية العجلة (يمكنك تغيير مسارات k.png و h.png هنا حسب مكان وجودهما) -->
-    <div style="position:relative; width:240px; height:240px; margin: 10px auto;">
-        <!-- المؤشر -->
-        <img src="k.png" alt="Pointer" style="position:absolute; top:-15px; left:50%; transform:translateX(-50%); width:35px; height:35px; z-index:15; pointer-events:none;" onerror="this.style.display='none'">
+    <!-- حاوية العجلة بدقة متناهية (الإطار h.png بحجم 240، العجلة 190 بكسل بالمنتصف تماماً) -->
+    <div style="position:relative; width:240px; height:240px; margin: 5px auto;">
+        <!-- المؤشر (k.png) في المنتصف بالأعلى -->
+        <img src="k.png" alt="Pointer" style="position:absolute; top:-2px; left:50%; transform:translateX(-50%); width:30px; height:30px; z-index:15; pointer-events:none;" onerror="this.style.display='none'">
         
-        <!-- العجلة (Canvas) -->
-        <canvas id="wheelCanvas" width="220" height="220" style="display:block; position:absolute; top:10px; left:10px; background:transparent; border-radius:50%;"></canvas>
+        <!-- العجلة (Canvas) مصغرة وموسّطة بدقة لتبقى داخل الإطار -->
+        <canvas id="wheelCanvas" width="190" height="190" style="display:block; position:absolute; top:25px; left:25px; background:transparent; border-radius:50%;"></canvas>
 
-        <!-- الإطار -->
+        <!-- الإطار (h.png) يحيط بالعجلة بالكامل -->
         <img src="h.png" alt="Wheel Frame" style="position:absolute; top:0; left:0; width:240px; height:240px; z-index:10; pointer-events:none;" onerror="this.style.display='none'">
     </div>
 
-    <button id="spinWheelBtn" onclick="spinWheel()" style="width:100%; padding:12px; font-size:17px; background:linear-gradient(45deg, #8e44ad, #9b59b6); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:5px;">🎡 تدوير العجلة</button>
-    <div id="wheelMsg" class="casino-msg"></div>
+    <button id="spinWheelBtn" onclick="spinWheel()" style="width:100%; padding:10px; font-size:16px; background:linear-gradient(45deg, #8e44ad, #9b59b6); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:5px;">🎡 تدوير العجلة</button>
+    <div id="wheelMsg" class="casino-msg" style="margin-top:5px; font-size:13px;"></div>
 </div>
 
 <!-- شاشة بداية لعبة السيارات -->
@@ -681,7 +681,7 @@ function drawWheel() {
     const numSlices = wheelNames.length;
     const centerX = wheelCanvas.width / 2;
     const centerY = wheelCanvas.height / 2;
-    const radius = centerX - 5;
+    const radius = centerX - 4;
 
     wheelCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
 
@@ -695,9 +695,9 @@ function drawWheel() {
         wheelCtx.stroke();
 
         wheelCtx.fillStyle = "#aaa";
-        wheelCtx.font = "bold 13px Arial";
+        wheelCtx.font = "bold 11px Arial";
         wheelCtx.textAlign = "center";
-        wheelCtx.fillText(currentLang === "ar" ? "أضف أسماءً للبدء" : "Add names to start", centerX, centerY + 5);
+        wheelCtx.fillText(currentLang === "ar" ? "أضف أسماءً" : "Add names", centerX, centerY + 4);
         return;
     }
 
@@ -712,7 +712,7 @@ function drawWheel() {
         wheelCtx.arc(centerX, centerY, radius, startAngle, endAngle);
         wheelCtx.fillStyle = wheelColors[i % wheelColors.length];
         wheelCtx.fill();
-        wheelCtx.lineWidth = 2;
+        wheelCtx.lineWidth = 1.5;
         wheelCtx.strokeStyle = "#fff";
         wheelCtx.stroke();
 
@@ -721,10 +721,10 @@ function drawWheel() {
         wheelCtx.rotate(startAngle + sliceAngle / 2);
         wheelCtx.textAlign = "right";
         wheelCtx.fillStyle = "#fff";
-        wheelCtx.font = "bold 13px Arial";
+        wheelCtx.font = "bold 11px Arial";
         wheelCtx.shadowColor = "#000";
-        wheelCtx.shadowBlur = 4;
-        wheelCtx.fillText(wheelNames[i], radius - 15, 5);
+        wheelCtx.shadowBlur = 3;
+        wheelCtx.fillText(wheelNames[i], radius - 12, 4);
         wheelCtx.restore();
     }
 }
@@ -791,9 +791,9 @@ function finishWheelSpin(reqText) {
     const msgEl = document.getElementById("wheelMsg");
 
     if(currentLang === "ar") {
-        msgEl.innerHTML = `👑 الفائز بالقرعة: <span style="color:gold;">[${winningName}]</span><br>📌 المطلوب منه: <span style="color:#2ecc71;">${reqText}</span>`;
+        msgEl.innerHTML = `👑 الفائز: <span style="color:gold;">[${winningName}]</span><br>📌 المطلوب: <span style="color:#2ecc71;">${reqText}</span>`;
     } else {
-        msgEl.innerHTML = `👑 Chosen Winner: <span style="color:gold;">[${winningName}]</span><br>📌 Assigned Task: <span style="color:#2ecc71;">${reqText}</span>`;
+        msgEl.innerHTML = `👑 Winner: <span style="color:gold;">[${winningName}]</span><br>📌 Task: <span style="color:#2ecc71;">${reqText}</span>`;
     }
     
     coinSound.currentTime = 0;
