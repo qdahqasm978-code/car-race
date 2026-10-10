@@ -213,9 +213,7 @@ canvas{
     display:none;
 }
 
-/* =====================================================
-   تنسيقات شاشة اختيار اللعبة ولعبة القمار والعجلة
-===================================================== */
+/* تنسيقات شاشة اختيار اللعبة ولعبة القمار والعجلة */
 .hub-btn {
     width: 100%;
     padding: 16px;
@@ -339,9 +337,7 @@ canvas{
 
 <body>
 
-<!-- =====================================================
-     الشاشة الرئيسية (مركز الألعاب)
-===================================================== -->
+<!-- الشاشة الرئيسية (مركز الألعاب) -->
 <div id="hubScreen" class="overlay-card">
     <div class="lang-container">
         <button id="hubLangAr" class="lang-btn active">🇸🇦 العربية</button>
@@ -368,10 +364,7 @@ canvas{
     </button>
 </div>
 
-
-<!-- =====================================================
-     شاشة لعبة القمار (ماكينة السلوت)
-===================================================== -->
+<!-- شاشة لعبة القمار (ماكينة السلوت) -->
 <div id="casinoScreen" class="overlay-card" style="display:none; border-color: gold; box-shadow: 0 0 25px rgba(241,196,15,.4);">
     <button id="casinoBackBtn" class="nav-back-btn">⬅️ القائمة الرئيسية</button>
     
@@ -398,10 +391,7 @@ canvas{
     </div>
 </div>
 
-
-<!-- =====================================================
-     شاشة لعبة عجلة الأسماء والتحديات (مستقلة ومجانية)
-===================================================== -->
+<!-- شاشة لعبة عجلة الأسماء والتحديات -->
 <div id="wheelScreen" class="overlay-card" style="display:none; border-color: #9b59b6; box-shadow: 0 0 25px rgba(155,89,182,.4);">
     <button id="wheelBackBtn" class="nav-back-btn">⬅️ القائمة الرئيسية</button>
 
@@ -421,7 +411,7 @@ canvas{
     <!-- الطلب / التحدي المرفق -->
     <div style="margin: 10px 0; text-align: right;">
         <label id="reqLabel" style="font-size:12px; color:#f39c12; font-weight:bold; display:block; margin-bottom:4px;">📋 الطلب / التحدي المرفق:</label>
-        <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي (مثال: دفع الحساب، الإجابة عن سؤال...)" style="width:100%; padding:9px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:13px;">
+        <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي..." style="width:100%; padding:9px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:13px;">
     </div>
 
     <div style="position:relative; width:220px; height:220px; margin: 10px auto;">
@@ -434,72 +424,21 @@ canvas{
     <div id="wheelMsg" class="casino-msg"></div>
 </div>
 
-
-<!-- =====================================================
-     شاشة بداية لعبة السيارات
-===================================================== -->
-
+<!-- شاشة بداية لعبة السيارات -->
 <div id="startScreen" class="overlay-card" style="display:none;">
     <button id="carBackBtn" class="nav-back-btn">⬅️ القائمة الرئيسية</button>
 
-    <h2 id="titleTxt">
-        🏎️ النجاة من التصادم
-    </h2>
+    <h2 id="titleTxt">🏎️ النجاة من التصادم</h2>
 
-    <div
-        id="startMoneyTxt"
-        class="money-badge">
-        💰 النقود: $0
+    <div id="startMoneyTxt" class="money-badge">💰 النقود: $0</div>
+
+    <div id="roadShopBox" class="road-shop-box">
+        <p id="selectRoadTxt" style="margin:0 0 6px; color:#f39c12; font-weight:bold; font-size:13px;">🛤️ اختر الطريق:</p>
+        <button id="roadBtn" class="menu-btn" style="width:85%; background:linear-gradient(45deg, #d35400, #e67e22);">🛣️ الطريق العادي</button>
+        <div id="swipeHintTxt" class="swipe-hint">👈 اسحب للشمال لتغيير الطريق</div>
     </div>
 
-    <!-- طرق -->
-    <div
-        id="roadShopBox"
-        class="road-shop-box">
-
-        <p
-            id="selectRoadTxt"
-            style="
-                margin:0 0 6px;
-                color:#f39c12;
-                font-weight:bold;
-                font-size:13px;
-            ">
-            🛤️ اختر الطريق:
-        </p>
-
-        <button
-            id="roadBtn"
-            class="menu-btn"
-            style="
-                width:85%;
-                background:
-                linear-gradient(
-                    45deg,
-                    #d35400,
-                    #e67e22
-                );
-            ">
-            🛣️ الطريق العادي
-        </button>
-
-        <div
-            id="swipeHintTxt"
-            class="swipe-hint">
-            👈 اسحب للشمال لتغيير الطريق
-        </div>
-    </div>
-
-    <!-- السيارات -->
-    <p
-        id="selectCarTxt"
-        style="
-            margin:5px;
-            color:#aaa;
-            font-size:13px;
-        ">
-        اختر أو اشترِ سيارتك:
-    </p>
+    <p id="selectCarTxt" style="margin:5px; color:#aaa; font-size:13px;">اختر أو اشترِ سيارتك:</p>
 
     <div class="car-shop">
         <button id="car2Btn" class="car-btn"></button>
@@ -508,75 +447,25 @@ canvas{
         <button id="car50Btn" class="car-btn"></button>
     </div>
 
-    <!-- الصعوبة -->
-    <button
-        id="easyBtn"
-        class="menu-btn"
-        style="border:2px solid gold;">
-        😎 هجوم عادي
-    </button>
-
-    <button
-        id="hardBtn"
-        class="menu-btn">
-        🔥 هجوم شرس
-    </button>
+    <button id="easyBtn" class="menu-btn" style="border:2px solid gold;">😎 هجوم عادي</button>
+    <button id="hardBtn" class="menu-btn">🔥 هجوم شرس</button>
 
     <br>
 
-    <!-- بدء -->
-    <button
-        id="startBtn"
-        class="menu-btn">
-        ▶ بدء اللعب
-    </button>
+    <button id="startBtn" class="menu-btn">▶ بدء اللعب</button>
 </div>
 
-
-<!-- =====================================================
-     اللعبة (Canvas)
-===================================================== -->
-
+<!-- اللعبة (Canvas) -->
 <canvas id="gameCanvas"></canvas>
 
-
-<!-- =====================================================
-     لوحة التحكم أثناء اللعب
-===================================================== -->
-
-<div
-    id="controlPanel"
-    class="overlay-card">
-
-    <button
-        id="pauseBtn"
-        class="menu-btn"
-        style="width:100%;">
-        ▶ استئناف
-    </button>
-
-    <button
-        id="restartBtn"
-        class="menu-btn"
-        style="width:100%;">
-        🔄 إعادة التشغيل
-    </button>
-
-    <button
-        id="quitToHubBtn"
-        class="menu-btn"
-        style="width:100%; background: #555;">
-        🏠 القائمة الرئيسية
-    </button>
+<!-- لوحة التحكم أثناء اللعب -->
+<div id="controlPanel" class="overlay-card">
+    <button id="pauseBtn" class="menu-btn" style="width:100%;">▶ استئناف</button>
+    <button id="restartBtn" class="menu-btn" style="width:100%;">🔄 إعادة التشغيل</button>
+    <button id="quitToHubBtn" class="menu-btn" style="width:100%; background: #555;">🏠 القائمة الرئيسية</button>
 </div>
 
-
 <script>
-
-/* =====================================================
-   مراجع HTML
-===================================================== */
-
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -598,10 +487,6 @@ const easyBtn = document.getElementById("easyBtn");
 const hardBtn = document.getElementById("hardBtn");
 const hubCheatBtn = document.getElementById("hubCheatBtn");
 
-/* =====================================================
-   مسارات الملفات
-===================================================== */
-
 const FILES = {
     car2: "car2.png",
     car32: "car32.png",
@@ -615,10 +500,6 @@ const FILES = {
     coin: "coin.mp3",
     spinSound: "r.mp3"
 };
-
-/* =====================================================
-   نظام الحماية والأمان (Anti-Cheat Security Guard)
-===================================================== */
 
 const SECRET_SALT = "CR_GAME_HUB_SECURE_2026_#987";
 
@@ -644,13 +525,10 @@ function loadSecureData() {
     const savedSig = localStorage.getItem("carRace_sig");
     const expectedSig = generateSecuritySig(rawMoney, rawHighScore, rawCars, rawRoads);
 
-    // التحقق من صلاحية البيانات ومطابقة التوقيع
     if (savedSig && savedSig !== expectedSig) {
-        console.warn("⚠️ Data tampering detected! Resetting state for security.");
         rawMoney = 0;
         localStorage.setItem("carRace_money", 0);
         saveMoney();
-        alert(currentLang === "ar" ? "⚠️ تم كشف تلاعب بالبيانات! تم إعادة ضبط الرصيد للحماية." : "⚠️ Data tampering detected! Money reset for security.");
     }
 
     return {
@@ -660,10 +538,6 @@ function loadSecureData() {
         unlockedRoads: rawRoads
     };
 }
-
-/* =====================================================
-   اللغة والترجمة
-===================================================== */
 
 let currentLang = "ar";
 
@@ -699,11 +573,6 @@ const i18n = {
         winMsg: "🎉 مبروك! فزت بـ $",
         loseMsg: "❌ حظاً أوفراً في المرة القادمة!",
         noMoney: "⚠️ ليس لديك عملات كافية لهذا الرهان!",
-        addNamePlaceholder: "أدخل اسماً جديداً...",
-        addBtn: "➕ إضافة",
-        reqLabel: "📋 الطلب / التحدي المرفق:",
-        reqPlaceholder: "أدخل الطلب أو التحدي هنا...",
-        spinWheelBtn: "🎡 تدوير العجلة",
         minNamesErr: "⚠️ يجب إضافة اسمين على الأقل للتدوير!",
         noReqErr: "⚠️ يرجى كتابة الطلب المرفق أولاً!"
     },
@@ -738,19 +607,10 @@ const i18n = {
         winMsg: "🎉 Congrats! You won $",
         loseMsg: "❌ Better luck next time!",
         noMoney: "⚠️ Not enough cash for this bet!",
-        addNamePlaceholder: "Enter a name...",
-        addBtn: "➕ Add",
-        reqLabel: "📋 Attached Request / Challenge:",
-        reqPlaceholder: "Enter request or challenge here...",
-        spinWheelBtn: "🎡 Spin Wheel",
         minNamesErr: "⚠️ Add at least 2 names to spin!",
         noReqErr: "⚠️ Please enter an attached request first!"
     }
 };
-
-/* =====================================================
-   LocalStorage والبيانات المحمية
-===================================================== */
 
 const secureData = loadSecureData();
 let highScore = secureData.highScore;
@@ -775,10 +635,6 @@ function updateAllMoneyDisplays() {
     document.getElementById("casinoMoneyTxt").innerText = t.money + money;
     document.getElementById("startMoneyTxt").innerText = t.money + money;
 }
-
-/* =====================================================
-   إدارة الشاشات والملاحة
-===================================================== */
 
 function showScreen(screenId) {
     hubScreen.style.display = "none";
@@ -809,99 +665,7 @@ quitToHubBtn.onclick = () => {
     showScreen("hub");
 };
 
-/* =====================================================
-   منطق لعبة القمار (Slot Machine)
-===================================================== */
-
-const slotSymbols = ["7️⃣", "🎰", "🔔", "🍋", "🪙"];
-let currentBet = 10;
-let isSpinning = false;
-
-function setBet(amount) {
-    if(isSpinning) return;
-    
-    if(amount === 'max') {
-        currentBet = money > 0 ? money : 10;
-    } else {
-        currentBet = amount;
-    }
-
-    const btns = casinoScreen.querySelectorAll(".bet-btn");
-    btns.forEach(b => b.classList.remove("active"));
-    event.target.classList.add("active");
-}
-
-function spinSlots() {
-    if(isSpinning) return;
-
-    if(money < currentBet || money <= 0) {
-        document.getElementById("casinoMsg").innerText = i18n[currentLang].noMoney;
-        document.getElementById("casinoMsg").style.color = "#e74c3c";
-        return;
-    }
-
-    money -= currentBet;
-    saveMoney();
-    
-    isSpinning = true;
-    document.getElementById("casinoMsg").innerText = "";
-
-    spinSound.currentTime = 0;
-    spinSound.loop = true;
-    spinSound.play().catch(() => {});
-
-    const reel1 = document.getElementById("reel1");
-    const reel2 = document.getElementById("reel2");
-    const reel3 = document.getElementById("reel3");
-
-    let counter = 0;
-    const interval = setInterval(() => {
-        reel1.innerText = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
-        reel2.innerText = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
-        reel3.innerText = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
-        counter++;
-
-        if(counter > 15) {
-            clearInterval(interval);
-            finishSpin(reel1.innerText, reel2.innerText, reel3.innerText);
-        }
-    }, 80);
-}
-
-function finishSpin(s1, s2, s3) {
-    isSpinning = false;
-    
-    spinSound.pause();
-    spinSound.currentTime = 0;
-
-    let winAmount = 0;
-
-    if(s1 === s2 && s2 === s3) {
-        if(s1 === "7️⃣") winAmount = currentBet * 25;
-        else if(s1 === "🎰") winAmount = currentBet * 15;
-        else winAmount = currentBet * 8;
-    } else if(s1 === s2 || s2 === s3 || s1 === s3) {
-        winAmount = currentBet * 2;
-    }
-
-    const msgEl = document.getElementById("casinoMsg");
-    if(winAmount > 0) {
-        money += winAmount;
-        saveMoney();
-        msgEl.innerText = i18n[currentLang].winMsg + winAmount;
-        msgEl.style.color = "#2ecc71";
-        coinSound.currentTime = 0;
-        coinSound.play().catch(() => {});
-    } else {
-        msgEl.innerText = i18n[currentLang].loseMsg;
-        msgEl.style.color = "#e74c3c";
-    }
-}
-
-/* =====================================================
-   منطق عجلة الأسماء والتحديات (مستقلة ومجانية بالكامل)
-===================================================== */
-
+/* عجلة الأسماء والتحديات */
 let wheelNames = [];
 let wheelColors = ["#e74c3c", "#3498db", "#2ecc71", "#f1c40f", "#9b59b6", "#e67e22", "#1abc9c", "#e84393"];
 let wheelAngle = 0;
@@ -924,7 +688,6 @@ function renderNameChips() {
             listEl.appendChild(chip);
         });
     }
-
     drawWheel();
 }
 
@@ -1024,14 +787,12 @@ function spinWheel() {
 
     const spinRotations = 5 + Math.random() * 5; 
     const totalRotation = spinRotations * Math.PI * 2;
-    
     const duration = 4000;
     const startTime = performance.now();
 
     function animateWheel(now) {
         const elapsed = now - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        
         const easeOut = 1 - Math.pow(1 - progress, 3);
         wheelAngle = easeOut * totalRotation;
         drawWheel();
@@ -1048,7 +809,6 @@ function spinWheel() {
 
 function finishWheelSpin(reqText) {
     isWheelSpinning = false;
-
     spinSound.pause();
     spinSound.currentTime = 0;
 
@@ -1073,13 +833,9 @@ function finishWheelSpin(reqText) {
     coinSound.play().catch(() => {});
 }
 
-// تهيئة أولية لعجلة الأسماء
 renderNameChips();
 
-/* =====================================================
-   تحميل الصور والأصوات
-===================================================== */
-
+/* لودر الملفات والأصوات */
 function loadImage(src){
     const img = new Image();
     img.src = src;
@@ -1108,10 +864,6 @@ coinSound.volume = 0.7;
 const spinSound = new Audio(FILES.spinSound);
 spinSound.volume = 0.8;
 
-/* =====================================================
-   السيارات والطرق
-===================================================== */
-
 const allCars = [
     { id:"car2", img:carImg, color:"#e74c3c", price:0, nameAr:"🔴 الحمراء", nameEn:"🔴 Red" },
     { id:"car32", img:car32Img, color:"#3498db", price:100, nameAr:"🔵 الزرقاء", nameEn:"🔵 Blue" },
@@ -1127,10 +879,6 @@ const allRoads = [
 
 let currentRoadIndex = allRoads.findIndex(road => road.id === currentRoad);
 if(currentRoadIndex < 0) { currentRoadIndex = 0; currentRoad = "road"; }
-
-/* =====================================================
-   تحديث واجهات السيارات والطرق
-===================================================== */
 
 function updateCarButtons(){
     const t = i18n[currentLang];
@@ -1170,7 +918,6 @@ function handleCarClick(id){
         money -= car.price;
         unlockedCars.push(id);
         currentCar = id;
-
         saveMoney();
         localStorage.setItem("carRace_currentCar", currentCar);
     }
@@ -1213,7 +960,6 @@ roadBtn.onclick = function(){
         money -= road.price;
         unlockedRoads.push(road.id);
         currentRoad = road.id;
-
         saveMoney();
         localStorage.setItem("carRace_currentRoad", currentRoad);
     }
@@ -1221,7 +967,6 @@ roadBtn.onclick = function(){
     updateRoadUI();
 };
 
-/* Swipe للطرق */
 let touchStartX = 0;
 roadShopBox.addEventListener("touchstart", (e) => touchStartX = e.touches[0].clientX, {passive:true});
 roadShopBox.addEventListener("touchend", (e) => {
@@ -1235,10 +980,6 @@ roadShopBox.addEventListener("touchend", (e) => {
     }
     updateRoadUI();
 }, {passive:true});
-
-/* =====================================================
-   اللغة وشحن العملات
-===================================================== */
 
 function setLanguage(lang){
     currentLang = lang;
@@ -1265,10 +1006,9 @@ function setLanguage(lang){
     document.getElementById("betLabel").innerText = t.betLabel;
     document.getElementById("spinBtn").innerText = t.spin;
     document.getElementById("spinWheelBtn").innerText = t.spinWheelBtn;
-    document.getElementById("nameInput").placeholder = t.addNamePlaceholder;
-    document.getElementById("addNameBtn").innerText = t.addBtn;
+    document.getElementById("nameInput").placeholder = (lang === "ar" ? "أدخل اسماً جديداً..." : "Enter a name...");
     document.getElementById("reqLabel").innerText = t.reqLabel;
-    document.getElementById("wheelReqInput").placeholder = t.reqPlaceholder;
+    document.getElementById("wheelReqInput").placeholder = (lang === "ar" ? "أدخل الطلب أو التحدي..." : "Enter request or challenge...");
 
     renderNameChips();
     updateCarButtons();
@@ -1289,10 +1029,6 @@ hubCheatBtn.onclick = function(){
     }
 };
 
-/* =====================================================
-   حالة وحسابات لعبة السيارات
-===================================================== */
-
 let difficulty = "easy";
 let paused = false;
 let gameOver = false;
@@ -1311,7 +1047,6 @@ function resizeCanvas(){
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
-/* رسم السيارات و Hitbox */
 function drawFallbackCar(w, h, color){
     ctx.fillStyle = color;
     ctx.beginPath();
@@ -1359,7 +1094,6 @@ function collision(a, b){
     return (a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y);
 }
 
-/* AI السيارات المنافسة */
 class SmartAICar{
     constructor(model){ this.model = model; this.w = carWidth; this.h = carHeight; this.reset(); }
     reset(){
@@ -1428,10 +1162,6 @@ function resetGame(){
     setupAttackers();
 }
 
-/* =====================================================
-   حلقة رسم اللعبة (Game Loop)
-===================================================== */
-
 function drawGame(){
     if(gameOver || paused) return;
 
@@ -1439,7 +1169,6 @@ function drawGame(){
     const roadSpeed = (difficulty === "easy" ? 6 : 8) + level;
     roadY = (roadY + roadSpeed) % canvas.height;
 
-    /* الطريق */
     const activeRoad = allRoads.find(road => road.id === currentRoad) || allRoads[0];
     const roadImage = activeRoad.img;
 
@@ -1455,7 +1184,6 @@ function drawGame(){
         }
     }
 
-    /* العملات */
     spawnCoin();
     for(let i=coins.length-1; i>=0; i--){
         const coin = coins[i];
@@ -1480,12 +1208,10 @@ function drawGame(){
         }
     }
 
-    /* اللاعب */
     const playerModel = allCars.find(car => car.id === currentCar) || allCars[0];
     renderCar(playerModel.img, playerX, playerY, carWidth, carHeight, playerModel.color, true, playerVx);
     const playerBox = getHitbox(playerX, playerY, carWidth, carHeight, true);
 
-    /* الخصوم */
     for(const attacker of attackerCars){
         attacker.update();
         renderCar(attacker.model.img, attacker.x, attacker.y, attacker.w, attacker.h, attacker.model.color, false, attacker.vx);
@@ -1498,7 +1224,6 @@ function drawGame(){
         }
     }
 
-    /* الشرارات */
     for(let i=sparks.length-1; i>=0; i--){
         const spark = sparks[i];
         ctx.fillStyle = `rgba(255, ${Math.floor(spark.life * 255)}, 0, ${spark.life})`;
@@ -1509,7 +1234,6 @@ function drawGame(){
         if(spark.life <= 0) sparks.splice(i, 1);
     }
 
-    /* المعلومات على الشاشة */
     const t = i18n[currentLang];
     ctx.fillStyle = "white"; ctx.font = "bold 15px Arial";
     if(currentLang === "ar"){
@@ -1548,10 +1272,6 @@ function endGame(){
     }, 300);
 }
 
-/* =====================================================
-   أدوات التحكم (لوحة المفاتيح واللمس)
-===================================================== */
-
 document.addEventListener("keydown", (e) => {
     if(gameOver || paused) return;
     const step = 22;
@@ -1584,10 +1304,6 @@ canvas.addEventListener("touchstart", movePlayerTouch, {passive:true});
 canvas.addEventListener("touchmove", (e) => { movePlayerTouch(e); e.preventDefault(); }, {passive:false});
 canvas.addEventListener("touchend", () => playerVx = 0);
 
-/* =====================================================
-   إيقاف / استئناف / بدء
-===================================================== */
-
 function togglePause(){
     if(gameOver) return;
     paused = !paused;
@@ -1615,13 +1331,8 @@ startBtn.onclick = () => {
     drawGame();
 };
 
-/* =====================================================
-   تشغيل أولي
-===================================================== */
-
 setLanguage("ar");
 showScreen("hub");
-
 </script>
 
 </body>
