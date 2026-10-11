@@ -375,14 +375,14 @@ canvas{
         <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي..." style="width:100%; padding:7px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:12px;">
     </div>
 
-    <!-- حاوية العجلة والإطار بدقة تامة -->
-    <div style="position:relative; width:200px; height:200px; margin: 10px auto; display:flex; align-items:center; justify-content:center;">
+    <!-- حاوية العجلة المتناسقة مع القطعة الذهبية المركزية في الإطار -->
+    <div style="position:relative; width:210px; height:210px; margin: 10px auto; display:flex; align-items:center; justify-content:center;">
         
-        <!-- العجلة (Canvas) مرسومة في الخلفية بداخل الإطار -->
-        <canvas id="wheelCanvas" width="160" height="160" style="position:absolute; top:20px; left:20px; background:transparent; border-radius:50%; z-index:10;"></canvas>
+        <!-- عجلة الحظ الملونة والمتحركة (Canvas) تحيط بالقطعة الذهبية المركزية -->
+        <canvas id="wheelCanvas" width="168" height="168" style="position:absolute; top:21px; left:21px; background:transparent; border-radius:50%; z-index:10;"></canvas>
         
-        <!-- الإطار (h.png) يغطي العجلة كطبقة فوقها -->
-        <img src="h.png" alt="Wheel Frame" style="position:absolute; top:0; left:0; width:200px; height:200px; z-index:15; pointer-events:none;" onerror="this.style.display='none'">
+        <!-- إطار العجلة الخارجي والقطعة الذهبية بمنتصفه (h.png) -->
+        <img src="h.png" alt="Wheel Frame" style="position:absolute; top:0; left:0; width:210px; height:210px; z-index:15; pointer-events:none;" onerror="this.style.display='none'">
         
         <!-- المؤشر (k.png) في أعلى الإطار بالداخل تماماً -->
         <img src="k.png" alt="Pointer" style="position:absolute; top:4px; left:50%; transform:translateX(-50%); width:22px; height:30px; z-index:20; pointer-events:none;" onerror="this.style.display='none'">
@@ -642,7 +642,7 @@ quitToHubBtn.onclick = () => {
     showScreen("hub");
 };
 
-/* عجلة الأسماء والتحديات الملونة والمتحركة بدقة داخل الإطار */
+/* عجلة الأسماء والتحديات متناسقة مع القطعة المركزية الذهبية */
 let wheelNames = [];
 let wheelColors = ["#e74c3c", "#2ecc71", "#3498db", "#f1c40f", "#9b59b6", "#e67e22", "#1abc9c", "#e84393"];
 let wheelAngle = 0;
@@ -692,7 +692,7 @@ function drawWheel() {
     const numSlices = wheelNames.length;
     const centerX = wheelCanvas.width / 2;
     const centerY = wheelCanvas.height / 2;
-    const radius = 68; // مقاس مثالي ليطابق تماماً المساحة الداخلية للإطار الأبيض
+    const radius = 64; // نصف قطر دقيق يحيتي بالقطعة الذهبية بمنتصف الإطار
 
     wheelCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
 
@@ -732,11 +732,11 @@ function drawWheel() {
         wheelCtx.rotate(startAngle + sliceAngle / 2);
         wheelCtx.textAlign = "right";
         wheelCtx.fillStyle = "#ffffff";
-        wheelCtx.font = "bold 11px Arial";
+        wheelCtx.font = "bold 10px Arial";
         wheelCtx.shadowColor = "#000000";
         wheelCtx.shadowBlur = 4;
         const displayName = wheelNames[i] ? wheelNames[i] : "";
-        wheelCtx.fillText(displayName, radius - 12, 4);
+        wheelCtx.fillText(displayName, radius - 14, 4);
         wheelCtx.restore();
     }
 }
