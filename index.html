@@ -34,11 +34,51 @@ canvas{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%);
 .nav-back-btn{background:#555;color:white;border:none;padding:8px 15px;border-radius:6px;cursor:pointer;margin-bottom:10px;font-size:12px;}
 .name-chip{background:#333;color:gold;border:1px solid #555;padding:4px 10px;border-radius:15px;font-size:12px;display:inline-flex;align-items:center;gap:5px;}
 .name-chip span{color:#e74c3c;cursor:pointer;font-weight:bold;}
+
+.wheel-container-wrapper {
+    position: relative;
+    width: 240px;
+    height: 240px;
+    margin: 10px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border-radius: 50%;
+}
+.wheel-canvas-style {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    border-radius: 50%;
+    z-index: 10;
+}
+.wheel-frame-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 240px;
+    height: 240px;
+    z-index: 15;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+}
+.wheel-pointer-img {
+    position: absolute;
+    top: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 34px;
+    height: 48px;
+    z-index: 25;
+    pointer-events: none;
+}
 </style>
 </head>
 <body>
 
-<!-- الشاشة الرئيسية -->
 <div id="hubScreen" class="overlay-card">
     <div class="lang-container">
         <button id="hubLangAr" class="lang-btn active">🇸🇦 العربية</button>
@@ -52,7 +92,6 @@ canvas{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%);
     <button id="hubCheatBtn" class="menu-btn" style="background: linear-gradient(45deg, #8e44ad, #9b59b6); border: 1px solid #be90d4; margin-top:15px; width:100%;">🔑 شحن العملات</button>
 </div>
 
-<!-- شاشة ماكينة السلوت -->
 <div id="casinoScreen" class="overlay-card" style="display:none; border-color: gold; box-shadow: 0 0 25px rgba(241,196,15,.4);">
     <button id="casinoBackBtn" class="nav-back-btn">⬅️ القائمة الرئيسية</button>
     <h2 id="casinoTitle">🎰 ماكينة الحظ والرهان</h2>
@@ -75,7 +114,6 @@ canvas{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%);
     </div>
 </div>
 
-<!-- شاشة عجلة الأسماء والتحديات -->
 <div id="wheelScreen" class="overlay-card" style="display:none; border-color: #9b59b6; box-shadow: 0 0 25px rgba(155,89,182,.4);">
     <button id="wheelBackBtn" class="nav-back-btn">⬅️ القائمة الرئيسية</button>
     <h2 id="wheelTitle">🎡 عجلة الأسماء والتحديات</h2>
@@ -94,25 +132,16 @@ canvas{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%);
         <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي..." style="width:100%; padding:7px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:12px;">
     </div>
 
-    <!-- حاوية العجلة المصممة خصيصاً كالموجودة بالصورة التوضيحية تماماً -->
-    <div style="position:relative; width:220px; height:220px; margin: 10px auto; display:flex; align-items:center; justify-content:center;">
-        
-        <!-- العجلة الملونة التي تدور بداخل الحافة البيضاء وحول المركز -->
-        <canvas id="wheelCanvas" width="220" height="220" style="position:absolute; top:0; left:0; background:transparent; border-radius:50%; z-index:10;"></canvas>
-        
-        <!-- الإطار الذهبي والقطعة المركزية (h.png) -->
-        <img src="h.png" alt="Wheel Frame" style="position:absolute; top:0; left:0; width:220px; height:220px; z-index:15; pointer-events:none;" onerror="this.style.display='none'">
-        
-        <!-- المؤشر الأحادي العالي الدقة المتمركز بداخل الحافة العلوية (k.png) -->
-        <img src="k.png" alt="Pointer" style="position:absolute; top:12px; left:50%; transform:translateX(-50%); width:30px; height:42px; z-index:20; pointer-events:none;" onerror="this.style.display='none'">
-    
+    <div class="wheel-container-wrapper">
+        <canvas id="wheelCanvas" width="220" height="220" class="wheel-canvas-style"></canvas>
+        <img src="h.png" alt="Wheel Frame" class="wheel-frame-img" onerror="this.style.display='none'">
+        <img src="k.png" alt="Pointer" class="wheel-pointer-img" onerror="this.style.display='none'">
     </div>
 
     <button id="spinWheelBtn" onclick="spinWheel()" style="width:100%; padding:10px; font-size:16px; background:linear-gradient(45deg, #8e44ad, #9b59b6); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:4px;">🎡 تدوير العجلة</button>
     <div id="wheelMsg" class="casino-msg" style="margin-top:4px; font-size:12px;"></div>
 </div>
 
-<!-- شاشة بداية لعبة السيارات -->
 <div id="startScreen" class="overlay-card" style="display:none;">
     <button id="carBackBtn" class="nav-back-btn">⬅️ القائمة الرئيسية</button>
     <h2 id="titleTxt">🏎️ النجاة من التصادم</h2>
@@ -331,7 +360,6 @@ document.getElementById("wheelBackBtn").onclick = () => showScreen("hub");
 document.getElementById("carBackBtn").onclick = () => showScreen("hub");
 quitToHubBtn.onclick = () => { gameOver = true; bgMusic.pause(); showScreen("hub"); };
 
-/* ==== برمجة وتشغيل لعبة ماكينة السلوت (Slot Machine) ==== */
 let currentBet = 10;
 const slotSymbols = ["7️⃣", "🎰", "🪙", "💎", "🍒", "🔔"];
 
@@ -412,7 +440,6 @@ function spinSlots() {
     }, 2000);
 }
 
-/* ==== برمجة وتشغيل عجلة الحظ المطابقة للصورة تماماً ==== */
 let wheelNames = [];
 let wheelColors = ["#e74c3c", "#2ecc71", "#3498db", "#f1c40f", "#9b59b6", "#e67e22", "#1abc9c", "#e84393"];
 let wheelAngle = 0;
@@ -461,8 +488,8 @@ function drawWheel() {
     const numSlices = wheelNames.length;
     const centerX = wheelCanvas.width / 2;
     const centerY = wheelCanvas.height / 2;
-    const outerRadius = 92; // يصل بالضبط لحافتي الإطار الأبيض
-    const innerRadius = 35; // يدور حول القطعة الذهبية البارزة بمنتصف الإطار
+    const outerRadius = 88;
+    const innerRadius = 34;
 
     wheelCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
 
@@ -470,16 +497,16 @@ function drawWheel() {
         wheelCtx.beginPath();
         wheelCtx.arc(centerX, centerY, outerRadius, 0, Math.PI * 2, false);
         wheelCtx.arc(centerX, centerY, innerRadius, Math.PI * 2, 0, true);
-        wheelCtx.fillStyle = "#1a1a1a";
+        wheelCtx.fillStyle = "rgba(255,255,255,0.8)";
         wheelCtx.fill();
         wheelCtx.lineWidth = 2;
         wheelCtx.strokeStyle = "#8e44ad";
         wheelCtx.stroke();
 
-        wheelCtx.fillStyle = "#aaa";
+        wheelCtx.fillStyle = "#333";
         wheelCtx.font = "bold 11px Arial";
         wheelCtx.textAlign = "center";
-        wheelCtx.fillText(i18n[currentLang].addPrompt, centerX, centerY + 55);
+        wheelCtx.fillText(i18n[currentLang].addPrompt, centerX, centerY + 50);
         return;
     }
 
