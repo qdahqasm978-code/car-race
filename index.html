@@ -375,14 +375,18 @@ canvas{
         <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي..." style="width:100%; padding:7px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:12px;">
     </div>
 
-    <!-- حاوية العجلة والإطار -->
-    <div style="position:relative; width:220px; height:220px; margin: 10px auto; display:flex; align-items:center; justify-content:center;">
-        <!-- العجلة (Canvas) -->
-        <canvas id="wheelCanvas" width="168" height="168" style="position:absolute; background:transparent; border-radius:50%; z-index:10;"></canvas>
-        <!-- الإطار (h.png) -->
-        <img src="h.png" alt="Wheel Frame" style="position:absolute; top:0; left:0; width:220px; height:220px; z-index:15; pointer-events:none;" onerror="this.style.display='none'">
-        <!-- المؤشر (k.png) -->
-        <img src="k.png" alt="Pointer" style="position:absolute; top:10px; left:50%; transform:translateX(-50%); width:26px; height:34px; z-index:20; pointer-events:none;" onerror="this.style.display='none'">
+    <!-- حاوية العجلة والإطار بدقة تامة -->
+    <div style="position:relative; width:200px; height:200px; margin: 10px auto; display:flex; align-items:center; justify-content:center;">
+        
+        <!-- العجلة (Canvas) مرسومة في الخلفية بداخل الإطار -->
+        <canvas id="wheelCanvas" width="160" height="160" style="position:absolute; top:20px; left:20px; background:transparent; border-radius:50%; z-index:10;"></canvas>
+        
+        <!-- الإطار (h.png) يغطي العجلة كطبقة فوقها -->
+        <img src="h.png" alt="Wheel Frame" style="position:absolute; top:0; left:0; width:200px; height:200px; z-index:15; pointer-events:none;" onerror="this.style.display='none'">
+        
+        <!-- المؤشر (k.png) في أعلى الإطار بالداخل تماماً -->
+        <img src="k.png" alt="Pointer" style="position:absolute; top:4px; left:50%; transform:translateX(-50%); width:22px; height:30px; z-index:20; pointer-events:none;" onerror="this.style.display='none'">
+    
     </div>
 
     <button id="spinWheelBtn" onclick="spinWheel()" style="width:100%; padding:10px; font-size:16px; background:linear-gradient(45deg, #8e44ad, #9b59b6); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:4px;">🎡 تدوير العجلة</button>
@@ -638,7 +642,7 @@ quitToHubBtn.onclick = () => {
     showScreen("hub");
 };
 
-/* عجلة الأسماء والتحديات */
+/* عجلة الأسماء والتحديات الملونة والمتحركة بدقة داخل الإطار */
 let wheelNames = [];
 let wheelColors = ["#e74c3c", "#2ecc71", "#3498db", "#f1c40f", "#9b59b6", "#e67e22", "#1abc9c", "#e84393"];
 let wheelAngle = 0;
@@ -688,7 +692,7 @@ function drawWheel() {
     const numSlices = wheelNames.length;
     const centerX = wheelCanvas.width / 2;
     const centerY = wheelCanvas.height / 2;
-    const radius = 72;
+    const radius = 68; // مقاس مثالي ليطابق تماماً المساحة الداخلية للإطار الأبيض
 
     wheelCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
 
@@ -732,7 +736,7 @@ function drawWheel() {
         wheelCtx.shadowColor = "#000000";
         wheelCtx.shadowBlur = 4;
         const displayName = wheelNames[i] ? wheelNames[i] : "";
-        wheelCtx.fillText(displayName, radius - 14, 4);
+        wheelCtx.fillText(displayName, radius - 12, 4);
         wheelCtx.restore();
     }
 }
