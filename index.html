@@ -375,16 +375,16 @@ canvas{
         <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي..." style="width:100%; padding:7px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:12px;">
     </div>
 
-    <!-- حاوية العجلة والإطار والدوران بالألوان والأسماء -->
+    <!-- حاوية العجلة والإطار بالمقاسات الصحيحة ليظهر كل شيء بداخله تماماً -->
     <div style="position:relative; width:210px; height:210px; margin: 5px auto; display:flex; align-items:center; justify-content:center;">
         <!-- الإطار الخارجي (h.png) -->
         <img src="h.png" alt="Wheel Frame" style="position:absolute; top:0; left:0; width:210px; height:210px; z-index:10; pointer-events:none;" onerror="this.style.display='none'">
         
-        <!-- عجلة الحظ الدائرية (canvas) بداخل الإطار تحمل الأجزاء الملونة والأسماء المتحركة -->
-        <canvas id="wheelCanvas" width="136" height="136" style="background:transparent; border-radius:50%; z-index:11;"></canvas>
+        <!-- عجلة الحظ المطابقة لحجم الإطار (210×210) لتغطي المساحة الداخلية والأسماء والتلويين -->
+        <canvas id="wheelCanvas" width="210" height="210" style="background:transparent; border-radius:50%; z-index:11;"></canvas>
 
-        <!-- المؤشر (k.png) في أعلى العجلة وداخل الإطار -->
-        <img src="k.png" alt="Pointer" style="position:absolute; top:22px; left:50%; transform:translateX(-50%); width:26px; height:34px; z-index:15; pointer-events:none;" onerror="this.style.display='none'">
+        <!-- المؤشر (k.png) في أعلى الإطار والعجلة -->
+        <img src="k.png" alt="Pointer" style="position:absolute; top:8px; left:50%; transform:translateX(-50%); width:26px; height:34px; z-index:15; pointer-events:none;" onerror="this.style.display='none'">
     </div>
 
     <button id="spinWheelBtn" onclick="spinWheel()" style="width:100%; padding:10px; font-size:16px; background:linear-gradient(45deg, #8e44ad, #9b59b6); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:4px;">🎡 تدوير العجلة</button>
@@ -559,31 +559,31 @@ const i18n = {
         easy: "😎 Normal Attack",
         hard: "🔥 Aggressive",
         cheat: "🔑 Redeem Code",
-        start: "▶ Start Game",
-        resume: "▶ Resume",
-        pause: "⏸ Pause",
-        restart: "🔄 Restart",
-        selected: "✔ Active",
+        start: "Start Game",
+        resume: "Resume",
+        pause: "Pause",
+        restart: "Restart",
+        selected: "Active",
         select: "Drive",
-        roadSelected: "✔ Active",
+        roadSelected: "Active",
         roadSelect: "Select",
         score: "Score:",
         high: "High Score:",
         level: "Level:",
-        crash: "💥 You Crashed!",
+        crash: "You Crashed!",
         need: "You need $",
         more: " more!",
         betLabel: "Select Bet Amount:",
-        spin: "🎲 SPIN",
-        winMsg: "🎉 Congrats! You won $",
-        loseMsg: "❌ Better luck next time!",
-        noMoney: "⚠️ Not enough cash for this bet!",
-        minNamesErr: "⚠️ Add at least 2 names to spin!",
-        noReqErr: "⚠️ Please enter an attached request first!",
+        spin: "SPIN",
+        winMsg: "Congrats! You won $",
+        loseMsg: "Better luck next time!",
+        noMoney: "Not enough cash for this bet!",
+        minNamesErr: "Add at least 2 names to spin!",
+        noReqErr: "Please enter an attached request first!",
         noNameText: "No names added yet",
         addPrompt: "Add names",
-        spinWheelBtn: "🎡 Spin Wheel",
-        reqLabel: "📋 Attached Request / Task:"
+        spinWheelBtn: "Spin Wheel",
+        reqLabel: "Attached Request / Task:"
     }
 };
 
@@ -640,9 +640,9 @@ quitToHubBtn.onclick = () => {
     showScreen("hub");
 };
 
-/* عجلة الأسماء والتحديات الملونة والمتحركة */
+/* عجلة الأسماء والتحديات الملونة والمتحركة داخل الإطار تماماً */
 let wheelNames = [];
-// ألوان زاهية وواضحة (أحمر، أخضر، أزرق، أصفر، بنفسجي، برتقالي، إلخ)
+// ألوان زاهية وواضحة (أحمر، أخضر، أزرق، أصفر، بنفسجي، برتقالي، تركي، وردي)
 let wheelColors = ["#e74c3c", "#2ecc71", "#3498db", "#f1c40f", "#9b59b6", "#e67e22", "#1abc9c", "#e84393"];
 let wheelAngle = 0;
 let isWheelSpinning = false;
@@ -691,23 +691,24 @@ function drawWheel() {
     const numSlices = wheelNames.length;
     const centerX = wheelCanvas.width / 2;
     const centerY = wheelCanvas.height / 2;
-    const radius = centerX - 3;
+    // ضبط نصف القطر ليملأ الإطار الذهبي بدقة دون تجاوز الحواف
+    const radius = 86;
 
     wheelCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
 
     if(numSlices === 0) {
         wheelCtx.beginPath();
         wheelCtx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-        wheelCtx.fillStyle = "#222";
+        wheelCtx.fillStyle = "#1a1a1a";
         wheelCtx.fill();
         wheelCtx.lineWidth = 2;
         wheelCtx.strokeStyle = "#8e44ad";
         wheelCtx.stroke();
 
         wheelCtx.fillStyle = "#aaa";
-        wheelCtx.font = "bold 9px Arial";
+        wheelCtx.font = "bold 11px Arial";
         wheelCtx.textAlign = "center";
-        wheelCtx.fillText(i18n[currentLang].addPrompt, centerX, centerY + 3);
+        wheelCtx.fillText(i18n[currentLang].addPrompt, centerX, centerY + 4);
         return;
     }
 
@@ -717,27 +718,27 @@ function drawWheel() {
         const startAngle = wheelAngle + i * sliceAngle;
         const endAngle = startAngle + sliceAngle;
 
-        // رسم القطع الملونة داخل الإطار
+        // رسم القطع الملونة (أحمر، أخضر، أزرق...)
         wheelCtx.beginPath();
         wheelCtx.moveTo(centerX, centerY);
         wheelCtx.arc(centerX, centerY, radius, startAngle, endAngle);
         wheelCtx.fillStyle = wheelColors[i % wheelColors.length];
         wheelCtx.fill();
         wheelCtx.lineWidth = 1;
-        wheelCtx.strokeStyle = "#fff";
+        wheelCtx.strokeStyle = "#ffffff";
         wheelCtx.stroke();
 
-        // رسم الأسماء بخطوط واضحة داخل العجلة لتلف معها
+        // رسم الأسماء بخطوط واضحة لتلف وتدور مع أجزاء العجلة داخل الإطار
         wheelCtx.save();
         wheelCtx.translate(centerX, centerY);
         wheelCtx.rotate(startAngle + sliceAngle / 2);
         wheelCtx.textAlign = "right";
         wheelCtx.fillStyle = "#ffffff";
-        wheelCtx.font = "bold 10px Arial";
+        wheelCtx.font = "bold 12px Arial";
         wheelCtx.shadowColor = "#000000";
-        wheelCtx.shadowBlur = 3;
+        wheelCtx.shadowBlur = 4;
         const displayName = wheelNames[i] ? wheelNames[i] : "";
-        wheelCtx.fillText(displayName, radius - 10, 3);
+        wheelCtx.fillText(displayName, radius - 18, 4);
         wheelCtx.restore();
     }
 }
