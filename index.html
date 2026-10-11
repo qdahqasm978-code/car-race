@@ -298,7 +298,7 @@ canvas{
 
 <body>
 
-<!-- الشاشة الرئيسية (مركز الألعاب) -->
+<!-- الشاشة الرئيسية -->
 <div id="hubScreen" class="overlay-card">
     <div class="lang-container">
         <button id="hubLangAr" class="lang-btn active">🇸🇦 العربية</button>
@@ -325,7 +325,7 @@ canvas{
     </button>
 </div>
 
-<!-- شاشة لعبة القمار (ماكينة السلوت) -->
+<!-- شاشة القمار (ماكينة السلوت) -->
 <div id="casinoScreen" class="overlay-card" style="display:none; border-color: gold; box-shadow: 0 0 25px rgba(241,196,15,.4);">
     <button id="casinoBackBtn" class="nav-back-btn">⬅️ القائمة الرئيسية</button>
     
@@ -352,7 +352,7 @@ canvas{
     </div>
 </div>
 
-<!-- شاشة لعبة عجلة الأسماء والتحديات -->
+<!-- شاشة عجلة الأسماء والتحديات -->
 <div id="wheelScreen" class="overlay-card" style="display:none; border-color: #9b59b6; box-shadow: 0 0 25px rgba(155,89,182,.4);">
     <button id="wheelBackBtn" class="nav-back-btn">⬅️ القائمة الرئيسية</button>
 
@@ -375,16 +375,13 @@ canvas{
         <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي..." style="width:100%; padding:7px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:12px;">
     </div>
 
-    <!-- حاوية العجلة المدمجة تماماً بدقة داخل إطار h.png والمؤشر في الأعلى -->
+    <!-- حاوية العجلة والإطار -->
     <div style="position:relative; width:220px; height:220px; margin: 10px auto; display:flex; align-items:center; justify-content:center;">
-        
-        <!-- العجلة (Canvas) كطبقة خلفية داخلية لتدور الأسماء والألوان بداخل الإطار تماماً -->
+        <!-- العجلة (Canvas) -->
         <canvas id="wheelCanvas" width="168" height="168" style="position:absolute; background:transparent; border-radius:50%; z-index:10;"></canvas>
-
-        <!-- الإطار الخارجي (h.png) كطبقة علوية تحيط بالعجلة -->
+        <!-- الإطار (h.png) -->
         <img src="h.png" alt="Wheel Frame" style="position:absolute; top:0; left:0; width:220px; height:220px; z-index:15; pointer-events:none;" onerror="this.style.display='none'">
-
-        <!-- المؤشر (k.png) في أعلى الإطار والعجلة -->
+        <!-- المؤشر (k.png) -->
         <img src="k.png" alt="Pointer" style="position:absolute; top:10px; left:50%; transform:translateX(-50%); width:26px; height:34px; z-index:20; pointer-events:none;" onerror="this.style.display='none'">
     </div>
 
@@ -641,7 +638,7 @@ quitToHubBtn.onclick = () => {
     showScreen("hub");
 };
 
-/* عجلة الأسماء والتحديات الملونة والمتحركة داخل الإطار تماماً */
+/* عجلة الأسماء والتحديات */
 let wheelNames = [];
 let wheelColors = ["#e74c3c", "#2ecc71", "#3498db", "#f1c40f", "#9b59b6", "#e67e22", "#1abc9c", "#e84393"];
 let wheelAngle = 0;
@@ -691,7 +688,7 @@ function drawWheel() {
     const numSlices = wheelNames.length;
     const centerX = wheelCanvas.width / 2;
     const centerY = wheelCanvas.height / 2;
-    const radius = 72; // مقاس دقيق ليناسب المساحة الداخلية للإطار
+    const radius = 72;
 
     wheelCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
 
