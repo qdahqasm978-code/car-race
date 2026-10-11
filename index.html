@@ -375,16 +375,17 @@ canvas{
         <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي..." style="width:100%; padding:7px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:12px;">
     </div>
 
-    <!-- حاوية العجلة والإطار بالمقاسات الصحيحة ليظهر كل شيء بداخله تماماً -->
-    <div style="position:relative; width:210px; height:210px; margin: 5px auto; display:flex; align-items:center; justify-content:center;">
-        <!-- الإطار الخارجي (h.png) -->
-        <img src="h.png" alt="Wheel Frame" style="position:absolute; top:0; left:0; width:210px; height:210px; z-index:10; pointer-events:none;" onerror="this.style.display='none'">
+    <!-- حاوية العجلة المدمجة تماماً بدقة داخل إطار h.png والمؤشر في الأعلى -->
+    <div style="position:relative; width:220px; height:220px; margin: 10px auto; display:flex; align-items:center; justify-content:center;">
         
-        <!-- عجلة الحظ المطابقة لحجم الإطار (210×210) لتغطي المساحة الداخلية والأسماء والتلويين -->
-        <canvas id="wheelCanvas" width="210" height="210" style="background:transparent; border-radius:50%; z-index:11;"></canvas>
+        <!-- العجلة (Canvas) كطبقة خلفية داخلية لتدور الأسماء والألوان بداخل الإطار تماماً -->
+        <canvas id="wheelCanvas" width="168" height="168" style="position:absolute; background:transparent; border-radius:50%; z-index:10;"></canvas>
+
+        <!-- الإطار الخارجي (h.png) كطبقة علوية تحيط بالعجلة -->
+        <img src="h.png" alt="Wheel Frame" style="position:absolute; top:0; left:0; width:220px; height:220px; z-index:15; pointer-events:none;" onerror="this.style.display='none'">
 
         <!-- المؤشر (k.png) في أعلى الإطار والعجلة -->
-        <img src="k.png" alt="Pointer" style="position:absolute; top:8px; left:50%; transform:translateX(-50%); width:26px; height:34px; z-index:15; pointer-events:none;" onerror="this.style.display='none'">
+        <img src="k.png" alt="Pointer" style="position:absolute; top:10px; left:50%; transform:translateX(-50%); width:26px; height:34px; z-index:20; pointer-events:none;" onerror="this.style.display='none'">
     </div>
 
     <button id="spinWheelBtn" onclick="spinWheel()" style="width:100%; padding:10px; font-size:16px; background:linear-gradient(45deg, #8e44ad, #9b59b6); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:4px;">🎡 تدوير العجلة</button>
@@ -642,7 +643,6 @@ quitToHubBtn.onclick = () => {
 
 /* عجلة الأسماء والتحديات الملونة والمتحركة داخل الإطار تماماً */
 let wheelNames = [];
-// ألوان زاهية وواضحة (أحمر، أخضر، أزرق، أصفر، بنفسجي، برتقالي، تركي، وردي)
 let wheelColors = ["#e74c3c", "#2ecc71", "#3498db", "#f1c40f", "#9b59b6", "#e67e22", "#1abc9c", "#e84393"];
 let wheelAngle = 0;
 let isWheelSpinning = false;
@@ -691,8 +691,7 @@ function drawWheel() {
     const numSlices = wheelNames.length;
     const centerX = wheelCanvas.width / 2;
     const centerY = wheelCanvas.height / 2;
-    // ضبط نصف القطر ليملأ الإطار الذهبي بدقة دون تجاوز الحواف
-    const radius = 86;
+    const radius = 72; // مقاس دقيق ليناسب المساحة الداخلية للإطار
 
     wheelCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
 
@@ -718,7 +717,6 @@ function drawWheel() {
         const startAngle = wheelAngle + i * sliceAngle;
         const endAngle = startAngle + sliceAngle;
 
-        // رسم القطع الملونة (أحمر، أخضر، أزرق...)
         wheelCtx.beginPath();
         wheelCtx.moveTo(centerX, centerY);
         wheelCtx.arc(centerX, centerY, radius, startAngle, endAngle);
@@ -728,17 +726,16 @@ function drawWheel() {
         wheelCtx.strokeStyle = "#ffffff";
         wheelCtx.stroke();
 
-        // رسم الأسماء بخطوط واضحة لتلف وتدور مع أجزاء العجلة داخل الإطار
         wheelCtx.save();
         wheelCtx.translate(centerX, centerY);
         wheelCtx.rotate(startAngle + sliceAngle / 2);
         wheelCtx.textAlign = "right";
         wheelCtx.fillStyle = "#ffffff";
-        wheelCtx.font = "bold 12px Arial";
+        wheelCtx.font = "bold 11px Arial";
         wheelCtx.shadowColor = "#000000";
         wheelCtx.shadowBlur = 4;
         const displayName = wheelNames[i] ? wheelNames[i] : "";
-        wheelCtx.fillText(displayName, radius - 18, 4);
+        wheelCtx.fillText(displayName, radius - 14, 4);
         wheelCtx.restore();
     }
 }
