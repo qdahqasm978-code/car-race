@@ -313,7 +313,7 @@ function showScreen(screenId) {
 
     if(screenId === "hub") hubScreen.style.display = "block";
     if(screenId === "casino") casinoScreen.style.display = "block";
-    if(screenId === "wheel") { wheelScreen.style.display = "block"; drawWheel(); }
+    if(screenId === "wheel") { wheelScreen.style.display = "block"; renderNameChips(); }
     if(screenId === "carStart") startScreen.style.display = "block";
     if(screenId === "canvas") canvas.style.display = "block";
     updateAllMoneyDisplays();
@@ -407,8 +407,8 @@ function spinSlots() {
     }, 2000);
 }
 
-// قائمة فارغة تماماً لتدخل أنت الأسماء بنفسك
-let wheelNames = [];
+// قائمة الأسماء تبدأ فارغة لتضيفها أنت بنفسك مع إضافة اسمين افتراضيين مبدئيين لتظهر العجلة فوراً
+let wheelNames = ["محمد", "أحمد"];
 let wheelColors = ["#e74c3c", "#2ecc71", "#3498db", "#f1c40f", "#9b59b6", "#e67e22", "#1abc9c", "#e84393"];
 let wheelAngle = 0;
 let isWheelSpinning = false;
