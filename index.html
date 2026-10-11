@@ -35,7 +35,6 @@ canvas{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%);
 .name-chip{background:#333;color:gold;border:1px solid #555;padding:4px 10px;border-radius:15px;font-size:12px;display:inline-flex;align-items:center;gap:5px;}
 .name-chip span{color:#e74c3c;cursor:pointer;font-weight:bold;}
 
-/* حاوية عجلة الحظ المباشرة بدون صور */
 .wheel-container-wrapper {
     position: relative;
     width: 250px;
@@ -67,7 +66,7 @@ canvas{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%);
     <div id="hubMoneyTxt" class="money-badge">💰 النقود: $0</div>
     <button id="goToCarGameBtn" class="hub-btn">🏎️ لعبة النجاة من التصادم</button>
     <button id="goToCasinoBtn" class="hub-btn" style="border-color: #2ecc71; color: #2ecc71;">🎰 لعبة الرهان والحظ (ماكينة السلوت)</button>
-    <button id="goToWheelBtn" class="hub-btn" style="border-color: #9b59b6; color: #be90d4;">🎡 عجلة الأسماء والتحديات (مجانية)</button>
+    <button id="goToWheelBtn" class="hub-btn" style="border-color: #9b59b6; color: #be90d4;">🎡 عجلة الأسماء (مجانية)</button>
     <button id="hubCheatBtn" class="menu-btn" style="background: linear-gradient(45deg, #8e44ad, #9b59b6); border: 1px solid #be90d4; margin-top:15px; width:100%;">🔑 شحن العملات</button>
 </div>
 
@@ -95,29 +94,23 @@ canvas{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%);
 
 <div id="wheelScreen" class="overlay-card" style="display:none; border-color: #9b59b6; box-shadow: 0 0 25px rgba(155,89,182,.4);">
     <button id="wheelBackBtn" class="nav-back-btn">⬅️ القائمة الرئيسية</button>
-    <h2 id="wheelTitle">🎡 عجلة الأسماء والتحديات</h2>
-    <div class="free-badge">✨ وضع مجاني بالكامل بدون رهان</div>
+    <h2 id="wheelTitle">🎡 عجلة الأسماء</h2>
+    <div class="free-badge">✨ أدخل الأسماء وادور بحرية</div>
 
-    <div style="margin: 6px 0;">
+    <div style="margin: 8px 0;">
         <div style="display: flex; gap: 5px; margin-bottom: 6px;">
-            <input type="text" id="nameInput" placeholder="أدخل اسماً جديداً..." style="flex:1; padding:6px; border-radius:6px; border:1px solid #555; background:#222; color:white; font-size:12px;">
-            <button id="addNameBtn" class="bet-btn" onclick="addWheelName()" style="background:#8e44ad; color:white; font-weight:bold;">➕ إضافة</button>
+            <input type="text" id="nameInput" placeholder="أدخل اسماً جديداً..." style="flex:1; padding:7px; border-radius:6px; border:1px solid #555; background:#222; color:white; font-size:13px;" onkeypress="if(event.key==='Enter') addWheelName()">
+            <button id="addNameBtn" class="bet-btn" onclick="addWheelName()" style="background:#8e44ad; color:white; font-weight:bold; padding:0 15px;">➕ إضافة</button>
         </div>
-        <div id="namesList" style="display:flex; flex-wrap:wrap; gap:4px; justify-content:center; max-height:60px; overflow-y:auto; padding:4px; background:#111; border-radius:6px; border:1px solid #333;"></div>
+        <div id="namesList" style="display:flex; flex-wrap:wrap; gap:4px; justify-content:center; max-height:75px; overflow-y:auto; padding:5px; background:#111; border-radius:6px; border:1px solid #333;"></div>
     </div>
 
-    <div style="margin: 6px 0; text-align: right;">
-        <label id="reqLabel" style="font-size:11px; color:#f39c12; font-weight:bold; display:block; margin-bottom:2px;">📋 الطلب / التحدي المرفق:</label>
-        <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي..." style="width:100%; padding:7px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:12px;">
-    </div>
-
-    <!-- Canvas للعجلة بدون أي صور خارجية -->
     <div class="wheel-container-wrapper">
         <canvas id="wheelCanvas" width="250" height="250" class="wheel-canvas-style"></canvas>
     </div>
 
-    <button id="spinWheelBtn" onclick="spinWheel()" style="width:100%; padding:10px; font-size:16px; background:linear-gradient(45deg, #8e44ad, #9b59b6); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:4px;">🎡 تدوير العجلة</button>
-    <div id="wheelMsg" class="casino-msg" style="margin-top:4px; font-size:12px;"></div>
+    <button id="spinWheelBtn" onclick="spinWheel()" style="width:100%; padding:12px; font-size:17px; background:linear-gradient(45deg, #8e44ad, #9b59b6); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:6px;">🎡 تدوير العجلة</button>
+    <div id="wheelMsg" class="casino-msg" style="margin-top:6px; font-size:13px;"></div>
 </div>
 
 <div id="startScreen" class="overlay-card" style="display:none;">
@@ -222,7 +215,7 @@ const i18n = {
         hubTitle: "🎰 صالة الألعاب 🏎️",
         title: "🏎️ النجاة من التصادم",
         casinoTitle: "🎰 ماكينة الحظ والرهان",
-        wheelTitle: "🎡 عجلة الأسماء والتحديات",
+        wheelTitle: "🎡 عجلة الأسماء",
         money: "💰 النقود: $",
         selectCar: "اختر أو اشترِ سيارتك:",
         selectRoad: "🛤️ اختر الطريق:",
@@ -247,17 +240,15 @@ const i18n = {
         betLabel: "اختر قيمة الرهان:",
         spin: "🎲 تدوير (سحب)",
         minNamesErr: "⚠️ يجب إضافة اسمين على الأقل للتدوير!",
-        noReqErr: "⚠️ يرجى كتابة الطلب المرفق أولاً!",
-        noNameText: "لا توجد أسماء مضافة بعد",
-        addPrompt: "أضف أسماءً",
-        spinWheelBtn: "🎡 تدوير العجلة",
-        reqLabel: "📋 الطلب / التحدي المرفق:"
+        noNameText: "لا توجد أسماء مضافة بعد، أضف أسماءك هنا 👇",
+        addPrompt: "أضف أسماءً للبدء",
+        spinWheelBtn: "🎡 تدوير العجلة"
     },
     en:{
         hubTitle: "🎰 Game Hub 🏎️",
         title: "🏎️ Survive the Collision",
         casinoTitle: "🎰 Slot Machine Casino",
-        wheelTitle: "🎡 Wheel of Names & Tasks",
+        wheelTitle: "🎡 Wheel of Names",
         money: "💰 Cash: $",
         selectCar: "Choose or Buy Your Car:",
         selectRoad: "🛤️ Choose Track:",
@@ -282,11 +273,9 @@ const i18n = {
         betLabel: "Select Bet Amount:",
         spin: "SPIN",
         minNamesErr: "Add at least 2 names to spin!",
-        noReqErr: "Please enter an attached request first!",
         noNameText: "No names added yet",
-        addPrompt: "Add names",
-        spinWheelBtn: "Spin Wheel",
-        reqLabel: "Attached Request / Task:"
+        addPrompt: "Add names to start",
+        spinWheelBtn: "Spin Wheel"
     }
 };
 
@@ -418,6 +407,7 @@ function spinSlots() {
     }, 2000);
 }
 
+// قائمة فارغة تماماً لتدخل أنت الأسماء بنفسك
 let wheelNames = [];
 let wheelColors = ["#e74c3c", "#2ecc71", "#3498db", "#f1c40f", "#9b59b6", "#e67e22", "#1abc9c", "#e84393"];
 let wheelAngle = 0;
@@ -462,7 +452,6 @@ function removeWheelName(index) {
     }
 }
 
-// رسم عجلة الحظ بالكامل بكود البرمجة المباشر (Canvas)
 function drawWheel() {
     const numSlices = wheelNames.length;
     const centerX = wheelCanvas.width / 2;
@@ -472,7 +461,7 @@ function drawWheel() {
 
     wheelCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
 
-    // 1. رسم الإطار الذهبي الخارجي لعجلة الحظ
+    // الإطار الذهبي الخارجي
     wheelCtx.beginPath();
     wheelCtx.arc(centerX, centerY, outerRadius + 12, 0, Math.PI * 2);
     wheelCtx.fillStyle = "#f1c40f";
@@ -481,7 +470,6 @@ function drawWheel() {
     wheelCtx.strokeStyle = "#b7950b";
     wheelCtx.stroke();
 
-    // رسم النقاط الذهبية الدائرية على الإطار الخارجي
     for (let a = 0; a < Math.PI * 2; a += Math.PI / 6) {
         let dotX = centerX + (outerRadius + 6) * Math.cos(a);
         let dotY = centerY + (outerRadius + 6) * Math.sin(a);
@@ -497,13 +485,12 @@ function drawWheel() {
         wheelCtx.fillStyle = "#222";
         wheelCtx.fill();
         wheelCtx.fillStyle = "#aaa";
-        wheelCtx.font = "bold 13px Arial";
+        wheelCtx.font = "bold 12px Arial";
         wheelCtx.textAlign = "center";
         wheelCtx.fillText(i18n[currentLang].addPrompt, centerX, centerY + 5);
     } else {
         const sliceAngle = (Math.PI * 2) / numSlices;
 
-        // 2. رسم الأجزاء الملونة والأسماء داخل العجلة
         for(let i = 0; i < numSlices; i++) {
             const startAngle = wheelAngle + i * sliceAngle;
             const endAngle = startAngle + sliceAngle;
@@ -519,7 +506,6 @@ function drawWheel() {
             wheelCtx.strokeStyle = "#ffffff";
             wheelCtx.stroke();
 
-            // كتابة الاسم
             wheelCtx.save();
             wheelCtx.translate(centerX, centerY);
             wheelCtx.rotate(startAngle + sliceAngle / 2);
@@ -534,7 +520,7 @@ function drawWheel() {
         }
     }
 
-    // 3. رسم القطعة الذهبية المركزية
+    // المركز الذهبي
     wheelCtx.beginPath();
     wheelCtx.arc(centerX, centerY, innerRadius, 0, Math.PI * 2);
     wheelCtx.fillStyle = "#f39c12";
@@ -543,7 +529,7 @@ function drawWheel() {
     wheelCtx.strokeStyle = "#ffffff";
     wheelCtx.stroke();
 
-    // 4. رسم السهم/المؤشر الأحمر في الأعلى
+    // السهم العلوي
     wheelCtx.beginPath();
     wheelCtx.moveTo(centerX - 12, centerY - outerRadius - 14);
     wheelCtx.lineTo(centerX + 12, centerY - outerRadius - 14);
@@ -560,12 +546,6 @@ function spinWheel() {
     if(isWheelSpinning) return;
     if(wheelNames.length < 2) {
         document.getElementById("wheelMsg").innerText = i18n[currentLang].minNamesErr;
-        document.getElementById("wheelMsg").style.color = "#e74c3c";
-        return;
-    }
-    const reqText = document.getElementById("wheelReqInput").value.trim();
-    if(reqText === "") {
-        document.getElementById("wheelMsg").innerText = i18n[currentLang].noReqErr;
         document.getElementById("wheelMsg").style.color = "#e74c3c";
         return;
     }
@@ -591,13 +571,13 @@ function spinWheel() {
         if(progress < 1) {
             requestAnimationFrame(animateWheel);
         } else {
-            finishWheelSpin(reqText);
+            finishWheelSpin();
         }
     }
     requestAnimationFrame(animateWheel);
 }
 
-function finishWheelSpin(reqText) {
+function finishWheelSpin() {
     isWheelSpinning = false;
     spinSound.pause();
     spinSound.currentTime = 0;
@@ -614,9 +594,9 @@ function finishWheelSpin(reqText) {
     const msgEl = document.getElementById("wheelMsg");
 
     if(currentLang === "ar") {
-        msgEl.innerHTML = `👑 الفائز: <span style="color:gold;">[${winningName}]</span><br>📌 المطلوب: <span style="color:#2ecc71;">${reqText}</span>`;
+        msgEl.innerHTML = `👑 الفائز: <span style="color:gold;">[${winningName}]</span>`;
     } else {
-        msgEl.innerHTML = `👑 Winner: <span style="color:gold;">[${winningName}]</span><br>📌 Task: <span style="color:#2ecc71;">${reqText}</span>`;
+        msgEl.innerHTML = `👑 Winner: <span style="color:gold;">[${winningName}]</span>`;
     }
     coinSound.currentTime = 0;
     coinSound.play().catch(() => {});
@@ -779,8 +759,6 @@ function setLanguage(lang){
     restartBtn.innerText = t.restart;
     document.getElementById("spinWheelBtn").innerText = t.spinWheelBtn;
     document.getElementById("nameInput").placeholder = (lang === "ar" ? "أدخل اسماً جديداً..." : "Enter a name...");
-    document.getElementById("reqLabel").innerText = t.reqLabel;
-    document.getElementById("wheelReqInput").placeholder = (lang === "ar" ? "أدخل الطلب أو التحدي..." : "Enter request or challenge...");
 
     renderNameChips();
     updateCarButtons();
