@@ -35,6 +35,7 @@ canvas{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%);
 .name-chip{background:#333;color:gold;border:1px solid #555;padding:4px 10px;border-radius:15px;font-size:12px;display:inline-flex;align-items:center;gap:5px;}
 .name-chip span{color:#e74c3c;cursor:pointer;font-weight:bold;}
 
+/* إزالة الخلفية البيضاء نهائياً وجعل العجلة شفافة تماماً بالداخل */
 .wheel-container-wrapper {
     position: relative;
     width: 240px;
@@ -43,8 +44,7 @@ canvas{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #ffffff;
-    border-radius: 50%;
+    background: transparent;
 }
 .wheel-canvas-style {
     position: absolute;
@@ -63,7 +63,7 @@ canvas{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%);
     height: 240px;
     z-index: 15;
     pointer-events: none;
-    mix-blend-mode: multiply;
+    mix-blend-mode: multiply; /* تدمج الإطار مع العجلة وتزيل البيضات الزائدة */
 }
 .wheel-pointer-img {
     position: absolute;
@@ -132,6 +132,7 @@ canvas{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%);
         <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي..." style="width:100%; padding:7px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:12px;">
     </div>
 
+    <!-- عجلة الحظ بدون خلفية بيضاء وشفافة بالكامل تدور الأسماء بداخلها -->
     <div class="wheel-container-wrapper">
         <canvas id="wheelCanvas" width="220" height="220" class="wheel-canvas-style"></canvas>
         <img src="h.png" alt="Wheel Frame" class="wheel-frame-img" onerror="this.style.display='none'">
@@ -497,13 +498,10 @@ function drawWheel() {
         wheelCtx.beginPath();
         wheelCtx.arc(centerX, centerY, outerRadius, 0, Math.PI * 2, false);
         wheelCtx.arc(centerX, centerY, innerRadius, Math.PI * 2, 0, true);
-        wheelCtx.fillStyle = "rgba(255,255,255,0.8)";
+        wheelCtx.fillStyle = "transparent";
         wheelCtx.fill();
-        wheelCtx.lineWidth = 2;
-        wheelCtx.strokeStyle = "#8e44ad";
-        wheelCtx.stroke();
 
-        wheelCtx.fillStyle = "#333";
+        wheelCtx.fillStyle = "#aaa";
         wheelCtx.font = "bold 11px Arial";
         wheelCtx.textAlign = "center";
         wheelCtx.fillText(i18n[currentLang].addPrompt, centerX, centerY + 50);
@@ -799,7 +797,7 @@ hardBtn.onclick = () => { difficulty = "hard"; hardBtn.style.border = "2px solid
 
 function resizeCanvas(){
     canvas.width = Math.min(window.innerWidth, 480);
-    canvas.height = window.innerHeight;
+    canvas.height = innerHeight;
 }
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
