@@ -65,10 +65,10 @@ canvas{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%);
         </div>
         <p style="margin:5px; font-size:12px; color:#aaa;" id="betLabel">اختر قيمة الرهان:</p>
         <div class="bet-controls">
-            <button class="bet-btn active" onclick="setBet(10)">$10</button>
-            <button class="bet-btn" onclick="setBet(50)">$50</button>
-            <button class="bet-btn" onclick="setBet(100)">$100</button>
-            <button class="bet-btn" onclick="setBet('max')">MAX</button>
+            <button class="bet-btn active" id="bet10Btn" onclick="setBet(10)">$10</button>
+            <button class="bet-btn" id="bet50Btn" onclick="setBet(50)">$50</button>
+            <button class="bet-btn" id="bet100Btn" onclick="setBet(100)">$100</button>
+            <button class="bet-btn" id="betMaxBtn" onclick="setBet('max')">MAX</button>
         </div>
         <button id="spinBtn" onclick="spinSlots()">🎲 تدوير (سحب)</button>
         <div id="casinoMsg" class="casino-msg"></div>
@@ -94,17 +94,17 @@ canvas{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%);
         <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي..." style="width:100%; padding:7px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:12px;">
     </div>
 
-    <!-- حاوية الإطار وعجلة الحظ الدائرية المحيطة بالقطعة الذهبية المركزية -->
+    <!-- حاوية العجلة المصممة خصيصاً كالموجودة بالصورة التوضيحية تماماً -->
     <div style="position:relative; width:220px; height:220px; margin: 10px auto; display:flex; align-items:center; justify-content:center;">
         
-        <!-- عجلة الحظ (Canvas) التي تدور حول القطعة الذهبية المركزية -->
-        <canvas id="wheelCanvas" width="180" height="180" style="position:absolute; top:20px; left:20px; background:transparent; border-radius:50%; z-index:10;"></canvas>
+        <!-- العجلة الملونة التي تدور بداخل الحافة البيضاء وحول المركز -->
+        <canvas id="wheelCanvas" width="220" height="220" style="position:absolute; top:0; left:0; background:transparent; border-radius:50%; z-index:10;"></canvas>
         
-        <!-- إطار العجلة الذي يحتوي على القطعة الذهبية بالمنتصف (h.png) -->
+        <!-- الإطار الذهبي والقطعة المركزية (h.png) -->
         <img src="h.png" alt="Wheel Frame" style="position:absolute; top:0; left:0; width:220px; height:220px; z-index:15; pointer-events:none;" onerror="this.style.display='none'">
         
-        <!-- المؤشر (k.png) في أعلى الإطار بالداخل تماماً -->
-        <img src="k.png" alt="Pointer" style="position:absolute; top:6px; left:50%; transform:translateX(-50%); width:24px; height:32px; z-index:20; pointer-events:none;" onerror="this.style.display='none'">
+        <!-- المؤشر الأحادي العالي الدقة المتمركز بداخل الحافة العلوية (k.png) -->
+        <img src="k.png" alt="Pointer" style="position:absolute; top:12px; left:50%; transform:translateX(-50%); width:30px; height:42px; z-index:20; pointer-events:none;" onerror="this.style.display='none'">
     
     </div>
 
@@ -331,7 +331,88 @@ document.getElementById("wheelBackBtn").onclick = () => showScreen("hub");
 document.getElementById("carBackBtn").onclick = () => showScreen("hub");
 quitToHubBtn.onclick = () => { gameOver = true; bgMusic.pause(); showScreen("hub"); };
 
-/* إعدادات عجلة الحظ الدورية المحيطة بالقطعة الذهبية المركزية */
+/* ==== برمجة وتشغيل لعبة ماكينة السلوت (Slot Machine) ==== */
+let currentBet = 10;
+const slotSymbols = ["7️⃣", "🎰", "🪙", "💎", "🍒", "🔔"];
+
+function setBet(amount) {
+    if (amount === 'max') {
+        currentBet = money > 0 ? money : 10;
+    } else {
+        currentBet = amount;
+    }
+    document.querySelectorAll('.bet-btn').forEach(btn => btn.classList.remove('active'));
+    if (amount === 10) document.getElementById('bet10Btn').classList.add('active');
+    if (amount === 50) document.getElementById('bet50Btn').classList.add('active');
+    if (amount === 100) document.getElementById('bet100Btn').classList.add('active');
+    if (amount === 'max') document.getElementById('betMaxBtn').classList.add('active');
+}
+
+function spinSlots() {
+    const msg = document.getElementById("casinoMsg");
+    if (money < currentBet) {
+        msg.innerText = currentLang === "ar" ? "⚠️ ليس لديك عملات كافية لهذا الرهان!" : "Not enough cash!";
+        msg.style.color = "#e74c3c";
+        return;
+    }
+
+    money -= currentBet;
+    saveMoney();
+    msg.innerText = "";
+
+    spinSound.currentTime = 0;
+    spinSound.play().catch(() => {});
+
+    let intervals = [];
+    const r1 = document.getElementById("reel1");
+    const r2 = document.getElementById("reel2");
+    const r3 = document.getElementById("reel3");
+
+    const runReel = (reelEl) => {
+        return setInterval(() => {
+            reelEl.innerText = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+        }, 80);
+    };
+
+    intervals.push(runReel(r1));
+    intervals.push(runReel(r2));
+    intervals.push(runReel(r3));
+
+    setTimeout(() => { clearInterval(intervals[0]); r1.innerText = slotSymbols[Math.floor(Math.random() * slotSymbols.length)]; }, 1000);
+    setTimeout(() => { clearInterval(intervals[1]); r2.innerText = slotSymbols[Math.floor(Math.random() * slotSymbols.length)]; }, 1500);
+    setTimeout(() => {
+        clearInterval(intervals[2]);
+        r3.innerText = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+
+        spinSound.pause();
+
+        const s1 = r1.innerText;
+        const s2 = r2.innerText;
+        const s3 = r3.innerText;
+
+        if (s1 === s2 && s2 === s3) {
+            const winAmt = currentBet * 5;
+            money += winAmt;
+            msg.innerText = (currentLang === "ar" ? "🎉 مبروك! فزت بالجائزة الكبرى $" : "🎉 Jackpot! You won $") + winAmt;
+            msg.style.color = "#2ecc71";
+            coinSound.currentTime = 0;
+            coinSound.play().catch(() => {});
+        } else if (s1 === s2 || s2 === s3 || s1 === s3) {
+            const winAmt = Math.floor(currentBet * 1.5);
+            money += winAmt;
+            msg.innerText = (currentLang === "ar" ? "🎉 مبروك! فزت بـ $" : "🎉 You won $") + winAmt;
+            msg.style.color = "#f1c40f";
+            coinSound.currentTime = 0;
+            coinSound.play().catch(() => {});
+        } else {
+            msg.innerText = currentLang === "ar" ? "❌ حظاً أوفراً في المرة القادمة!" : "Better luck next time!";
+            msg.style.color = "#e74c3c";
+        }
+        saveMoney();
+    }, 2000);
+}
+
+/* ==== برمجة وتشغيل عجلة الحظ المطابقة للصورة تماماً ==== */
 let wheelNames = [];
 let wheelColors = ["#e74c3c", "#2ecc71", "#3498db", "#f1c40f", "#9b59b6", "#e67e22", "#1abc9c", "#e84393"];
 let wheelAngle = 0;
@@ -380,14 +461,15 @@ function drawWheel() {
     const numSlices = wheelNames.length;
     const centerX = wheelCanvas.width / 2;
     const centerY = wheelCanvas.height / 2;
-    const outerRadius = 78;
-    const innerRadius = 22; // فراغ بالمنتصف لكي تظهر القطعة الذهبية المركزية للإطار بوضوح
+    const outerRadius = 92; // يصل بالضبط لحافتي الإطار الأبيض
+    const innerRadius = 35; // يدور حول القطعة الذهبية البارزة بمنتصف الإطار
 
     wheelCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
 
     if(numSlices === 0) {
         wheelCtx.beginPath();
-        wheelCtx.arc(centerX, centerY, outerRadius, 0, Math.PI * 2);
+        wheelCtx.arc(centerX, centerY, outerRadius, 0, Math.PI * 2, false);
+        wheelCtx.arc(centerX, centerY, innerRadius, Math.PI * 2, 0, true);
         wheelCtx.fillStyle = "#1a1a1a";
         wheelCtx.fill();
         wheelCtx.lineWidth = 2;
@@ -397,7 +479,7 @@ function drawWheel() {
         wheelCtx.fillStyle = "#aaa";
         wheelCtx.font = "bold 11px Arial";
         wheelCtx.textAlign = "center";
-        wheelCtx.fillText(i18n[currentLang].addPrompt, centerX, centerY + 4);
+        wheelCtx.fillText(i18n[currentLang].addPrompt, centerX, centerY + 55);
         return;
     }
 
@@ -423,7 +505,7 @@ function drawWheel() {
         wheelCtx.rotate(startAngle + sliceAngle / 2);
         wheelCtx.textAlign = "right";
         wheelCtx.fillStyle = "#ffffff";
-        wheelCtx.font = "bold 10px Arial";
+        wheelCtx.font = "bold 11px Arial";
         wheelCtx.shadowColor = "#000000";
         wheelCtx.shadowBlur = 4;
         const displayName = wheelNames[i] ? wheelNames[i] : "";
