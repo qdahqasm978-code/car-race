@@ -35,7 +35,7 @@ canvas{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%);
 .name-chip{background:#333;color:gold;border:1px solid #555;padding:4px 10px;border-radius:15px;font-size:12px;display:inline-flex;align-items:center;gap:5px;}
 .name-chip span{color:#e74c3c;cursor:pointer;font-weight:bold;}
 
-/* إزالة الخلفية البيضاء نهائياً وجعل العجلة شفافة تماماً بالداخل */
+/* تنسيق العجلة لتكون داخل الإطار تماماً */
 .wheel-container-wrapper {
     position: relative;
     width: 240px;
@@ -63,15 +63,14 @@ canvas{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%);
     height: 240px;
     z-index: 15;
     pointer-events: none;
-    mix-blend-mode: multiply; /* تدمج الإطار مع العجلة وتزيل البيضات الزائدة */
 }
 .wheel-pointer-img {
     position: absolute;
-    top: 2px;
+    top: -2px;
     left: 50%;
     transform: translateX(-50%);
-    width: 34px;
-    height: 48px;
+    width: 36px;
+    height: 50px;
     z-index: 25;
     pointer-events: none;
 }
@@ -132,11 +131,11 @@ canvas{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%);
         <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي..." style="width:100%; padding:7px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:12px;">
     </div>
 
-    <!-- عجلة الحظ بدون خلفية بيضاء وشفافة بالكامل تدور الأسماء بداخلها -->
+    <!-- رسم الأجزاء الملونة داخل الإطار الذهبي h.png والمؤشر k.png -->
     <div class="wheel-container-wrapper">
-        <canvas id="wheelCanvas" width="220" height="220" class="wheel-canvas-style"></canvas>
-        <img src="h.png" alt="Wheel Frame" class="wheel-frame-img" onerror="this.style.display='none'">
-        <img src="k.png" alt="Pointer" class="wheel-pointer-img" onerror="this.style.display='none'">
+        <canvas id="wheelCanvas" width="240" height="240" class="wheel-canvas-style"></canvas>
+        <img src="h.png" alt="الإطار" class="wheel-frame-img">
+        <img src="k.png" alt="المؤشر" class="wheel-pointer-img">
     </div>
 
     <button id="spinWheelBtn" onclick="spinWheel()" style="width:100%; padding:10px; font-size:16px; background:linear-gradient(45deg, #8e44ad, #9b59b6); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:4px;">🎡 تدوير العجلة</button>
@@ -485,26 +484,21 @@ function removeWheelName(index) {
     }
 }
 
+// رسم الأجزاء الملونة والأسماء بدقة لتناسب المساحة الدائرية لإطار h.png
 function drawWheel() {
     const numSlices = wheelNames.length;
     const centerX = wheelCanvas.width / 2;
     const centerY = wheelCanvas.height / 2;
-    const outerRadius = 88;
-    const innerRadius = 34;
+    const outerRadius = 92;  // مقاس مطابق لحافة الإطار الذهبي الداخلية
+    const innerRadius = 38;  // مقاس مطابق للدائرة المركزية البارزة
 
     wheelCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
 
     if(numSlices === 0) {
-        wheelCtx.beginPath();
-        wheelCtx.arc(centerX, centerY, outerRadius, 0, Math.PI * 2, false);
-        wheelCtx.arc(centerX, centerY, innerRadius, Math.PI * 2, 0, true);
-        wheelCtx.fillStyle = "transparent";
-        wheelCtx.fill();
-
         wheelCtx.fillStyle = "#aaa";
         wheelCtx.font = "bold 11px Arial";
         wheelCtx.textAlign = "center";
-        wheelCtx.fillText(i18n[currentLang].addPrompt, centerX, centerY + 50);
+        wheelCtx.fillText(i18n[currentLang].addPrompt, centerX, centerY + 55);
         return;
     }
 
@@ -521,7 +515,7 @@ function drawWheel() {
 
         wheelCtx.fillStyle = wheelColors[i % wheelColors.length];
         wheelCtx.fill();
-        wheelCtx.lineWidth = 1;
+        wheelCtx.lineWidth = 1.5;
         wheelCtx.strokeStyle = "#ffffff";
         wheelCtx.stroke();
 
@@ -534,7 +528,7 @@ function drawWheel() {
         wheelCtx.shadowColor = "#000000";
         wheelCtx.shadowBlur = 4;
         const displayName = wheelNames[i] ? wheelNames[i] : "";
-        wheelCtx.fillText(displayName, outerRadius - 10, 4);
+        wheelCtx.fillText(displayName, outerRadius - 12, 4);
         wheelCtx.restore();
     }
 }
@@ -797,7 +791,7 @@ hardBtn.onclick = () => { difficulty = "hard"; hardBtn.style.border = "2px solid
 
 function resizeCanvas(){
     canvas.width = Math.min(window.innerWidth, 480);
-    canvas.height = innerHeight;
+    canvas.height = window.innerHeight;
 }
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
