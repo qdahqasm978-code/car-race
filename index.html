@@ -35,11 +35,11 @@ canvas{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%);
 .name-chip{background:#333;color:gold;border:1px solid #555;padding:4px 10px;border-radius:15px;font-size:12px;display:inline-flex;align-items:center;gap:5px;}
 .name-chip span{color:#e74c3c;cursor:pointer;font-weight:bold;}
 
-/* تنسيق العجلة لتكون داخل الإطار تماماً */
+/* حاوية عجلة الحظ المباشرة بدون صور */
 .wheel-container-wrapper {
     position: relative;
-    width: 240px;
-    height: 240px;
+    width: 250px;
+    height: 250px;
     margin: 10px auto;
     display: flex;
     align-items: center;
@@ -53,26 +53,6 @@ canvas{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%);
     transform: translate(-50%, -50%);
     background: transparent;
     border-radius: 50%;
-    z-index: 10;
-}
-.wheel-frame-img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 240px;
-    height: 240px;
-    z-index: 15;
-    pointer-events: none;
-}
-.wheel-pointer-img {
-    position: absolute;
-    top: -2px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 36px;
-    height: 50px;
-    z-index: 25;
-    pointer-events: none;
 }
 </style>
 </head>
@@ -131,11 +111,9 @@ canvas{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%);
         <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي..." style="width:100%; padding:7px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:12px;">
     </div>
 
-    <!-- رسم الأجزاء الملونة داخل الإطار الذهبي h.png والمؤشر k.png -->
+    <!-- Canvas للعجلة بدون أي صور خارجية -->
     <div class="wheel-container-wrapper">
-        <canvas id="wheelCanvas" width="240" height="240" class="wheel-canvas-style"></canvas>
-        <img src="h.png" alt="الإطار" class="wheel-frame-img">
-        <img src="k.png" alt="المؤشر" class="wheel-pointer-img">
+        <canvas id="wheelCanvas" width="250" height="250" class="wheel-canvas-style"></canvas>
     </div>
 
     <button id="spinWheelBtn" onclick="spinWheel()" style="width:100%; padding:10px; font-size:16px; background:linear-gradient(45deg, #8e44ad, #9b59b6); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:4px;">🎡 تدوير العجلة</button>
@@ -484,53 +462,98 @@ function removeWheelName(index) {
     }
 }
 
-// رسم الأجزاء الملونة والأسماء بدقة لتناسب المساحة الدائرية لإطار h.png
+// رسم عجلة الحظ بالكامل بكود البرمجة المباشر (Canvas)
 function drawWheel() {
     const numSlices = wheelNames.length;
     const centerX = wheelCanvas.width / 2;
     const centerY = wheelCanvas.height / 2;
-    const outerRadius = 92;  // مقاس مطابق لحافة الإطار الذهبي الداخلية
-    const innerRadius = 38;  // مقاس مطابق للدائرة المركزية البارزة
+    const outerRadius = 100;
+    const innerRadius = 25;
 
     wheelCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
 
-    if(numSlices === 0) {
-        wheelCtx.fillStyle = "#aaa";
-        wheelCtx.font = "bold 11px Arial";
-        wheelCtx.textAlign = "center";
-        wheelCtx.fillText(i18n[currentLang].addPrompt, centerX, centerY + 55);
-        return;
-    }
+    // 1. رسم الإطار الذهبي الخارجي لعجلة الحظ
+    wheelCtx.beginPath();
+    wheelCtx.arc(centerX, centerY, outerRadius + 12, 0, Math.PI * 2);
+    wheelCtx.fillStyle = "#f1c40f";
+    wheelCtx.fill();
+    wheelCtx.lineWidth = 3;
+    wheelCtx.strokeStyle = "#b7950b";
+    wheelCtx.stroke();
 
-    const sliceAngle = (Math.PI * 2) / numSlices;
-
-    for(let i = 0; i < numSlices; i++) {
-        const startAngle = wheelAngle + i * sliceAngle;
-        const endAngle = startAngle + sliceAngle;
-
+    // رسم النقاط الذهبية الدائرية على الإطار الخارجي
+    for (let a = 0; a < Math.PI * 2; a += Math.PI / 6) {
+        let dotX = centerX + (outerRadius + 6) * Math.cos(a);
+        let dotY = centerY + (outerRadius + 6) * Math.sin(a);
         wheelCtx.beginPath();
-        wheelCtx.arc(centerX, centerY, outerRadius, startAngle, endAngle, false);
-        wheelCtx.arc(centerX, centerY, innerRadius, endAngle, startAngle, true);
-        wheelCtx.closePath();
-
-        wheelCtx.fillStyle = wheelColors[i % wheelColors.length];
-        wheelCtx.fill();
-        wheelCtx.lineWidth = 1.5;
-        wheelCtx.strokeStyle = "#ffffff";
-        wheelCtx.stroke();
-
-        wheelCtx.save();
-        wheelCtx.translate(centerX, centerY);
-        wheelCtx.rotate(startAngle + sliceAngle / 2);
-        wheelCtx.textAlign = "right";
+        wheelCtx.arc(dotX, dotY, 4, 0, Math.PI * 2);
         wheelCtx.fillStyle = "#ffffff";
-        wheelCtx.font = "bold 11px Arial";
-        wheelCtx.shadowColor = "#000000";
-        wheelCtx.shadowBlur = 4;
-        const displayName = wheelNames[i] ? wheelNames[i] : "";
-        wheelCtx.fillText(displayName, outerRadius - 12, 4);
-        wheelCtx.restore();
+        wheelCtx.fill();
     }
+
+    if(numSlices === 0) {
+        wheelCtx.beginPath();
+        wheelCtx.arc(centerX, centerY, outerRadius, 0, Math.PI * 2);
+        wheelCtx.fillStyle = "#222";
+        wheelCtx.fill();
+        wheelCtx.fillStyle = "#aaa";
+        wheelCtx.font = "bold 13px Arial";
+        wheelCtx.textAlign = "center";
+        wheelCtx.fillText(i18n[currentLang].addPrompt, centerX, centerY + 5);
+    } else {
+        const sliceAngle = (Math.PI * 2) / numSlices;
+
+        // 2. رسم الأجزاء الملونة والأسماء داخل العجلة
+        for(let i = 0; i < numSlices; i++) {
+            const startAngle = wheelAngle + i * sliceAngle;
+            const endAngle = startAngle + sliceAngle;
+
+            wheelCtx.beginPath();
+            wheelCtx.arc(centerX, centerY, outerRadius, startAngle, endAngle, false);
+            wheelCtx.arc(centerX, centerY, innerRadius, endAngle, startAngle, true);
+            wheelCtx.closePath();
+
+            wheelCtx.fillStyle = wheelColors[i % wheelColors.length];
+            wheelCtx.fill();
+            wheelCtx.lineWidth = 2;
+            wheelCtx.strokeStyle = "#ffffff";
+            wheelCtx.stroke();
+
+            // كتابة الاسم
+            wheelCtx.save();
+            wheelCtx.translate(centerX, centerY);
+            wheelCtx.rotate(startAngle + sliceAngle / 2);
+            wheelCtx.textAlign = "right";
+            wheelCtx.fillStyle = "#ffffff";
+            wheelCtx.font = "bold 12px Arial";
+            wheelCtx.shadowColor = "#000000";
+            wheelCtx.shadowBlur = 4;
+            const displayName = wheelNames[i] ? wheelNames[i] : "";
+            wheelCtx.fillText(displayName, outerRadius - 12, 4);
+            wheelCtx.restore();
+        }
+    }
+
+    // 3. رسم القطعة الذهبية المركزية
+    wheelCtx.beginPath();
+    wheelCtx.arc(centerX, centerY, innerRadius, 0, Math.PI * 2);
+    wheelCtx.fillStyle = "#f39c12";
+    wheelCtx.fill();
+    wheelCtx.lineWidth = 3;
+    wheelCtx.strokeStyle = "#ffffff";
+    wheelCtx.stroke();
+
+    // 4. رسم السهم/المؤشر الأحمر في الأعلى
+    wheelCtx.beginPath();
+    wheelCtx.moveTo(centerX - 12, centerY - outerRadius - 14);
+    wheelCtx.lineTo(centerX + 12, centerY - outerRadius - 14);
+    wheelCtx.lineTo(centerX, centerY - outerRadius + 8);
+    wheelCtx.closePath();
+    wheelCtx.fillStyle = "#e74c3c";
+    wheelCtx.fill();
+    wheelCtx.lineWidth = 2;
+    wheelCtx.strokeStyle = "#ffffff";
+    wheelCtx.stroke();
 }
 
 function spinWheel() {
