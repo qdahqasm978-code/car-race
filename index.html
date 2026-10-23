@@ -213,9 +213,22 @@ canvas{
     display:none;
 }
 
-/* =====================================================
-   تنسيقات شاشة اختيار اللعبة ولعبة القمار والعجلة
-===================================================== */
+/* تنسيقات زر الصور التفاعلي */
+.interactive-image-btn {
+    width: 80%;
+    max-width: 240px;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    margin: 15px auto;
+    display: block;
+    border-radius: 12px;
+}
+
+.interactive-image-btn:active {
+    transform: scale(0.95);
+}
+
+/* تنسيقات شاشة اختيار اللعبة ولعبة القمار والعجلة */
 .hub-btn {
     width: 100%;
     padding: 16px;
@@ -351,9 +364,8 @@ canvas{
     <h2 id="hubTitle">🎰 صالة الألعاب 🏎️</h2>
     <div id="hubMoneyTxt" class="money-badge">💰 النقود: $0</div>
 
-    <button id="goToCarGameBtn" class="hub-btn">
-        🏎️ لعبة النجاة من التصادم
-    </button>
+    <!-- زر الصورة التفاعلي (الأحمر يتحول إلى أخضر عند الضغط وينتقل للعبة السيارات)[span_2](start_span)[span_2](end_span)[span_3](start_span)[span_3](end_span) -->
+    <img id="customActionImgBtn" class="interactive-image-btn" src="red_button.jpg" alt="ابدأ اللعبة" onclick="triggerGreenButtonAndOpenGame(this)">
 
     <button id="goToCasinoBtn" class="hub-btn" style="border-color: #2ecc71; color: #2ecc71;">
         🎰 لعبة الرهان والحظ (ماكينة السلوت)
@@ -400,7 +412,7 @@ canvas{
 
 
 <!-- =====================================================
-     شاشة لعبة عجلة الأسماء والتحديات (مستقلة ومجانية)
+     شاشة لعبة عجلة الأسماء والتحديات
 ===================================================== -->
 <div id="wheelScreen" class="overlay-card" style="display:none; border-color: #9b59b6; box-shadow: 0 0 25px rgba(155,89,182,.4);">
     <button id="wheelBackBtn" class="nav-back-btn">⬅️ القائمة الرئيسية</button>
@@ -414,18 +426,15 @@ canvas{
             <button id="addNameBtn" class="bet-btn" onclick="addWheelName()" style="background:#8e44ad; color:white; font-weight:bold;">➕ إضافة</button>
         </div>
         <div id="namesList" style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; max-height:80px; overflow-y:auto; padding:5px; background:#111; border-radius:6px; border:1px solid #333;">
-            <!-- سيتم توليد الأسماء هنا -->
         </div>
     </div>
 
-    <!-- الطلب / التحدي المرفق -->
     <div style="margin: 10px 0; text-align: right;">
         <label id="reqLabel" style="font-size:12px; color:#f39c12; font-weight:bold; display:block; margin-bottom:4px;">📋 الطلب / التحدي المرفق:</label>
-        <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي (مثال: دفع الحساب، الإجابة عن سؤال...)" style="width:100%; padding:9px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:13px;">
+        <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي..." style="width:100%; padding:9px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:13px;">
     </div>
 
     <div style="position:relative; width:220px; height:220px; margin: 10px auto;">
-        <!-- السهم المؤشر -->
         <div style="position:absolute; top:-10px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:18px solid gold; z-index:10;"></div>
         <canvas id="wheelCanvas" width="220" height="220" style="display:block; background:transparent; border-radius:50%; box-shadow: 0 0 10px rgba(0,0,0,0.8);"></canvas>
     </div>
@@ -438,68 +447,20 @@ canvas{
 <!-- =====================================================
      شاشة بداية لعبة السيارات
 ===================================================== -->
-
 <div id="startScreen" class="overlay-card" style="display:none;">
     <button id="carBackBtn" class="nav-back-btn">⬅️ القائمة الرئيسية</button>
 
-    <h2 id="titleTxt">
-        🏎️ النجاة من التصادم
-    </h2>
+    <h2 id="titleTxt">🏎️ النجاة من التصادم</h2>
 
-    <div
-        id="startMoneyTxt"
-        class="money-badge">
-        💰 النقود: $0
+    <div id="startMoneyTxt" class="money-badge">💰 النقود: $0</div>
+
+    <div id="roadShopBox" class="road-shop-box">
+        <p id="selectRoadTxt" style="margin:0 0 6px; color:#f39c12; font-weight:bold; font-size:13px;">🛤️ اختر الطريق:</p>
+        <button id="roadBtn" class="menu-btn" style="width:85%; background:linear-gradient(45deg, #d35400, #e67e22);">🛣️ الطريق العادي</button>
+        <div id="swipeHintTxt" class="swipe-hint">👈 اسحب للشمال لتغيير الطريق</div>
     </div>
 
-    <!-- طرق -->
-    <div
-        id="roadShopBox"
-        class="road-shop-box">
-
-        <p
-            id="selectRoadTxt"
-            style="
-                margin:0 0 6px;
-                color:#f39c12;
-                font-weight:bold;
-                font-size:13px;
-            ">
-            🛤️ اختر الطريق:
-        </p>
-
-        <button
-            id="roadBtn"
-            class="menu-btn"
-            style="
-                width:85%;
-                background:
-                linear-gradient(
-                    45deg,
-                    #d35400,
-                    #e67e22
-                );
-            ">
-            🛣️ الطريق العادي
-        </button>
-
-        <div
-            id="swipeHintTxt"
-            class="swipe-hint">
-            👈 اسحب للشمال لتغيير الطريق
-        </div>
-    </div>
-
-    <!-- السيارات -->
-    <p
-        id="selectCarTxt"
-        style="
-            margin:5px;
-            color:#aaa;
-            font-size:13px;
-        ">
-        اختر أو اشترِ سيارتك:
-    </p>
+    <p id="selectCarTxt" style="margin:5px; color:#aaa; font-size:13px;">اختر أو اشترِ سيارتك:</p>
 
     <div class="car-shop">
         <button id="car2Btn" class="car-btn"></button>
@@ -508,70 +469,53 @@ canvas{
         <button id="car50Btn" class="car-btn"></button>
     </div>
 
-    <!-- الصعوبة -->
-    <button
-        id="easyBtn"
-        class="menu-btn"
-        style="border:2px solid gold;">
-        😎 هجوم عادي
-    </button>
-
-    <button
-        id="hardBtn"
-        class="menu-btn">
-        🔥 هجوم شرس
-    </button>
+    <button id="easyBtn" class="menu-btn" style="border:2px solid gold;">😎 هجوم عادي</button>
+    <button id="hardBtn" class="menu-btn">🔥 هجوم شرس</button>
 
     <br>
 
-    <!-- بدء -->
-    <button
-        id="startBtn"
-        class="menu-btn">
-        ▶ بدء اللعب
-    </button>
+    <button id="startBtn" class="menu-btn">▶ بدء اللعب</button>
 </div>
 
 
 <!-- =====================================================
      اللعبة (Canvas)
 ===================================================== -->
-
 <canvas id="gameCanvas"></canvas>
 
 
 <!-- =====================================================
      لوحة التحكم أثناء اللعب
 ===================================================== -->
-
-<div
-    id="controlPanel"
-    class="overlay-card">
-
-    <button
-        id="pauseBtn"
-        class="menu-btn"
-        style="width:100%;">
-        ▶ استئناف
-    </button>
-
-    <button
-        id="restartBtn"
-        class="menu-btn"
-        style="width:100%;">
-        🔄 إعادة التشغيل
-    </button>
-
-    <button
-        id="quitToHubBtn"
-        class="menu-btn"
-        style="width:100%; background: #555;">
-        🏠 القائمة الرئيسية
-    </button>
+<div id="controlPanel" class="overlay-card">
+    <button id="pauseBtn" class="menu-btn" style="width:100%;">▶ استئناف</button>
+    <button id="restartBtn" class="menu-btn" style="width:100%;">🔄 إعادة التشغيل</button>
+    <button id="quitToHubBtn" class="menu-btn" style="width:100%; background: #555;">🏠 القائمة الرئيسية</button>
 </div>
 
 
 <script>
+
+/* =====================================================
+   إدارة تبديل صور الأزرار في القائمة الرئيسية
+===================================================== */
+const IMAGE_RED_BUTTON = "red_button.jpg";     // مسار صورة الزر الأحمر[span_4](start_span)[span_4](end_span)
+const IMAGE_GREEN_BUTTON = "green_button.jpg"; // مسار صورة الزر الأخضر المضغوط[span_5](start_span)[span_5](end_span)
+
+function triggerGreenButtonAndOpenGame(imgElement) {
+    // 1. تحويل الصورة إلى الزر الأخضر فور النقر
+    imgElement.src = IMAGE_GREEN_BUTTON;
+    
+    // 2. مهلة قصيرة لعرض الصورة الخضراء ثم الانتقال لشاشة اللعبة
+    setTimeout(() => {
+        showScreen("carStart"); // الانتقال إلى شاشة بداية لعبة السيارات
+        
+        // إعادة الصورة إلى اللون الأحمر استعداداً لعودة المستخدم لاحقاً
+        setTimeout(() => {
+            imgElement.src = IMAGE_RED_BUTTON;
+        }, 300);
+    }, 350);
+}
 
 /* =====================================================
    مراجع HTML
@@ -644,9 +588,7 @@ function loadSecureData() {
     const savedSig = localStorage.getItem("carRace_sig");
     const expectedSig = generateSecuritySig(rawMoney, rawHighScore, rawCars, rawRoads);
 
-    // التحقق من صلاحية البيانات ومطابقة التوقيع
     if (savedSig && savedSig !== expectedSig) {
-        console.warn("⚠️ Data tampering detected! Resetting state for security.");
         rawMoney = 0;
         localStorage.setItem("carRace_money", 0);
         saveMoney();
@@ -797,7 +739,6 @@ function showScreen(screenId) {
     updateAllMoneyDisplays();
 }
 
-document.getElementById("goToCarGameBtn").onclick = () => showScreen("carStart");
 document.getElementById("goToCasinoBtn").onclick = () => showScreen("casino");
 document.getElementById("goToWheelBtn").onclick = () => showScreen("wheel");
 document.getElementById("casinoBackBtn").onclick = () => showScreen("hub");
@@ -870,7 +811,6 @@ function spinSlots() {
 
 function finishSpin(s1, s2, s3) {
     isSpinning = false;
-    
     spinSound.pause();
     spinSound.currentTime = 0;
 
@@ -899,7 +839,7 @@ function finishSpin(s1, s2, s3) {
 }
 
 /* =====================================================
-   منطق عجلة الأسماء والتحديات (مستقلة ومجانية بالكامل)
+   منطق عجلة الأسماء والتحديات
 ===================================================== */
 
 let wheelNames = [];
@@ -924,7 +864,6 @@ function renderNameChips() {
             listEl.appendChild(chip);
         });
     }
-
     drawWheel();
 }
 
@@ -1024,14 +963,12 @@ function spinWheel() {
 
     const spinRotations = 5 + Math.random() * 5; 
     const totalRotation = spinRotations * Math.PI * 2;
-    
     const duration = 4000;
     const startTime = performance.now();
 
     function animateWheel(now) {
         const elapsed = now - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        
         const easeOut = 1 - Math.pow(1 - progress, 3);
         wheelAngle = easeOut * totalRotation;
         drawWheel();
@@ -1048,19 +985,16 @@ function spinWheel() {
 
 function finishWheelSpin(reqText) {
     isWheelSpinning = false;
-
     spinSound.pause();
     spinSound.currentTime = 0;
 
     const numSlices = wheelNames.length;
     const sliceAngle = (Math.PI * 2) / numSlices;
-    
     let normalizedAngle = (1.5 * Math.PI - (wheelAngle % (Math.PI * 2))) % (Math.PI * 2);
     if(normalizedAngle < 0) normalizedAngle += Math.PI * 2;
 
     const winningIndex = Math.floor(normalizedAngle / sliceAngle) % numSlices;
     const winningName = wheelNames[winningIndex];
-
     const msgEl = document.getElementById("wheelMsg");
 
     if(currentLang === "ar") {
@@ -1073,7 +1007,6 @@ function finishWheelSpin(reqText) {
     coinSound.play().catch(() => {});
 }
 
-// تهيئة أولية لعجلة الأسماء
 renderNameChips();
 
 /* =====================================================
@@ -1221,7 +1154,6 @@ roadBtn.onclick = function(){
     updateRoadUI();
 };
 
-/* Swipe للطرق */
 let touchStartX = 0;
 roadShopBox.addEventListener("touchstart", (e) => touchStartX = e.touches[0].clientX, {passive:true});
 roadShopBox.addEventListener("touchend", (e) => {
@@ -1259,7 +1191,6 @@ function setLanguage(lang){
     easyBtn.innerText = t.easy;
     hardBtn.innerText = t.hard;
     hubCheatBtn.innerText = t.cheat;
-    startBtn.innerText = t.start;
     pauseBtn.innerText = t.resume;
     restartBtn.innerText = t.restart;
     document.getElementById("betLabel").innerText = t.betLabel;
@@ -1311,7 +1242,6 @@ function resizeCanvas(){
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
-/* رسم السيارات و Hitbox */
 function drawFallbackCar(w, h, color){
     ctx.fillStyle = color;
     ctx.beginPath();
@@ -1359,7 +1289,6 @@ function collision(a, b){
     return (a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y);
 }
 
-/* AI السيارات المنافسة */
 class SmartAICar{
     constructor(model){ this.model = model; this.w = carWidth; this.h = carHeight; this.reset(); }
     reset(){
@@ -1428,10 +1357,6 @@ function resetGame(){
     setupAttackers();
 }
 
-/* =====================================================
-   حلقة رسم اللعبة (Game Loop)
-===================================================== */
-
 function drawGame(){
     if(gameOver || paused) return;
 
@@ -1439,7 +1364,6 @@ function drawGame(){
     const roadSpeed = (difficulty === "easy" ? 6 : 8) + level;
     roadY = (roadY + roadSpeed) % canvas.height;
 
-    /* الطريق */
     const activeRoad = allRoads.find(road => road.id === currentRoad) || allRoads[0];
     const roadImage = activeRoad.img;
 
@@ -1455,7 +1379,6 @@ function drawGame(){
         }
     }
 
-    /* العملات */
     spawnCoin();
     for(let i=coins.length-1; i>=0; i--){
         const coin = coins[i];
@@ -1480,12 +1403,10 @@ function drawGame(){
         }
     }
 
-    /* اللاعب */
     const playerModel = allCars.find(car => car.id === currentCar) || allCars[0];
     renderCar(playerModel.img, playerX, playerY, carWidth, carHeight, playerModel.color, true, playerVx);
     const playerBox = getHitbox(playerX, playerY, carWidth, carHeight, true);
 
-    /* الخصوم */
     for(const attacker of attackerCars){
         attacker.update();
         renderCar(attacker.model.img, attacker.x, attacker.y, attacker.w, attacker.h, attacker.model.color, false, attacker.vx);
@@ -1498,7 +1419,6 @@ function drawGame(){
         }
     }
 
-    /* الشرارات */
     for(let i=sparks.length-1; i>=0; i--){
         const spark = sparks[i];
         ctx.fillStyle = `rgba(255, ${Math.floor(spark.life * 255)}, 0, ${spark.life})`;
@@ -1509,7 +1429,6 @@ function drawGame(){
         if(spark.life <= 0) sparks.splice(i, 1);
     }
 
-    /* المعلومات على الشاشة */
     const t = i18n[currentLang];
     ctx.fillStyle = "white"; ctx.font = "bold 15px Arial";
     if(currentLang === "ar"){
@@ -1548,10 +1467,6 @@ function endGame(){
     }, 300);
 }
 
-/* =====================================================
-   أدوات التحكم (لوحة المفاتيح واللمس)
-===================================================== */
-
 document.addEventListener("keydown", (e) => {
     if(gameOver || paused) return;
     const step = 22;
@@ -1584,10 +1499,6 @@ canvas.addEventListener("touchstart", movePlayerTouch, {passive:true});
 canvas.addEventListener("touchmove", (e) => { movePlayerTouch(e); e.preventDefault(); }, {passive:false});
 canvas.addEventListener("touchend", () => playerVx = 0);
 
-/* =====================================================
-   إيقاف / استئناف / بدء
-===================================================== */
-
 function togglePause(){
     if(gameOver) return;
     paused = !paused;
@@ -1606,18 +1517,6 @@ function togglePause(){
 
 pauseBtn.onclick = togglePause;
 restartBtn.onclick = () => { resetGame(); bgMusic.currentTime = 0; bgMusic.play().catch(() => {}); drawGame(); };
-
-startBtn.onclick = () => {
-    showScreen("canvas");
-    resetGame();
-    bgMusic.currentTime = 0;
-    bgMusic.play().catch(() => {});
-    drawGame();
-};
-
-/* =====================================================
-   تشغيل أولي
-===================================================== */
 
 setLanguage("ar");
 showScreen("hub");
