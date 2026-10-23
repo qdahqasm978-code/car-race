@@ -39,6 +39,35 @@ canvas{
     touch-action:none;
 }
 
+/* =====================================================
+   شاشة البداية الترحيبية (الصورة والزر التفاعلي)
+===================================================== */
+#welcomeScreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('red_button.jpg');
+    background-size: cover;
+    background-position: center;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 8vh;
+    transition: background-image 0.2s ease-in-out;
+}
+
+.welcome-btn-container {
+    width: 220px;
+    height: 70px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .overlay-card{
     position:absolute;
     top:50%;
@@ -213,27 +242,9 @@ canvas{
     display:none;
 }
 
-.interactive-image-btn {
-    width: 80%;
-    max-width: 240px;
-    padding: 14px;
-    background: linear-gradient(45deg, #e74c3c, #c0392b);
-    color: white;
-    border-radius: 12px;
-    border: 2px solid gold;
-    cursor: pointer;
-    font-size: 17px;
-    font-weight: bold;
-    margin: 15px auto;
-    display: block;
-    box-shadow: 0 4px 15px rgba(231,76,60,0.5);
-    transition: transform 0.1s ease;
-}
-
-.interactive-image-btn:active {
-    transform: scale(0.95);
-}
-
+/* =====================================================
+   تنسيقات شاشة اختيار اللعبة ولعبة القمار والعجلة
+===================================================== */
 .hub-btn {
     width: 100%;
     padding: 16px;
@@ -352,30 +363,23 @@ canvas{
     font-weight: bold;
 }
 
-.in-game-pause-btn {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 100;
-    padding: 8px 14px;
-    background: rgba(0,0,0,0.7);
-    color: gold;
-    border: 1px solid gold;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    display: none;
-}
-
 </style>
 </head>
 
 <body>
 
 <!-- =====================================================
+     شاشة البداية بالصورة والزر التفاعلي
+===================================================== -->
+<div id="welcomeScreen">
+    <div id="welcomeTriggerBtn" class="welcome-btn-container" onclick="activateGameHub()"></div>
+</div>
+
+
+<!-- =====================================================
      الشاشة الرئيسية (مركز الألعاب)
 ===================================================== -->
-<div id="hubScreen" class="overlay-card">
+<div id="hubScreen" class="overlay-card" style="display:none;">
     <div class="lang-container">
         <button id="hubLangAr" class="lang-btn active">🇸🇦 العربية</button>
         <button id="hubLangEn" class="lang-btn">🇬🇧 English</button>
@@ -384,9 +388,9 @@ canvas{
     <h2 id="hubTitle">🎰 صالة الألعاب 🏎️</h2>
     <div id="hubMoneyTxt" class="money-badge">💰 النقود: $0</div>
 
-    <div id="customActionImgBtn" class="interactive-image-btn" onclick="triggerGreenButtonAndOpenGame(this)">
-        🏎️ ابدأ لعبة السيارات الآن
-    </div>
+    <button id="goToCarGameBtn" class="hub-btn">
+        🏎️ لعبة النجاة من التصادم
+    </button>
 
     <button id="goToCasinoBtn" class="hub-btn" style="border-color: #2ecc71; color: #2ecc71;">
         🎰 لعبة الرهان والحظ (ماكينة السلوت)
@@ -433,7 +437,7 @@ canvas{
 
 
 <!-- =====================================================
-     شاشة لعبة عجلة الأسماء والتحديات
+     شاشة لعبة عجلة الأسماء والتحديات (مستقلة ومجانية)
 ===================================================== -->
 <div id="wheelScreen" class="overlay-card" style="display:none; border-color: #9b59b6; box-shadow: 0 0 25px rgba(155,89,182,.4);">
     <button id="wheelBackBtn" class="nav-back-btn">⬅️ القائمة الرئيسية</button>
@@ -447,15 +451,18 @@ canvas{
             <button id="addNameBtn" class="bet-btn" onclick="addWheelName()" style="background:#8e44ad; color:white; font-weight:bold;">➕ إضافة</button>
         </div>
         <div id="namesList" style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; max-height:80px; overflow-y:auto; padding:5px; background:#111; border-radius:6px; border:1px solid #333;">
+            <!-- سيتم توليد الأسماء هنا -->
         </div>
     </div>
 
+    <!-- الطلب / التحدي المرفق -->
     <div style="margin: 10px 0; text-align: right;">
         <label id="reqLabel" style="font-size:12px; color:#f39c12; font-weight:bold; display:block; margin-bottom:4px;">📋 الطلب / التحدي المرفق:</label>
-        <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي..." style="width:100%; padding:9px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:13px;">
+        <input type="text" id="wheelReqInput" placeholder="أدخل الطلب أو التحدي (مثال: دفع الحساب، الإجابة عن سؤال...)" style="width:100%; padding:9px; border-radius:6px; border:1px solid #9b59b6; background:#1a1a1a; color:gold; font-size:13px;">
     </div>
 
     <div style="position:relative; width:220px; height:220px; margin: 10px auto;">
+        <!-- السهم المؤشر -->
         <div style="position:absolute; top:-10px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:18px solid gold; z-index:10;"></div>
         <canvas id="wheelCanvas" width="220" height="220" style="display:block; background:transparent; border-radius:50%; box-shadow: 0 0 10px rgba(0,0,0,0.8);"></canvas>
     </div>
@@ -468,20 +475,68 @@ canvas{
 <!-- =====================================================
      شاشة بداية لعبة السيارات
 ===================================================== -->
+
 <div id="startScreen" class="overlay-card" style="display:none;">
     <button id="carBackBtn" class="nav-back-btn">⬅️ القائمة الرئيسية</button>
 
-    <h2 id="titleTxt">🏎️ النجاة من التصادم</h2>
+    <h2 id="titleTxt">
+        🏎️ النجاة من التصادم
+    </h2>
 
-    <div id="startMoneyTxt" class="money-badge">💰 النقود: $0</div>
-
-    <div id="roadShopBox" class="road-shop-box">
-        <p id="selectRoadTxt" style="margin:0 0 6px; color:#f39c12; font-weight:bold; font-size:13px;">🛤️ اختر الطريق:</p>
-        <button id="roadBtn" class="menu-btn" style="width:85%; background:linear-gradient(45deg, #d35400, #e67e22);">🛣️ الطريق العادي</button>
-        <div id="swipeHintTxt" class="swipe-hint">👈 اسحب للشمال لتغيير الطريق</div>
+    <div
+        id="startMoneyTxt"
+        class="money-badge">
+        💰 النقود: $0
     </div>
 
-    <p id="selectCarTxt" style="margin:5px; color:#aaa; font-size:13px;">اختر أو اشترِ سيارتك:</p>
+    <!-- طرق -->
+    <div
+        id="roadShopBox"
+        class="road-shop-box">
+
+        <p
+            id="selectRoadTxt"
+            style="
+                margin:0 0 6px;
+                color:#f39c12;
+                font-weight:bold;
+                font-size:13px;
+            ">
+            🛤️ اختر الطريق:
+        </p>
+
+        <button
+            id="roadBtn"
+            class="menu-btn"
+            style="
+                width:85%;
+                background:
+                linear-gradient(
+                    45deg,
+                    #d35400,
+                    #e67e22
+                );
+            ">
+            🛣️ الطريق العادي
+        </button>
+
+        <div
+            id="swipeHintTxt"
+            class="swipe-hint">
+            👈 اسحب للشمال لتغيير الطريق
+        </div>
+    </div>
+
+    <!-- السيارات -->
+    <p
+        id="selectCarTxt"
+        style="
+            margin:5px;
+            color:#aaa;
+            font-size:13px;
+        ">
+        اختر أو اشترِ سيارتك:
+    </p>
 
     <div class="car-shop">
         <button id="car2Btn" class="car-btn"></button>
@@ -490,53 +545,84 @@ canvas{
         <button id="car50Btn" class="car-btn"></button>
     </div>
 
-    <button id="easyBtn" class="menu-btn" style="border:2px solid gold;">😎 هجوم عادي</button>
-    <button id="hardBtn" class="menu-btn">🔥 هجوم شرس</button>
+    <!-- الصعوبة -->
+    <button
+        id="easyBtn"
+        class="menu-btn"
+        style="border:2px solid gold;">
+        😎 هجوم عادي
+    </button>
+
+    <button
+        id="hardBtn"
+        class="menu-btn">
+        🔥 هجوم شرس
+    </button>
 
     <br>
 
-    <button id="startBtn" class="menu-btn">▶ بدء اللعب</button>
+    <!-- بدء -->
+    <button
+        id="startBtn"
+        class="menu-btn">
+        ▶ بدء اللعب
+    </button>
 </div>
 
 
 <!-- =====================================================
      اللعبة (Canvas)
 ===================================================== -->
-<button id="inGamePauseBtn" class="in-game-pause-btn" onclick="togglePause()">⏸ إيقاف</button>
+
 <canvas id="gameCanvas"></canvas>
 
 
 <!-- =====================================================
      لوحة التحكم أثناء اللعب
 ===================================================== -->
-<div id="controlPanel" class="overlay-card">
-    <button id="pauseBtn" class="menu-btn" style="width:100%;">▶ استئناف</button>
-    <button id="restartBtn" class="menu-btn" style="width:100%;">🔄 إعادة التشغيل</button>
-    <button id="quitToHubBtn" class="menu-btn" style="width:100%; background: #555;">🏠 القائمة الرئيسية</button>
+
+<div
+    id="controlPanel"
+    class="overlay-card">
+
+    <button
+        id="pauseBtn"
+        class="menu-btn"
+        style="width:100%;">
+        ▶ استئناف
+    </button>
+
+    <button
+        id="restartBtn"
+        class="menu-btn"
+        style="width:100%;">
+        🔄 إعادة التشغيل
+    </button>
+
+    <button
+        id="quitToHubBtn"
+        class="menu-btn"
+        style="width:100%; background: #555;">
+        🏠 القائمة الرئيسية
+    </button>
 </div>
 
 
 <script>
 
-function triggerGreenButtonAndOpenGame(element) {
-    element.style.background = "linear-gradient(45deg, #27ae60, #2ecc71)";
-    setTimeout(() => {
-        showScreen("carStart");
-        setTimeout(() => {
-            element.style.background = "linear-gradient(45deg, #e74c3c, #c0392b)";
-        }, 300);
-    }, 200);
-}
+/* =====================================================
+   مراجع HTML
+===================================================== */
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+const welcomeScreen = document.getElementById("welcomeScreen");
 const hubScreen = document.getElementById("hubScreen");
 const casinoScreen = document.getElementById("casinoScreen");
 const wheelScreen = document.getElementById("wheelScreen");
 const startScreen = document.getElementById("startScreen");
 const startBtn = document.getElementById("startBtn");
-const inGamePauseBtn = document.getElementById("inGamePauseBtn");
 
 const controlPanel = document.getElementById("controlPanel");
 const pauseBtn = document.getElementById("pauseBtn");
@@ -550,74 +636,88 @@ const easyBtn = document.getElementById("easyBtn");
 const hardBtn = document.getElementById("hardBtn");
 const hubCheatBtn = document.getElementById("hubCheatBtn");
 
-// صور السيارات المصممة برمجيًا (SVG) لضمان التشغيل الفوري
-function createSVGDataURI(color, subColor) {
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="60" height="110" viewBox="0 0 60 110">
-        <rect x="5" y="10" width="50" height="90" rx="12" fill="${color}"/>
-        <rect x="10" y="25" width="40" height="22" rx="4" fill="#111"/>
-        <rect x="13" y="27" width="34" height="18" rx="2" fill="${subColor}"/>
-        <rect x="10" y="65" width="40" height="18" rx="3" fill="#111"/>
-        <circle cx="12" cy="15" r="4" fill="#fff"/>
-        <circle cx="48" cy="15" r="4" fill="#fff"/>
-    </svg>`;
-    return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
-}
+/* =====================================================
+   مسارات الملفات
+===================================================== */
 
-const CAR_SVGS = {
-    car2: createSVGDataURI("#e74c3c", "#3498db"),
-    car32: createSVGDataURI("#3498db", "#e74c3c"),
-    carExtra: createSVGDataURI("#2ecc71", "#f1c40f"),
-    car50: createSVGDataURI("#34495e", "#ecf0f1")
+const FILES = {
+    redButtonBg: "red_button.jpg",
+    greenButtonBg: "green_button.jpg",
+    car2: "car2.png",
+    car32: "car32.png",
+    carExtra: "carExtra.png",
+    car50: "car50.png",
+    road: "road.png",
+    desert: "desert.png",
+    snow: "snow.png",
+    music: "background.mp3",
+    crash: "explosion.mp3",
+    coin: "coin.mp3",
+    spinSound: "r.mp3"
 };
 
-function loadSvgImage(src) {
-    const img = new Image();
-    img.src = src;
-    return img;
+/* =====================================================
+   منطق تفعيل شاشة البداية وتحويل الزر للأخضر
+===================================================== */
+
+function activateGameHub() {
+    // تغيير الصورة الخلفية للزر الأخضر
+    welcomeScreen.style.backgroundImage = `url('${FILES.greenButtonBg}')`;
+    
+    // تأخير بسيط للانتقال إلى مركز الألعاب بسلاسة
+    setTimeout(() => {
+        welcomeScreen.style.display = "none";
+        showScreen("hub");
+    }, 300);
 }
 
-const carImg = loadSvgImage(CAR_SVGS.car2);
-const car32Img = loadSvgImage(CAR_SVGS.car32);
-const carExtraImg = loadSvgImage(CAR_SVGS.carExtra);
-const car50Img = loadSvgImage(CAR_SVGS.car50);
+/* =====================================================
+   نظام الحماية والأمان (Anti-Cheat Security Guard)
+===================================================== */
 
-const allCars = [
-    { id:"car2", img:carImg, color:"#e74c3c", price:0, nameAr:"🔴 الحمراء", nameEn:"🔴 Red" },
-    { id:"car32", img:car32Img, color:"#3498db", price:100, nameAr:"🔵 الزرقاء", nameEn:"🔵 Blue" },
-    { id:"carExtra", img:carExtraImg, color:"#2ecc71", price:250, nameAr:"🟢 الخضراء", nameEn:"🟢 Green" },
-    { id:"car50", img:car50Img, color:"#34495e", price:500, nameAr:"⬛ السوداء", nameEn:"⬛ Black" }
-];
+const SECRET_SALT = "CR_GAME_HUB_SECURE_2026_#987";
 
-const allRoads = [
-    { id:"road", price:0, nameAr:"🛣️ الطريق العادي", nameEn:"🛣️ Default Road" },
-    { id:"desert", price:1000, nameAr:"🌵 الطريق الصحراوي", nameEn:"🌵 Desert Track" },
-    { id:"snow", price:2000, nameAr:"❄️ الطريق الثلجي", nameEn:"❄️ Snow Track" }
-];
-
-let highScore = Number(localStorage.getItem("carRace_highScore")) || 0;
-let money = Number(localStorage.getItem("carRace_money")) || 0;
-let unlockedCars = JSON.parse(localStorage.getItem("carRace_unlockedCars") || '["car2"]');
-let currentCar = localStorage.getItem("carRace_currentCar") || "car2";
-let unlockedRoads = JSON.parse(localStorage.getItem("carRace_unlockedRoads") || '["road"]');
-let currentRoad = localStorage.getItem("carRace_currentRoad") || "road";
-
-let currentRoadIndex = allRoads.findIndex(r => r.id === currentRoad);
-if(currentRoadIndex < 0) currentRoadIndex = 0;
-
-function saveMoney() {
-    localStorage.setItem("carRace_money", money);
-    localStorage.setItem("carRace_highScore", highScore);
-    localStorage.setItem("carRace_unlockedCars", JSON.stringify(unlockedCars));
-    localStorage.setItem("carRace_unlockedRoads", JSON.stringify(unlockedRoads));
-    updateAllMoneyDisplays();
+function generateSecuritySig(m, hs, cars, roads) {
+    const dataStr = `${m}_${hs}_${JSON.stringify(cars)}_${JSON.stringify(roads)}_${SECRET_SALT}`;
+    let hash = 0;
+    for (let i = 0; i < dataStr.length; i++) {
+        const char = dataStr.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash |= 0;
+    }
+    return hash.toString(16);
 }
 
-function updateAllMoneyDisplays() {
-    const t = i18n[currentLang];
-    document.getElementById("hubMoneyTxt").innerText = t.money + money;
-    document.getElementById("casinoMoneyTxt").innerText = t.money + money;
-    document.getElementById("startMoneyTxt").innerText = t.money + money;
+function loadSecureData() {
+    let rawMoney = Number(localStorage.getItem("carRace_money")) || 0;
+    let rawHighScore = Number(localStorage.getItem("carRace_highScore")) || 0;
+    let rawCars, rawRoads;
+
+    try { rawCars = JSON.parse(localStorage.getItem("carRace_unlockedCars")) || ["car2"]; } catch { rawCars = ["car2"]; }
+    try { rawRoads = JSON.parse(localStorage.getItem("carRace_unlockedRoads")) || ["road"]; } catch { rawRoads = ["road"]; }
+
+    const savedSig = localStorage.getItem("carRace_sig");
+    const expectedSig = generateSecuritySig(rawMoney, rawHighScore, rawCars, rawRoads);
+
+    if (savedSig && savedSig !== expectedSig) {
+        console.warn("⚠️ Data tampering detected! Resetting state for security.");
+        rawMoney = 0;
+        localStorage.setItem("carRace_money", 0);
+        saveMoney();
+        alert(currentLang === "ar" ? "⚠️ تم كشف تلاعب بالبيانات! تم إعادة ضبط الرصيد للحماية." : "⚠️ Data tampering detected! Money reset for security.");
+    }
+
+    return {
+        money: rawMoney < 0 ? 0 : rawMoney,
+        highScore: rawHighScore < 0 ? 0 : rawHighScore,
+        unlockedCars: rawCars,
+        unlockedRoads: rawRoads
+    };
 }
+
+/* =====================================================
+   اللغة والترجمة
+===================================================== */
 
 let currentLang = "ar";
 
@@ -702,6 +802,38 @@ const i18n = {
     }
 };
 
+/* =====================================================
+   LocalStorage والبيانات المحمية
+===================================================== */
+
+const secureData = loadSecureData();
+let highScore = secureData.highScore;
+let money = secureData.money;
+let unlockedCars = secureData.unlockedCars;
+let currentCar = localStorage.getItem("carRace_currentCar") || "car2";
+let unlockedRoads = secureData.unlockedRoads;
+let currentRoad = localStorage.getItem("carRace_currentRoad") || "road";
+
+function saveMoney() {
+    localStorage.setItem("carRace_money", money);
+    localStorage.setItem("carRace_highScore", highScore);
+    localStorage.setItem("carRace_unlockedCars", JSON.stringify(unlockedCars));
+    localStorage.setItem("carRace_unlockedRoads", JSON.stringify(unlockedRoads));
+    localStorage.setItem("carRace_sig", generateSecuritySig(money, highScore, unlockedCars, unlockedRoads));
+    updateAllMoneyDisplays();
+}
+
+function updateAllMoneyDisplays() {
+    const t = i18n[currentLang];
+    document.getElementById("hubMoneyTxt").innerText = t.money + money;
+    document.getElementById("casinoMoneyTxt").innerText = t.money + money;
+    document.getElementById("startMoneyTxt").innerText = t.money + money;
+}
+
+/* =====================================================
+   إدارة الشاشات والملاحة
+===================================================== */
+
 function showScreen(screenId) {
     hubScreen.style.display = "none";
     casinoScreen.style.display = "none";
@@ -709,54 +841,53 @@ function showScreen(screenId) {
     startScreen.style.display = "none";
     canvas.style.display = "none";
     controlPanel.style.display = "none";
-    inGamePauseBtn.style.display = "none";
 
     if(screenId === "hub") hubScreen.style.display = "block";
     if(screenId === "casino") casinoScreen.style.display = "block";
     if(screenId === "wheel") { wheelScreen.style.display = "block"; drawWheel(); }
     if(screenId === "carStart") startScreen.style.display = "block";
-    if(screenId === "canvas") {
-        canvas.style.display = "block";
-        inGamePauseBtn.style.display = "block";
-    }
+    if(screenId === "canvas") canvas.style.display = "block";
     
     updateAllMoneyDisplays();
 }
 
+document.getElementById("goToCarGameBtn").onclick = () => showScreen("carStart");
 document.getElementById("goToCasinoBtn").onclick = () => showScreen("casino");
 document.getElementById("goToWheelBtn").onclick = () => showScreen("wheel");
 document.getElementById("casinoBackBtn").onclick = () => showScreen("hub");
 document.getElementById("wheelBackBtn").onclick = () => showScreen("hub");
 document.getElementById("carBackBtn").onclick = () => showScreen("hub");
-
 quitToHubBtn.onclick = () => {
     gameOver = true;
+    bgMusic.pause();
     showScreen("hub");
 };
 
-startBtn.onclick = () => {
-    resetGame();
-    showScreen("canvas");
-    drawGame();
-};
-
 /* =====================================================
-   منطق ماكينة السلوت
+   منطق لعبة القمار (Slot Machine)
 ===================================================== */
+
 const slotSymbols = ["7️⃣", "🎰", "🔔", "🍋", "🪙"];
 let currentBet = 10;
 let isSpinning = false;
 
 function setBet(amount) {
     if(isSpinning) return;
-    currentBet = amount === 'max' ? (money > 0 ? money : 10) : amount;
+    
+    if(amount === 'max') {
+        currentBet = money > 0 ? money : 10;
+    } else {
+        currentBet = amount;
+    }
+
     const btns = casinoScreen.querySelectorAll(".bet-btn");
     btns.forEach(b => b.classList.remove("active"));
-    if(event && event.target) event.target.classList.add("active");
+    event.target.classList.add("active");
 }
 
 function spinSlots() {
     if(isSpinning) return;
+
     if(money < currentBet || money <= 0) {
         document.getElementById("casinoMsg").innerText = i18n[currentLang].noMoney;
         document.getElementById("casinoMsg").style.color = "#e74c3c";
@@ -765,7 +896,13 @@ function spinSlots() {
 
     money -= currentBet;
     saveMoney();
+    
     isSpinning = true;
+    document.getElementById("casinoMsg").innerText = "";
+
+    spinSound.currentTime = 0;
+    spinSound.loop = true;
+    spinSound.play().catch(() => {});
 
     const reel1 = document.getElementById("reel1");
     const reel2 = document.getElementById("reel2");
@@ -787,10 +924,16 @@ function spinSlots() {
 
 function finishSpin(s1, s2, s3) {
     isSpinning = false;
+    
+    spinSound.pause();
+    spinSound.currentTime = 0;
+
     let winAmount = 0;
 
     if(s1 === s2 && s2 === s3) {
-        winAmount = currentBet * (s1 === "7️⃣" ? 25 : s1 === "🎰" ? 15 : 8);
+        if(s1 === "7️⃣") winAmount = currentBet * 25;
+        else if(s1 === "🎰") winAmount = currentBet * 15;
+        else winAmount = currentBet * 8;
     } else if(s1 === s2 || s2 === s3 || s1 === s3) {
         winAmount = currentBet * 2;
     }
@@ -801,6 +944,8 @@ function finishSpin(s1, s2, s3) {
         saveMoney();
         msgEl.innerText = i18n[currentLang].winMsg + winAmount;
         msgEl.style.color = "#2ecc71";
+        coinSound.currentTime = 0;
+        coinSound.play().catch(() => {});
     } else {
         msgEl.innerText = i18n[currentLang].loseMsg;
         msgEl.style.color = "#e74c3c";
@@ -808,8 +953,9 @@ function finishSpin(s1, s2, s3) {
 }
 
 /* =====================================================
-   منطق عجلة الأسماء
+   منطق عجلة الأسماء والتحديات (مستقلة ومجانية بالكامل)
 ===================================================== */
+
 let wheelNames = [];
 let wheelColors = ["#e74c3c", "#3498db", "#2ecc71", "#f1c40f", "#9b59b6", "#e67e22", "#1abc9c", "#e84393"];
 let wheelAngle = 0;
@@ -821,6 +967,7 @@ const wheelCtx = wheelCanvas.getContext("2d");
 function renderNameChips() {
     const listEl = document.getElementById("namesList");
     listEl.innerHTML = "";
+    
     if(wheelNames.length === 0) {
         listEl.innerHTML = `<span style="color:#777; font-size:12px; padding:4px;">${currentLang === "ar" ? "لا توجد أسماء مضافة بعد" : "No names added yet"}</span>`;
     } else {
@@ -831,6 +978,7 @@ function renderNameChips() {
             listEl.appendChild(chip);
         });
     }
+
     drawWheel();
 }
 
@@ -847,8 +995,10 @@ function addWheelName() {
 
 function removeWheelName(index) {
     if(isWheelSpinning) return;
-    wheelNames.splice(index, 1);
-    renderNameChips();
+    if(wheelNames.length > 0) {
+        wheelNames.splice(index, 1);
+        renderNameChips();
+    }
 }
 
 function drawWheel() {
@@ -864,8 +1014,10 @@ function drawWheel() {
         wheelCtx.arc(centerX, centerY, radius, 0, Math.PI * 2);
         wheelCtx.fillStyle = "#222";
         wheelCtx.fill();
+        wheelCtx.lineWidth = 2;
         wheelCtx.strokeStyle = "#8e44ad";
         wheelCtx.stroke();
+
         wheelCtx.fillStyle = "#aaa";
         wheelCtx.font = "bold 13px Arial";
         wheelCtx.textAlign = "center";
@@ -894,6 +1046,8 @@ function drawWheel() {
         wheelCtx.textAlign = "right";
         wheelCtx.fillStyle = "#fff";
         wheelCtx.font = "bold 13px Arial";
+        wheelCtx.shadowColor = "#000";
+        wheelCtx.shadowBlur = 4;
         wheelCtx.fillText(wheelNames[i], radius - 15, 5);
         wheelCtx.restore();
     }
@@ -901,6 +1055,7 @@ function drawWheel() {
 
 function spinWheel() {
     if(isWheelSpinning) return;
+
     if(wheelNames.length < 2) {
         document.getElementById("wheelMsg").innerText = i18n[currentLang].minNamesErr;
         document.getElementById("wheelMsg").style.color = "#e74c3c";
@@ -915,13 +1070,22 @@ function spinWheel() {
     }
 
     isWheelSpinning = true;
-    const totalRotation = (5 + Math.random() * 5) * Math.PI * 2;
-    const duration = 3000;
+    document.getElementById("wheelMsg").innerText = "";
+
+    spinSound.currentTime = 0;
+    spinSound.loop = true;
+    spinSound.play().catch(() => {});
+
+    const spinRotations = 5 + Math.random() * 5; 
+    const totalRotation = spinRotations * Math.PI * 2;
+    
+    const duration = 4000;
     const startTime = performance.now();
 
     function animateWheel(now) {
         const elapsed = now - startTime;
         const progress = Math.min(elapsed / duration, 1);
+        
         const easeOut = 1 - Math.pow(1 - progress, 3);
         wheelAngle = easeOut * totalRotation;
         drawWheel();
@@ -929,34 +1093,104 @@ function spinWheel() {
         if(progress < 1) {
             requestAnimationFrame(animateWheel);
         } else {
-            isWheelSpinning = false;
-            const numSlices = wheelNames.length;
-            const sliceAngle = (Math.PI * 2) / numSlices;
-            let normalizedAngle = (1.5 * Math.PI - (wheelAngle % (Math.PI * 2))) % (Math.PI * 2);
-            if(normalizedAngle < 0) normalizedAngle += Math.PI * 2;
-            const winningIndex = Math.floor(normalizedAngle / sliceAngle) % numSlices;
-            
-            const msgEl = document.getElementById("wheelMsg");
-            msgEl.innerHTML = currentLang === "ar" ? 
-                `👑 الفائز: <span style="color:gold;">[${wheelNames[winningIndex]}]</span><br>📌 المطلوب: <span style="color:#2ecc71;">${reqText}</span>` :
-                `👑 Winner: <span style="color:gold;">[${wheelNames[winningIndex]}]</span><br>📌 Task: <span style="color:#2ecc71;">${reqText}</span>`;
+            finishWheelSpin(reqText);
         }
     }
+
     requestAnimationFrame(animateWheel);
+}
+
+function finishWheelSpin(reqText) {
+    isWheelSpinning = false;
+
+    spinSound.pause();
+    spinSound.currentTime = 0;
+
+    const numSlices = wheelNames.length;
+    const sliceAngle = (Math.PI * 2) / numSlices;
+    
+    let normalizedAngle = (1.5 * Math.PI - (wheelAngle % (Math.PI * 2))) % (Math.PI * 2);
+    if(normalizedAngle < 0) normalizedAngle += Math.PI * 2;
+
+    const winningIndex = Math.floor(normalizedAngle / sliceAngle) % numSlices;
+    const winningName = wheelNames[winningIndex];
+
+    const msgEl = document.getElementById("wheelMsg");
+
+    if(currentLang === "ar") {
+        msgEl.innerHTML = `👑 الفائز بالقرعة: <span style="color:gold;">[${winningName}]</span><br>📌 المطلوب منه: <span style="color:#2ecc71;">${reqText}</span>`;
+    } else {
+        msgEl.innerHTML = `👑 Chosen Winner: <span style="color:gold;">[${winningName}]</span><br>📌 Assigned Task: <span style="color:#2ecc71;">${reqText}</span>`;
+    }
+    
+    coinSound.currentTime = 0;
+    coinSound.play().catch(() => {});
 }
 
 renderNameChips();
 
 /* =====================================================
-   إدارة المتجر وتحديث الواجهات
+   تحميل الصور والأصوات
 ===================================================== */
+
+function loadImage(src){
+    const img = new Image();
+    img.src = src;
+    return img;
+}
+
+const carImg = loadImage(FILES.car2);
+const car32Img = loadImage(FILES.car32);
+const carExtraImg = loadImage(FILES.carExtra);
+const car50Img = loadImage(FILES.car50);
+
+const roadImg = loadImage(FILES.road);
+const desertImg = loadImage(FILES.desert);
+const snowImg = loadImage(FILES.snow);
+
+const bgMusic = new Audio(FILES.music);
+bgMusic.loop = true;
+bgMusic.volume = 0.4;
+
+const crashSound = new Audio(FILES.crash);
+crashSound.volume = 0.8;
+
+const coinSound = new Audio(FILES.coin);
+coinSound.volume = 0.7;
+
+const spinSound = new Audio(FILES.spinSound);
+spinSound.volume = 0.8;
+
+/* =====================================================
+   السيارات والطرق
+===================================================== */
+
+const allCars = [
+    { id:"car2", img:carImg, color:"#e74c3c", price:0, nameAr:"🔴 الحمراء", nameEn:"🔴 Red" },
+    { id:"car32", img:car32Img, color:"#3498db", price:100, nameAr:"🔵 الزرقاء", nameEn:"🔵 Blue" },
+    { id:"carExtra", img:carExtraImg, color:"#2ecc71", price:250, nameAr:"🟢 الخضراء", nameEn:"🟢 Green" },
+    { id:"car50", img:car50Img, color:"#34495e", price:500, nameAr:"⬛ السوداء", nameEn:"⬛ Black" }
+];
+
+const allRoads = [
+    { id:"road", img:roadImg, price:0, nameAr:"🛣️ الطريق العادي", nameEn:"🛣️ Default Road" },
+    { id:"desert", img:desertImg, price:1000, nameAr:"🌵 الطريق الصحراوي", nameEn:"🌵 Desert Track" },
+    { id:"snow", img:snowImg, price:2000, nameAr:"❄️ الطريق الثلجي", nameEn:"❄️ Snow Track" }
+];
+
+let currentRoadIndex = allRoads.findIndex(road => road.id === currentRoad);
+if(currentRoadIndex < 0) { currentRoadIndex = 0; currentRoad = "road"; }
+
+/* =====================================================
+   تحديث واجهات السيارات والطرق
+===================================================== */
+
 function updateCarButtons(){
     const t = i18n[currentLang];
     updateAllMoneyDisplays();
 
     allCars.forEach(car => {
         const btn = document.getElementById(car.id + "Btn");
-        if(!btn) return;
         const unlocked = unlockedCars.includes(car.id);
         const selected = currentCar === car.id;
         const name = currentLang === "ar" ? car.nameAr : car.nameEn;
@@ -989,6 +1223,7 @@ function handleCarClick(id){
         money -= car.price;
         unlockedCars.push(id);
         currentCar = id;
+
         saveMoney();
         localStorage.setItem("carRace_currentCar", currentCar);
     }
@@ -996,8 +1231,7 @@ function handleCarClick(id){
 }
 
 allCars.forEach(car => {
-    const btn = document.getElementById(car.id + "Btn");
-    if(btn) btn.onclick = () => handleCarClick(car.id);
+    document.getElementById(car.id + "Btn").onclick = () => handleCarClick(car.id);
 });
 
 function updateRoadUI(){
@@ -1032,12 +1266,31 @@ roadBtn.onclick = function(){
         money -= road.price;
         unlockedRoads.push(road.id);
         currentRoad = road.id;
+
         saveMoney();
         localStorage.setItem("carRace_currentRoad", currentRoad);
     }
     updateCarButtons();
     updateRoadUI();
 };
+
+let touchStartX = 0;
+roadShopBox.addEventListener("touchstart", (e) => touchStartX = e.touches[0].clientX, {passive:true});
+roadShopBox.addEventListener("touchend", (e) => {
+    const diff = e.changedTouches[0].clientX - touchStartX;
+    if(Math.abs(diff) < 30) return;
+
+    if((currentLang === "ar" && diff < 0) || (currentLang === "en" && diff > 0)) {
+        currentRoadIndex = (currentRoadIndex + 1) % allRoads.length;
+    } else {
+        currentRoadIndex = (currentRoadIndex - 1 + allRoads.length) % allRoads.length;
+    }
+    updateRoadUI();
+}, {passive:true});
+
+/* =====================================================
+   اللغة وشحن العملات
+===================================================== */
 
 function setLanguage(lang){
     currentLang = lang;
@@ -1058,6 +1311,7 @@ function setLanguage(lang){
     easyBtn.innerText = t.easy;
     hardBtn.innerText = t.hard;
     hubCheatBtn.innerText = t.cheat;
+    startBtn.innerText = t.start;
     pauseBtn.innerText = t.resume;
     restartBtn.innerText = t.restart;
     document.getElementById("betLabel").innerText = t.betLabel;
@@ -1082,21 +1336,22 @@ hubCheatBtn.onclick = function(){
         money += 5000;
         saveMoney();
         alert(currentLang === "ar" ? "🎉 تم شحن 5000$ بنجاح!" : "🎉 $5000 added successfully!");
-    } else if(pass !== null) {
+    }else if(pass !== null){
         alert(currentLang === "ar" ? "❌ كلمة السر غير صحيحة!" : "❌ Invalid code!");
     }
 };
 
 /* =====================================================
-   محرك لعبة السيارات بالكامل
+   حالة وحسابات لعبة السيارات
 ===================================================== */
+
 let difficulty = "easy";
 let paused = false;
 let gameOver = false;
 let playerX = 0, playerY = 0, playerVx = 0;
 let score = 0, level = 1, dodgedCars = 0, roadY = 0;
 let coins = [], attackerCars = [], sparks = [];
-const carWidth = 50, carHeight = 90;
+const carWidth = 52, carHeight = 105;
 
 easyBtn.onclick = () => { difficulty = "easy"; easyBtn.style.border = "2px solid gold"; hardBtn.style.border = "none"; };
 hardBtn.onclick = () => { difficulty = "hard"; hardBtn.style.border = "2px solid gold"; easyBtn.style.border = "none"; };
@@ -1108,6 +1363,15 @@ function resizeCanvas(){
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
+function drawFallbackCar(w, h, color){
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.roundRect(-w/2, -h/2, w, h, 8);
+    ctx.fill();
+    ctx.fillStyle = "#87CEEB";
+    ctx.fillRect(-w/2 + 5, -h/4, w - 10, h/4);
+}
+
 function renderCar(img, x, y, w, h, color, isPlayer, tilt){
     ctx.save();
     ctx.translate(x + w / 2, y + h / 2);
@@ -1115,21 +1379,31 @@ function renderCar(img, x, y, w, h, color, isPlayer, tilt){
     rotation += tilt * .03;
     ctx.rotate(rotation);
 
-    if(img && img.complete && img.naturalWidth > 0){
+    if(img.complete && img.naturalWidth > 0){
         ctx.drawImage(img, -w/2, -h/2, w, h);
     } else {
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.roundRect(-w/2, -h/2, w, h, 8);
-        ctx.fill();
-        ctx.fillStyle = "#87CEEB";
-        ctx.fillRect(-w/2 + 5, -h/4, w - 10, h/4);
+        drawFallbackCar(w, h, color);
     }
     ctx.restore();
 }
 
-function getHitbox(x, y, w, h){
-    return { x: x + 6, y: y + 6, w: w - 12, h: h - 12 };
+function getHitbox(x, y, w, h, isPlayer = true){
+    const insetX = w * .22;
+    let insetYTop = h * .12, insetYBottom = h * .12;
+
+    if(isPlayer){
+        insetYTop += h * 0.05;
+        insetYBottom += h * 0.15;
+    } else {
+        insetYBottom += h * 0.05;
+        insetYTop += h * 0.15;
+    }
+
+    const origW = w - insetX * 2;
+    const origH = h - (insetYTop + insetYBottom);
+    const boxW = origW * 0.90, boxH = origH * 0.90;
+
+    return { x: x + insetX + (origW - boxW) / 2, y: y + insetYTop + (origH - boxH) / 2, w: boxW, h: boxH };
 }
 
 function collision(a, b){
@@ -1140,7 +1414,7 @@ class SmartAICar{
     constructor(model){ this.model = model; this.w = carWidth; this.h = carHeight; this.reset(); }
     reset(){
         this.x = Math.random() * (canvas.width - this.w);
-        this.y = -this.h - Math.random() * 300;
+        this.y = -this.h - Math.random() * 400;
         this.baseSpeed = (difficulty === "easy" ? 3.5 : 5.2) + Math.random() * 1.5;
         this.steeringPower = difficulty === "easy" ? .025 : .05;
         this.vx = 0;
@@ -1168,9 +1442,10 @@ class SmartAICar{
 
 function setupAttackers(){
     attackerCars = [];
+    const opponents = allCars.filter(car => car.id !== currentCar);
     const count = difficulty === "easy" ? 2 : 3;
     for(let i=0; i<count; i++){
-        attackerCars.push(new SmartAICar(allCars[(i+1) % allCars.length]));
+        attackerCars.push(new SmartAICar(opponents[i % opponents.length]));
     }
 }
 
@@ -1181,12 +1456,12 @@ function spawnCoin(){
 }
 
 function createSparks(x, y){
-    for(let i=0; i<25; i++){
+    for(let i=0; i<35; i++){
         sparks.push({
             x: x, y: y,
-            vx: (Math.random() - .5) * 12,
-            vy: (Math.random() - .5) * 12,
-            size: Math.random() * 4 + 2,
+            vx: (Math.random() - .5) * 16,
+            vy: (Math.random() - .5) * 16,
+            size: Math.random() * 5 + 2,
             life: 1
         });
     }
@@ -1195,7 +1470,7 @@ function createSparks(x, y){
 function resetGame(){
     resizeCanvas();
     playerX = canvas.width / 2 - carWidth / 2;
-    playerY = canvas.height - carHeight - 40;
+    playerY = canvas.height - carHeight - 30;
     playerVx = 0; roadY = 0; score = 0; level = 1; dodgedCars = 0;
     coins = []; sparks = [];
     gameOver = false; paused = false;
@@ -1210,17 +1485,21 @@ function drawGame(){
     const roadSpeed = (difficulty === "easy" ? 6 : 8) + level;
     roadY = (roadY + roadSpeed) % canvas.height;
 
-    // خلفية الطريق
-    ctx.fillStyle = currentRoad === "desert" ? "#c87520" : currentRoad === "snow" ? "#7f8c8d" : "#333";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // خطوط الطريق
-    ctx.fillStyle = "#f1c40f";
-    for(let y = -canvas.height; y < canvas.height; y += 60){
-        ctx.fillRect(canvas.width / 2 - 3, y + (roadY % 60), 6, 30);
+    const activeRoad = allRoads.find(road => road.id === currentRoad) || allRoads[0];
+    const roadImage = activeRoad.img;
+
+    if(roadImage.complete && roadImage.naturalWidth > 0){
+        ctx.drawImage(roadImage, 0, roadY, canvas.width, canvas.height);
+        ctx.drawImage(roadImage, 0, roadY - canvas.height, canvas.width, canvas.height);
+    } else {
+        ctx.fillStyle = currentRoad === "desert" ? "#c87520" : currentRoad === "snow" ? "#9eb5c7" : "#333";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#f1c40f";
+        for(let y=-canvas.height; y<canvas.height; y+=70){
+            ctx.fillRect(canvas.width / 2 - 3, y + (roadY % 70), 6, 35);
+        }
     }
 
-    // رسم العملات
     spawnCoin();
     for(let i=coins.length-1; i>=0; i--){
         const coin = coins[i];
@@ -1236,6 +1515,8 @@ function drawGame(){
         if(Math.hypot(playerX + carWidth / 2 - coin.x, playerY + carHeight / 2 - coin.y) < carWidth / 2 + coin.size / 2){
             money += coin.value;
             score += 5;
+            coinSound.currentTime = 0;
+            coinSound.play().catch(() => {});
             saveMoney();
             coins.splice(i, 1);
         } else if(coin.y > canvas.height + 20){
@@ -1243,16 +1524,14 @@ function drawGame(){
         }
     }
 
-    // رسم سيارة اللاعب
     const playerModel = allCars.find(car => car.id === currentCar) || allCars[0];
     renderCar(playerModel.img, playerX, playerY, carWidth, carHeight, playerModel.color, true, playerVx);
-    const playerBox = getHitbox(playerX, playerY, carWidth, carHeight);
+    const playerBox = getHitbox(playerX, playerY, carWidth, carHeight, true);
 
-    // رسم سيارات الأعداء واختبار التصادم
     for(const attacker of attackerCars){
         attacker.update();
         renderCar(attacker.model.img, attacker.x, attacker.y, attacker.w, attacker.h, attacker.model.color, false, attacker.vx);
-        const enemyBox = getHitbox(attacker.x, attacker.y, attacker.w, attacker.h);
+        const enemyBox = getHitbox(attacker.x, attacker.y, attacker.w, attacker.h, false);
 
         if(collision(playerBox, enemyBox)){
             createSparks((playerBox.x + enemyBox.x) / 2, (playerBox.y + enemyBox.y) / 2);
@@ -1261,7 +1540,6 @@ function drawGame(){
         }
     }
 
-    // شرار التصادم
     for(let i=sparks.length-1; i>=0; i--){
         const spark = sparks[i];
         ctx.fillStyle = `rgba(255, ${Math.floor(spark.life * 255)}, 0, ${spark.life})`;
@@ -1272,7 +1550,6 @@ function drawGame(){
         if(spark.life <= 0) sparks.splice(i, 1);
     }
 
-    // معلومات النقاط على الشاشة
     const t = i18n[currentLang];
     ctx.fillStyle = "white"; ctx.font = "bold 15px Arial";
     if(currentLang === "ar"){
@@ -1280,11 +1557,13 @@ function drawGame(){
         ctx.fillText(t.money + money, canvas.width - 15, 30);
         ctx.fillText(t.score + " " + score, canvas.width - 15, 55);
         ctx.fillText(t.high + " " + highScore, canvas.width - 15, 80);
+        ctx.fillText(t.level + " " + level, canvas.width - 15, 105);
     } else {
         ctx.textAlign = "left";
         ctx.fillText(t.money + money, 15, 30);
         ctx.fillText(t.score + " " + score, 15, 55);
         ctx.fillText(t.high + " " + highScore, 15, 80);
+        ctx.fillText(t.level + " " + level, 15, 105);
     }
 
     requestAnimationFrame(drawGame);
@@ -1293,6 +1572,9 @@ function drawGame(){
 function endGame(){
     if(gameOver) return;
     gameOver = true;
+    bgMusic.pause();
+    crashSound.currentTime = 0;
+    crashSound.play().catch(() => {});
 
     if(score > highScore){
         highScore = score;
@@ -1303,12 +1585,9 @@ function endGame(){
         const t = i18n[currentLang];
         alert(t.crash + "\n" + t.score + " " + score + "\n" + t.money + money + "\n" + t.high + " " + highScore);
         showScreen("carStart");
-    }, 150);
+    }, 300);
 }
 
-/* =====================================================
-   التحكم بأسهم الكيبورد واللمس
-===================================================== */
 document.addEventListener("keydown", (e) => {
     if(gameOver || paused) return;
     const step = 22;
@@ -1346,20 +1625,29 @@ function togglePause(){
     paused = !paused;
 
     if(paused){
+        bgMusic.pause();
         pauseBtn.innerText = i18n[currentLang].resume;
         controlPanel.style.display = "block";
     } else {
         controlPanel.style.display = "none";
         pauseBtn.innerText = i18n[currentLang].pause;
+        bgMusic.play().catch(() => {});
         drawGame();
     }
 }
 
 pauseBtn.onclick = togglePause;
-restartBtn.onclick = () => { resetGame(); drawGame(); };
+restartBtn.onclick = () => { resetGame(); bgMusic.currentTime = 0; bgMusic.play().catch(() => {}); drawGame(); };
+
+startBtn.onclick = () => {
+    showScreen("canvas");
+    resetGame();
+    bgMusic.currentTime = 0;
+    bgMusic.play().catch(() => {});
+    drawGame();
+};
 
 setLanguage("ar");
-showScreen("hub");
 
 </script>
 
