@@ -1159,16 +1159,15 @@ coinSound.volume = 0.7;
 const spinSound = new Audio(FILES.spinSound);
 spinSound.volume = 0.8;
 
-// تعريف صوت الأزرار الفوري بدون أي تأخير
+// تعريف صوت الأزرار الفوري بدون تأخير
 const buttonSound = new Audio(FILES.buttonSound);
 buttonSound.volume = 0.6;
 
-// تشغيل صوت فوري ونظيف لكل ضغطة زر باستخدام استنساخ عنصر الصوت (Clone)
+// تشغيل صوت فوري ونظيف لكل ضغطة زر باستخدام currentTime = 0
 document.addEventListener("click", (e) => {
     if (e.target.tagName === "BUTTON" || e.target.closest("button") || e.target.id === "welcomeTriggerBtn") {
-        const btnAudio = buttonSound.cloneNode();
-        btnAudio.volume = 0.6;
-        btnAudio.play().catch(() => {});
+        buttonSound.currentTime = 0;
+        buttonSound.play().catch(() => {});
     }
 });
 
@@ -1599,22 +1598,68 @@ function endGame(){
     }, 300);
 }
 
-document.addEventListener("keydown", (e) => {
-    if(gameOver || paused) return;
-    const step = 22;
-    if(e.key === "ArrowLeft") { playerX -= step; playerVx = -5; }
-    if(e.key === "ArrowRight") { playerX += step; playerVx = 5; }
-    if(e.key === "ArrowUp") playerY -= step;
-    if(e.key === "ArrowDown") playerY += step;
+/* =====================================================
+   التحكم للكمبيوتر (لوحة المفاتيح + الماوس) وللهواتف (اللمس)
+===================================================== */
 
-    playerX = Math.max(0, Math.min(canvas.width - carWidth, playerX));
-    playerY = Math.max(0, Math.min(canvas.height - carHeight, playerY));
+const keys = {};
+
+document.addEventListener("keydown", (e) => {
+    if(["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", " "].includes(e.key)){
+        e.preventDefault(); // منع التمرير بالصفحة عند الضغط على الأسهم
+    }
+    keys[e.key] = true;
 });
 
 document.addEventListener("keyup", (e) => {
-    if(e.key === "ArrowLeft" || e.key === "ArrowRight") playerVx = 0;
+    keys[e.key] = false;
 });
 
+// حلقة تحديث حركة لوحة المفاتيح بسلاسة للابتوب
+setInterval(() => {
+    if(gameOver || paused || canvas.style.display === "none") return;
+    const step = 8;
+    if(keys["ArrowLeft"]) { playerX -= step; playerVx = -5; }
+    else if(keys["ArrowRight"]) { playerX += step; playerVx = 5; }
+    else { playerVx = 0; }
+
+    if(keys["ArrowUp"]) playerY -= step;
+    if(keys["ArrowDown"]) playerY += step;
+
+    playerX = Math.max(0, Math.min(canvas.width - carWidth, playerX));
+    playerY = Math.max(0, Math.min(canvas.height - carHeight, playerY));
+}, 1000 / 60);
+
+// دعم التحكم بالماوس (النقر والسحب للكمبيوتر)
+let isMouseDown = false;
+
+canvas.addEventListener("mousedown", (e) => {
+    if(gameOver || paused) return;
+    isMouseDown = true;
+    movePlayerMouse(e);
+});
+
+canvas.addEventListener("mousemove", (e) => {
+    if(!isMouseDown || gameOver || paused) return;
+    movePlayerMouse(e);
+});
+
+window.addEventListener("mouseup", () => {
+    isMouseDown = false;
+    playerVx = 0;
+});
+
+function movePlayerMouse(e){
+    const rect = canvas.getBoundingClientRect();
+    let targetX = e.clientX - rect.left - carWidth / 2;
+    let targetY = e.clientY - rect.top - carHeight / 2;
+
+    playerVx = targetX - playerX;
+    playerX = Math.max(0, Math.min(canvas.width - carWidth, targetX));
+    playerY = Math.max(0, Math.min(canvas.height - carHeight, targetY));
+}
+
+// دعم اللمس للهواتف
 function movePlayerTouch(e){
     if(gameOver || paused) return;
     const touch = e.touches[0];
