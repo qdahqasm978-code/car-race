@@ -653,7 +653,8 @@ const FILES = {
     music: "background.mp3",
     crash: "explosion.mp3",
     coin: "coin.mp3",
-    spinSound: "r.mp3"
+    spinSound: "r.mp3",
+    buttonSound: "k.mp3"
 };
 
 /* =====================================================
@@ -661,10 +662,7 @@ const FILES = {
 ===================================================== */
 
 function activateGameHub() {
-    // تغيير الصورة الخلفية للزر الأخضر
     welcomeScreen.style.backgroundImage = `url('${FILES.greenButtonBg}')`;
-    
-    // تأخير بسيط للانتقال إلى مركز الألعاب بسلاسة
     setTimeout(() => {
         welcomeScreen.style.display = "none";
         showScreen("hub");
@@ -1160,6 +1158,18 @@ coinSound.volume = 0.7;
 
 const spinSound = new Audio(FILES.spinSound);
 spinSound.volume = 0.8;
+
+// صوت الأزرار الجديد k.mp3
+const buttonSound = new Audio(FILES.buttonSound);
+buttonSound.volume = 0.6;
+
+// مشغل صوت الأزرار عند الضغط على أي زر في التطبيق تلقائياً
+document.addEventListener("click", (e) => {
+    if (e.target.tagName === "BUTTON" || e.target.closest("button") || e.target.id === "welcomeTriggerBtn") {
+        buttonSound.currentTime = 0;
+        buttonSound.play().catch(() => {});
+    }
+});
 
 /* =====================================================
    السيارات والطرق
