@@ -52,23 +52,38 @@ canvas{
     width: 100%;
     height: 100%;
     background-image: url('red_button.jpg');
-    background-size: cover;
-    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-color: #000;
     z-index: 100;
     display: flex;
     justify-content: center;
     align-items: flex-end;
     padding-bottom: 8vh;
+    cursor: pointer;
     transition: background-image 0.2s ease-in-out;
 }
 
 .welcome-btn-container {
-    width: 220px;
-    height: 70px;
+    width: 280px;
+    height: 80px;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
+    background: rgba(255, 0, 0, 0.1);
+    border-radius: 40px;
+    transition: transform 0.1s, background 0.2s;
+}
+
+.welcome-btn-container:hover {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.welcome-btn-container:active {
+    transform: scale(0.95);
 }
 
 .overlay-card{
@@ -377,8 +392,8 @@ canvas{
 <!-- =====================================================
      شاشة البداية بالصورة والزر التفاعلي
 ===================================================== -->
-<div id="welcomeScreen">
-    <div id="welcomeTriggerBtn" class="welcome-btn-container" onclick="activateGameHub()"></div>
+<div id="welcomeScreen" onclick="activateGameHub()">
+    <div id="welcomeTriggerBtn" class="welcome-btn-container"></div>
 </div>
 
 
@@ -523,7 +538,7 @@ canvas{
                     #e67e22
                 );
             ">
-            🛣️ الطريق العادي
+                        🛣️ الطريق العادي
         </button>
 
         <div
@@ -664,15 +679,38 @@ const FILES = {
 };
 
 /* =====================================================
+   تحسين محرك الصوت لمنع الحظر بواسطة المتصفح
+===================================================== */
+let audioContextUnlocked = false;
+
+function unlockAudio() {
+    if (audioContextUnlocked) return;
+    audioContextUnlocked = true;
+
+    const audioElements = [bgMusic, crashSound, coinSound, spinSound, buttonSound];
+    audioElements.forEach(audio => {
+        audio.play().then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+        }).catch(() => {});
+    });
+}
+
+document.addEventListener("click", unlockAudio, { once: true });
+document.addEventListener("touchstart", unlockAudio, { once: true });
+document.addEventListener("keydown", unlockAudio, { once: true });
+
+/* =====================================================
    منطق تفعيل شاشة البداية وتحويل الزر للأخضر
 ===================================================== */
 
 function activateGameHub() {
+    unlockAudio();
     welcomeScreen.style.backgroundImage = `url('${FILES.greenButtonBg}')`;
     setTimeout(() => {
         welcomeScreen.style.display = "none";
         showScreen("hub");
-    }, 300);
+    }, 250);
 }
 
 /* =====================================================
@@ -886,7 +924,7 @@ function setBet(amount) {
 
     const btns = casinoScreen.querySelectorAll(".bet-btn");
     btns.forEach(b => b.classList.remove("active"));
-    event.target.classList.add("active");
+    if (event && event.target) event.target.classList.add("active");
 }
 
 function spinSlots() {
@@ -1165,7 +1203,6 @@ coinSound.volume = 0.7;
 const spinSound = new Audio(FILES.spinSound);
 spinSound.volume = 0.8;
 
-// صوت الأزرار الفوري بدون تأخير (تم استخدام الاستنساخ لضمان سرعة الاستجابة المطلقة)
 const buttonSound = new Audio(FILES.buttonSound);
 buttonSound.volume = 0.6;
 
@@ -1637,25 +1674,28 @@ function endGame(){
 const keys = {};
 
 document.addEventListener("keydown", (e) => {
-    if(["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", " "].includes(e.key)){
+    if(["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", " ", "a", "A", "d", "D", "w", "W", "s", "S"].includes(e.key)){
         e.preventDefault();
     }
+    keys[e.key.toLowerCase()] = true;
     keys[e.key] = true;
 });
 
 document.addEventListener("keyup", (e) => {
+    keys[e.key.toLowerCase()] = false;
     keys[e.key] = false;
 });
 
 setInterval(() => {
     if(gameOver || paused || canvas.style.display === "none") return;
     const step = 8;
-    if(keys["ArrowLeft"]) { playerX -= step; playerVx = -5; }
-    else if(keys["ArrowRight"]) { playerX += step; playerVx = 5; }
-    else { playerVx = 0; }
+    
+    if(keys["arrowleft"] || keys["a"]) { playerX -= step; playerVx = -5; }
+    else if(keys["arrowright"] || keys["d"]) { playerX += step; playerVx = 5; }
+    else if(!isMouseDown) { playerVx = 0; }
 
-    if(keys["ArrowUp"]) playerY -= step;
-    if(keys["ArrowDown"]) playerY += step;
+    if(keys["arrowup"] || keys["w"]) playerY -= step;
+    if(keys["arrowdown"] || keys["s"]) playerY += step;
 
     playerX = Math.max(0, Math.min(canvas.width - carWidth, playerX));
     playerY = Math.max(0, Math.min(canvas.height - carHeight, playerY));
