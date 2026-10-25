@@ -43,7 +43,7 @@ canvas{
 }
 
 /* =====================================================
-   شاشة البداية الترحيبية (الصورة والزر التفاعلي)
+   شاشة البداية الترحيبية (متجاوبة للهاتف واللابتوب بدقة)
 ===================================================== */
 #welcomeScreen {
     position: absolute;
@@ -52,38 +52,35 @@ canvas{
     width: 100%;
     height: 100%;
     background-image: url('red_button.jpg');
-    background-size: contain;
-    background-repeat: no-repeat;
+    background-size: cover; /* للهواتف: تملأ الشاشة بالكامل */
     background-position: center center;
+    background-repeat: no-repeat;
     background-color: #000;
     z-index: 100;
     display: flex;
     justify-content: center;
     align-items: flex-end;
-    padding-bottom: 8vh;
+    padding-bottom: 7vh;
     cursor: pointer;
     transition: background-image 0.2s ease-in-out;
 }
 
+/* للشاشات الكبيرة (اللابتوب والكمبيوتر): تصغير الصورة وضبطها لتظهر كاملة مع الزر بوضوح */
+@media (min-width: 768px) {
+    #welcomeScreen {
+        background-size: contain;
+        background-color: #0d0d0d;
+    }
+}
+
 .welcome-btn-container {
-    width: 280px;
-    height: 80px;
+    width: 240px;
+    height: 70px;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(255, 0, 0, 0.1);
-    border-radius: 40px;
-    transition: transform 0.1s, background 0.2s;
-}
-
-.welcome-btn-container:hover {
-    transform: scale(1.05);
-    background: rgba(255, 255, 255, 0.15);
-}
-
-.welcome-btn-container:active {
-    transform: scale(0.95);
+    z-index: 101;
 }
 
 .overlay-card{
@@ -538,7 +535,7 @@ canvas{
                     #e67e22
                 );
             ">
-                        🛣️ الطريق العادي
+            🛣️ الطريق العادي
         </button>
 
         <div
@@ -679,7 +676,7 @@ const FILES = {
 };
 
 /* =====================================================
-   تحسين محرك الصوت لمنع الحظر بواسطة المتصفح
+   محرك الصوت الذكي (تجاوز حظر المتصفحات للأصوات)
 ===================================================== */
 let audioContextUnlocked = false;
 
