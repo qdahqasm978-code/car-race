@@ -32,11 +32,14 @@ html,body{
 canvas{
     display:none;
     position:absolute;
-    top:0;
+    top:50%;
     left:50%;
-    transform:translateX(-50%);
+    transform:translate(-50%, -50%);
     background:#222;
     touch-action:none;
+    border-left: 2px solid #444;
+    border-right: 2px solid #444;
+    box-shadow: 0 0 20px rgba(0,0,0,0.8);
 }
 
 /* =====================================================
@@ -220,8 +223,11 @@ canvas{
     border:1px dashed #f39c12;
 
     border-radius:10px;
+    cursor: grab;
+}
 
-    touch-action:pan-y;
+.road-shop-box:active {
+    cursor: grabbing;
 }
 
 .swipe-hint{
@@ -728,7 +734,7 @@ const i18n = {
         money: "💰 النقود: $",
         selectCar: "اختر أو اشترِ سيارتك:",
         selectRoad: "🛤️ اختر الطريق:",
-        swipe: "👈 اسحب للشمال لتغيير الطريق",
+        swipe: "👈 اسحب أو انقر للتنقل بين الطرق",
         easy: "😎 هجوم عادي",
         hard: "🔥 هجوم شرس",
         cheat: "🔑 شحن العملات",
@@ -767,7 +773,7 @@ const i18n = {
         money: "💰 Cash: $",
         selectCar: "Choose or Buy Your Car:",
         selectRoad: "🛤️ Choose Track:",
-        swipe: "👉 Swipe right to change track",
+        swipe: "👈 Drag or swipe to change track",
         easy: "😎 Normal Attack",
         hard: "🔥 Aggressive",
         cheat: "🔑 Redeem Code",
@@ -951,7 +957,7 @@ function finishSpin(s1, s2, s3) {
 }
 
 /* =====================================================
-   منطق عجلة الأسماء والتحديات (مستقلة ومجانية بالكامل)
+   منطق عجلة الأسماء والتحديات
 ===================================================== */
 
 let wheelNames = [];
@@ -1159,15 +1165,15 @@ coinSound.volume = 0.7;
 const spinSound = new Audio(FILES.spinSound);
 spinSound.volume = 0.8;
 
-// تعريف صوت الأزرار الفوري بدون تأخير
+// صوت الأزرار الفوري بدون تأخير (تم استخدام الاستنساخ لضمان سرعة الاستجابة المطلقة)
 const buttonSound = new Audio(FILES.buttonSound);
 buttonSound.volume = 0.6;
 
-// تشغيل صوت فوري ونظيف لكل ضغطة زر باستخدام currentTime = 0
 document.addEventListener("click", (e) => {
     if (e.target.tagName === "BUTTON" || e.target.closest("button") || e.target.id === "welcomeTriggerBtn") {
-        buttonSound.currentTime = 0;
-        buttonSound.play().catch(() => {});
+        const clickSound = buttonSound.cloneNode();
+        clickSound.volume = 0.6;
+        clickSound.play().catch(() => {});
     }
 });
 
@@ -1284,19 +1290,41 @@ roadBtn.onclick = function(){
     updateRoadUI();
 };
 
-let touchStartX = 0;
-roadShopBox.addEventListener("touchstart", (e) => touchStartX = e.touches[0].clientX, {passive:true});
-roadShopBox.addEventListener("touchend", (e) => {
-    const diff = e.changedTouches[0].clientX - touchStartX;
-    if(Math.abs(diff) < 30) return;
+/* =====================================================
+   إصلاح تفاعل اختيار الطرق على اللابتوب (الماوس + اللمس)
+===================================================== */
+let roadTouchStartX = 0;
+let isRoadMouseDown = false;
 
+roadShopBox.addEventListener("touchstart", (e) => roadTouchStartX = e.touches[0].clientX, {passive:true});
+roadShopBox.addEventListener("touchend", (e) => {
+    handleRoadSwipe(e.changedTouches[0].clientX - roadTouchStartX);
+}, {passive:true});
+
+roadShopBox.addEventListener("mousedown", (e) => {
+    isRoadMouseDown = true;
+    roadTouchStartX = e.clientX;
+});
+
+roadShopBox.addEventListener("mouseup", (e) => {
+    if(!isRoadMouseDown) return;
+    isRoadMouseDown = false;
+    handleRoadSwipe(e.clientX - roadTouchStartX);
+});
+
+roadShopBox.addEventListener("mouseleave", () => {
+    isRoadMouseDown = false;
+});
+
+function handleRoadSwipe(diff){
+    if(Math.abs(diff) < 20) return;
     if((currentLang === "ar" && diff < 0) || (currentLang === "en" && diff > 0)) {
         currentRoadIndex = (currentRoadIndex + 1) % allRoads.length;
     } else {
         currentRoadIndex = (currentRoadIndex - 1 + allRoads.length) % allRoads.length;
     }
     updateRoadUI();
-}, {passive:true});
+}
 
 /* =====================================================
    اللغة وشحن العملات
@@ -1366,9 +1394,13 @@ const carWidth = 52, carHeight = 105;
 easyBtn.onclick = () => { difficulty = "easy"; easyBtn.style.border = "2px solid gold"; hardBtn.style.border = "none"; };
 hardBtn.onclick = () => { difficulty = "hard"; hardBtn.style.border = "2px solid gold"; easyBtn.style.border = "none"; };
 
+/* =====================================================
+   إصلاح مقاسات الشاشة والـ Canvas للابتوب والهواتف
+===================================================== */
 function resizeCanvas(){
-    canvas.width = Math.min(window.innerWidth, 480);
-    canvas.height = window.innerHeight;
+    const isDesktop = window.innerWidth > 768;
+    canvas.width = Math.min(window.innerWidth, isDesktop ? 450 : 480);
+    canvas.height = isDesktop ? Math.min(window.innerHeight - 30, 700) : window.innerHeight;
 }
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
@@ -1606,7 +1638,7 @@ const keys = {};
 
 document.addEventListener("keydown", (e) => {
     if(["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", " "].includes(e.key)){
-        e.preventDefault(); // منع التمرير بالصفحة عند الضغط على الأسهم
+        e.preventDefault();
     }
     keys[e.key] = true;
 });
@@ -1615,7 +1647,6 @@ document.addEventListener("keyup", (e) => {
     keys[e.key] = false;
 });
 
-// حلقة تحديث حركة لوحة المفاتيح بسلاسة للابتوب
 setInterval(() => {
     if(gameOver || paused || canvas.style.display === "none") return;
     const step = 8;
@@ -1630,7 +1661,6 @@ setInterval(() => {
     playerY = Math.max(0, Math.min(canvas.height - carHeight, playerY));
 }, 1000 / 60);
 
-// دعم التحكم بالماوس (النقر والسحب للكمبيوتر)
 let isMouseDown = false;
 
 canvas.addEventListener("mousedown", (e) => {
@@ -1659,7 +1689,6 @@ function movePlayerMouse(e){
     playerY = Math.max(0, Math.min(canvas.height - carHeight, targetY));
 }
 
-// دعم اللمس للهواتف
 function movePlayerTouch(e){
     if(gameOver || paused) return;
     const touch = e.touches[0];
