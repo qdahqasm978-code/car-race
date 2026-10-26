@@ -671,8 +671,7 @@ const FILES = {
     music: "background.mp3",
     crash: "explosion.mp3",
     coin: "coin.mp3",
-    spinSound: "r.mp3",
-    buttonSound: "k.mp3"
+    spinSound: "r.mp3"
 };
 
 /* =====================================================
@@ -684,7 +683,7 @@ function unlockAudio() {
     if (audioContextUnlocked) return;
     audioContextUnlocked = true;
 
-    const audioElements = [bgMusic, crashSound, coinSound, spinSound, buttonSound];
+    const audioElements = [bgMusic, crashSound, coinSound, spinSound];
     audioElements.forEach(audio => {
         audio.play().then(() => {
             audio.pause();
@@ -1199,17 +1198,6 @@ coinSound.volume = 0.7;
 
 const spinSound = new Audio(FILES.spinSound);
 spinSound.volume = 0.8;
-
-const buttonSound = new Audio(FILES.buttonSound);
-buttonSound.volume = 0.6;
-
-document.addEventListener("click", (e) => {
-    if (e.target.tagName === "BUTTON" || e.target.closest("button") || e.target.id === "welcomeTriggerBtn") {
-        const clickSound = buttonSound.cloneNode();
-        clickSound.volume = 0.6;
-        clickSound.play().catch(() => {});
-    }
-});
 
 /* =====================================================
    السيارات والطرق
